@@ -2,7 +2,7 @@
 Splathonで使用するAPIをSwaggerで作る
 
 ## Swagger UIへのアクセス
-https://splathon.github.io/splathon-api/index.html
+https://splathon.github.io/splathon-api/dist/index.html
 
 ## ざっくり今後やる必要があることメモ(Issue管理するほどでもなかったので)
  - [ ] swagger-codegen.jarをgit管理下に追加する(https://github.com/swagger-api/swagger-codegen)
