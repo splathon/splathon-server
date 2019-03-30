@@ -1,0 +1,40 @@
+swagger: "2.0"
+info:
+  description: "Splathonで使うAPI"
+  version: "1.0.0"
+  title: "SplathonAPI"
+host: "localhost"
+basePath: "/splathon/v1"
+schemes:
+  - "https"
+tags:
+- name: "sample1"
+  description: "サンプル用のtag"
+- name: "sample2"
+  description: "サンプル用のtag"
+paths:
+  "/user/{id}":
+    get:
+      tags:
+      - "sample1"
+      description: "サンプルコード"
+      operationId: "getUserById"
+      parameters:
+      - name: id
+        in: path
+        description: user id
+        required: true
+        type: number
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/SampleObj"
+definitions:
+  SampleObj:
+    type: object
+    properties:
+      id:
+        type: integer
+      username:
+        type: string
