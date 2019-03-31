@@ -7,15 +7,15 @@ https://splathon.github.io/splathon-api/dist/
 ## ざっくり今後やる必要があることメモ(Issue管理するほどでもなかったので)
  - [x] swagger-codegen.jarをgit管理下に追加する(https://github.com/swagger-api/swagger-codegen)
  - [ ] swagger-code-gen.jarを使って各サーバー、クライアント用のAPIを作成する用のスクリプトを用意する
-  - [x] Android
-  - [ ] iOS
-  - [ ] Dart?
-  - [ ] Server(Ruby??)
+   - [x] Android
+   - [ ] iOS
+   - [ ] Dart?
+   - [ ] Server(Ruby??)
  - [ ] 各API作成用のconfigファイルを用意する
-  - [x]Android
-  - [ ] iOS
-  - [ ] Dart?
-  - [ ] Server(Ruby??)
+   - [x] Android
+   - [ ] iOS
+   - [ ] Dart?
+   - [ ] Server(Ruby??)
  - [ ] swagger.yamlの中身を書く
 
 ## いずれやりたい
