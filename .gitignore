@@ -31,3 +31,7 @@ Temporary Items
 .apdisk
 
 # End of https://www.gitignore.io/api/macos
+
+# Swagger ignore
+swagger-codegen-cli.jar
+/api-*/
