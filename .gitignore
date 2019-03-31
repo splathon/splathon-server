@@ -35,3 +35,4 @@ Temporary Items
 # Swagger ignore
 swagger-codegen-cli.jar
 /api-*/
+/bin/
