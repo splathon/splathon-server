@@ -1,0 +1,7 @@
+{
+  "groupId": "splathon.ink",
+  "artifactId": "android-api",
+  "version": "0.0.1",
+  "useRxJava2": true,
+  "library": "retrofit2"
+}
