@@ -5,12 +5,22 @@ Splathonで使用するAPIをSwaggerで作る
 https://splathon.github.io/splathon-api/dist/index.html
 
 ## ざっくり今後やる必要があることメモ(Issue管理するほどでもなかったので)
- - [ ] swagger-codegen.jarをgit管理下に追加する(https://github.com/swagger-api/swagger-codegen)
- - [ ] CI環境を構築する(CircleCI?)
+ - [x] swagger-codegen.jarをgit管理下に追加する(https://github.com/swagger-api/swagger-codegen)
  - [ ] swagger-code-gen.jarを使って各サーバー、クライアント用のAPIを作成する用のスクリプトを用意する
+  - [x] Android
+  - [ ] iOS
+  - [ ] Dart?
+  - [ ] Server(Ruby??)
  - [ ] 各API作成用のconfigファイルを用意する
- - [ ] ↑で作ったスクリプトとconfigを使ってCI環境に連携させて、swagger.yaml更新されたら自動でAPIも更新するようにする
+  - [x]Android
+  - [ ] iOS
+  - [ ] Dart?
+  - [ ] Server(Ruby??)
  - [ ] swagger.yamlの中身を書く
+
+## いずれやりたい
+ - [ ] CI環境を構築する(CircleCI?)->今回はパスかな。。。
+ - [ ] ↑で作ったスクリプトとconfigを使ってCI環境に連携させて、swagger.yaml更新されたら自動でAPIも更新するようにする
 
 ## ディレクトリ構成
 ```
