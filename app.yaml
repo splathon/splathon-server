@@ -4,3 +4,6 @@ runtime: go111
 handlers:
 - url: /.*
   script: auto
+
+includes:
+- secret/secret.yaml

@@ -15,5 +15,9 @@ type Handler interface {
 }
 
 func NewDefaultHandler() (Handler, error) {
-	return pg.NewHandler()
+	opt, err := pg.NewOptionFromEnv()
+	if err != nil {
+		return nil, err
+	}
+	return pg.NewHandler(opt)
 }
