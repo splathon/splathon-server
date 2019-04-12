@@ -63,6 +63,11 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 		ms[m.QualifierId][m.RoomId] = append(ms[m.QualifierId][m.RoomId], m)
 	}
 
+	// Past splathon may not have room.
+	if len(rooms) == 0 {
+		rooms = append(rooms, &Room{Name: "Unknown"})
+	}
+
 	// team_id => Team
 	teamMap := make(map[int64]*Team)
 	for _, t := range teams {
@@ -87,27 +92,7 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 			}
 
 			for _, m := range ms[q.Id][r.Id] {
-				match := &models.Match{
-					ID:    swag.Int32(int32(m.Id)),
-					Order: int32(m.Order),
-				}
-
-				if t, ok := teamMap[m.TeamId]; ok {
-					match.TeamAlpha = convertTeam(t)
-				}
-				if t, ok := teamMap[m.OpponentId]; ok {
-					match.TeamBravo = convertTeam(t)
-				}
-
-				if m.TeamPoints > 0 && m.OpponentPoints > 0 && m.TeamPoints == m.OpponentPoints {
-					match.Winner = models.MatchWinnerDraw
-				} else if m.TeamPoints > m.OpponentPoints {
-					match.Winner = models.MatchWinnerAlpha
-				} else if m.TeamPoints < m.OpponentPoints {
-					match.Winner = models.MatchWinnerBravo
-				}
-
-				room.Matches = append(room.Matches, match)
+				room.Matches = append(room.Matches, convertMatch(m, teamMap))
 				sort.Slice(room.Matches, func(i, j int) bool {
 					return room.Matches[i].Order < room.Matches[j].Order
 				})
@@ -119,6 +104,29 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 		result.Qualifiers = append(result.Qualifiers, round)
 	}
 	return result
+}
+
+func convertMatch(m *Match, teamMap map[int64]*Team) *models.Match {
+	match := &models.Match{
+		ID:    swag.Int32(int32(m.Id)),
+		Order: int32(m.Order),
+	}
+
+	if t, ok := teamMap[m.TeamId]; ok {
+		match.TeamAlpha = convertTeam(t)
+	}
+	if t, ok := teamMap[m.OpponentId]; ok {
+		match.TeamBravo = convertTeam(t)
+	}
+
+	if m.TeamPoints > 0 && m.OpponentPoints > 0 && m.TeamPoints == m.OpponentPoints {
+		match.Winner = models.MatchWinnerDraw
+	} else if m.TeamPoints > m.OpponentPoints {
+		match.Winner = models.MatchWinnerAlpha
+	} else if m.TeamPoints < m.OpponentPoints {
+		match.Winner = models.MatchWinnerBravo
+	}
+	return match
 }
 
 func convertTeam(t *Team) *models.Team {
