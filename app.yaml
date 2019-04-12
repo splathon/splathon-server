@@ -1,0 +1,6 @@
+# https://cloud.google.com/appengine/docs/standard/go/config/appref
+runtime: go111
+
+handlers:
+- url: /.*
+  script: auto
