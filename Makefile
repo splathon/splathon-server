@@ -4,7 +4,7 @@ all: build
 .PHONY: build
 build:
 	mkdir -p swagger
-	swagger generate server -t ./swagger/ -A splathon -f=./splathon-api/swagger.yaml
+	swagger generate server -t ./swagger/ -A splathon -f=./splathon-api/swagger.yaml --with-context
 
 .PHONY: install
 install:
