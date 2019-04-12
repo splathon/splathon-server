@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -15,6 +16,9 @@ import (
 // Handler is splathon API handler backed by PostgreSQL.
 type Handler struct {
 	db *gorm.DB
+
+	eventCacheMu sync.Mutex
+	eventCache   map[float64]int64
 }
 
 type Option struct {
@@ -63,15 +67,22 @@ func NewHandler(opt *Option) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Handler{db: db}, nil
+	return &Handler{db: db, eventCache: make(map[float64]int64)}, nil
 }
 
 func (h *Handler) queryInternalEventID(eventIDInPath float64) (int64, error) {
+	h.eventCacheMu.Lock()
+	defer h.eventCacheMu.Unlock()
+	if eid, ok := h.eventCache[eventIDInPath]; ok {
+		return eid, nil
+	}
+
 	var event Event
 	q := fmt.Sprintf("Splathon#%d", int32(eventIDInPath)) + "%"
 	if err := h.db.Where("name LIKE ?", q).Find(&event).Error; err != nil {
 		return 0, fmt.Errorf("event not found (event_id=%d): %v", int32(eventIDInPath), err)
 	}
+	h.eventCache[eventIDInPath] = event.Id
 	return event.Id, nil
 }
 
