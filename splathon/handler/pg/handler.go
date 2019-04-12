@@ -66,6 +66,15 @@ func NewHandler(opt *Option) (*Handler, error) {
 	return &Handler{db: db}, nil
 }
 
+func (h *Handler) queryInternalEventID(eventIDInPath float64) (int64, error) {
+	var event Event
+	q := fmt.Sprintf("Splathon#%d", int32(eventIDInPath)) + "%"
+	if err := h.db.Where("name LIKE ?", q).Find(&event).Error; err != nil {
+		return 0, fmt.Errorf("event not found (event_id=%d): %v", int32(eventIDInPath), err)
+	}
+	return event.Id, nil
+}
+
 func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*models.Match, error) {
 	return nil, errors.New("not implemented")
 }

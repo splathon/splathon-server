@@ -4,6 +4,15 @@ import (
 	"time"
 )
 
+// TODO(haya14busa): Add numbering.
+type Event struct {
+	Id        int64 `gorm:"primary_key"`
+	Name      string
+	HeldOn    time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type Qualifier struct {
 	Id        int64 `gorm:"primary_key"`
 	EventId   int64

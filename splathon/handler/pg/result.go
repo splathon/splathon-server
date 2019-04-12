@@ -19,8 +19,13 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	var teams []*Team
 	var rooms []*Room
 
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	eg.Go(func() error {
-		if err := h.db.Where("event_id = ?", params.EventID).Order("round asc").Find(&qualifiers).Error; err != nil {
+		if err := h.db.Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error; err != nil {
 			return err
 		}
 		qids := make([]int64, 0, len(qualifiers))
@@ -31,11 +36,11 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	})
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ?", params.EventID).Find(&teams).Error
+		return h.db.Where("event_id = ?", eventID).Find(&teams).Error
 	})
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ?", params.EventID).Order("id asc").Find(&rooms).Error
+		return h.db.Where("event_id = ?", eventID).Order("id asc").Find(&rooms).Error
 	})
 
 	if err := eg.Wait(); err != nil {
