@@ -106,10 +106,6 @@ definitions:
         description: "Room内でのマッチの順番"
         type: integer
         format: int32
-      maxNumOfBattle:
-        description: "このマッチで最大何戦するか。例えば予選は2戦。決勝TはBO3とした場合値は3だけど2戦で勝敗が決まり終了することもある。"
-        type: integer
-        format: int32
       teamAlpha:
         $ref: "#/definitions/Team"
       teamBravo:
