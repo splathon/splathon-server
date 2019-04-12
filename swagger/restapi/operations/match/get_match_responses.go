@@ -56,3 +56,61 @@ func (o *GetMatchOK) WriteResponse(rw http.ResponseWriter, producer runtime.Prod
 		}
 	}
 }
+
+/*GetMatchDefault Generic error
+
+swagger:response getMatchDefault
+*/
+type GetMatchDefault struct {
+	_statusCode int
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetMatchDefault creates GetMatchDefault with default headers values
+func NewGetMatchDefault(code int) *GetMatchDefault {
+	if code <= 0 {
+		code = 500
+	}
+
+	return &GetMatchDefault{
+		_statusCode: code,
+	}
+}
+
+// WithStatusCode adds the status to the get match default response
+func (o *GetMatchDefault) WithStatusCode(code int) *GetMatchDefault {
+	o._statusCode = code
+	return o
+}
+
+// SetStatusCode sets the status to the get match default response
+func (o *GetMatchDefault) SetStatusCode(code int) {
+	o._statusCode = code
+}
+
+// WithPayload adds the payload to the get match default response
+func (o *GetMatchDefault) WithPayload(payload *models.Error) *GetMatchDefault {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get match default response
+func (o *GetMatchDefault) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetMatchDefault) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(o._statusCode)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}

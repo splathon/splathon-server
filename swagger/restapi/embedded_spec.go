@@ -58,6 +58,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Match"
             }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -88,6 +94,12 @@ func init() {
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/Results"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -154,6 +166,21 @@ func init() {
             "alpha",
             "bravo"
           ]
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
         }
       }
     },
@@ -364,6 +391,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Match"
             }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -394,6 +427,12 @@ func init() {
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/Results"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -460,6 +499,21 @@ func init() {
             "alpha",
             "bravo"
           ]
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
         }
       }
     },
