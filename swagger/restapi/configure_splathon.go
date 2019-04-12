@@ -3,13 +3,17 @@
 package restapi
 
 import (
+	"context"
 	"crypto/tls"
+	"log"
 	"net/http"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
+	"github.com/splathon/splathon-server/splathon"
+	"github.com/splathon/splathon-server/splathon/swagutils"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
@@ -29,22 +33,31 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 	// Expected interface func(string, ...interface{})
 	//
 	// Example:
-	// api.Logger = log.Printf
+	api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.MatchGetMatchHandler == nil {
-		api.MatchGetMatchHandler = match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
-			return middleware.NotImplemented("operation match.GetMatch has not yet been implemented")
-		})
+	thonHandler, err := splathon.NewDefaultHandler()
+	if err != nil {
+		log.Fatal(err)
 	}
-	if api.ResultGetResultHandler == nil {
-		api.ResultGetResultHandler = result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
-			return middleware.NotImplemented("operation result.GetResult has not yet been implemented")
-		})
-	}
+
+	api.MatchGetMatchHandler = match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
+		res, err := thonHandler.GetMatch(context.TODO(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return match.NewGetMatchOK().WithPayload(res)
+	})
+	api.ResultGetResultHandler = result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
+		res, err := thonHandler.GetResult(context.TODO(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return result.NewGetResultOK().WithPayload(res)
+	})
 
 	api.ServerShutdown = func() {}
 
