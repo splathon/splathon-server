@@ -42,12 +42,19 @@ func (opt *Option) DBArg() string {
 func NewOptionFromEnv() (*Option, error) {
 	opt := &Option{}
 	var err error
-	opt.Host, err = nonEmptyEnv("DB_HOST")
-	opt.Port, err = nonEmptyEnv("DB_PORT")
-	opt.User, err = nonEmptyEnv("DB_USER")
-	opt.DBName, err = nonEmptyEnv("DB_DBNAME")
-	opt.Password, err = nonEmptyEnv("DB_PASSWORD")
-	if err != nil {
+	if opt.Host, err = nonEmptyEnv("DB_HOST"); err != nil {
+		return nil, err
+	}
+	if opt.Port, err = nonEmptyEnv("DB_PORT"); err != nil {
+		return nil, err
+	}
+	if opt.User, err = nonEmptyEnv("DB_USER"); err != nil {
+		return nil, err
+	}
+	if opt.DBName, err = nonEmptyEnv("DB_DBNAME"); err != nil {
+		return nil, err
+	}
+	if opt.Password, err = nonEmptyEnv("DB_PASSWORD"); err != nil {
 		return nil, err
 	}
 	opt.SSLMode = os.Getenv("DB_SSLMODE")
@@ -57,7 +64,7 @@ func NewOptionFromEnv() (*Option, error) {
 func nonEmptyEnv(envname string) (string, error) {
 	v := os.Getenv(envname)
 	if v == "" {
-		return "", fmt.Errorf("Environment variable %q is empty", envname)
+		return "", fmt.Errorf("environment variable %q is empty", envname)
 	}
 	return v, nil
 }
