@@ -1,4 +1,5 @@
-package splathon
+// Package serror provides Splathon Error type.
+package serror
 
 // Error is error object of Splathon API.
 type Error struct {

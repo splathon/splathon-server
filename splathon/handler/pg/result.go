@@ -3,9 +3,11 @@ package pg
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sort"
 
 	"github.com/go-openapi/swag"
+	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
 	"golang.org/x/sync/errgroup"
@@ -54,7 +56,26 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		return nil, err
 	}
 
+	if err := checkTeamFound(params, teams); err != nil {
+		return nil, err
+	}
+
 	return buildResult(qualifiers, matches, teams, rooms), nil
+}
+
+func checkTeamFound(params result.GetResultParams, teams []*Team) error {
+	if params.TeamID == nil {
+		return nil
+	}
+	for _, t := range teams {
+		if t.Id == *params.TeamID {
+			return nil
+		}
+	}
+	return &serror.Error{
+		Code:    http.StatusNotFound,
+		Message: fmt.Sprintf("team_id=%d not found", *params.TeamID),
+	}
 }
 
 func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms []*Room) *models.Results {
