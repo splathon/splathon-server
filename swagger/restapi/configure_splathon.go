@@ -3,7 +3,6 @@
 package restapi
 
 import (
-	"context"
 	"crypto/tls"
 	"log"
 	"net/http"
@@ -46,21 +45,21 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 	}
 
 	api.MatchGetMatchHandler = match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
-		res, err := thonHandler.GetMatch(context.TODO(), params)
+		res, err := thonHandler.GetMatch(params.HTTPRequest.Context(), params)
 		if err != nil {
 			return swagutils.Error(err)
 		}
 		return match.NewGetMatchOK().WithPayload(res)
 	})
 	api.ResultGetResultHandler = result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
-		res, err := thonHandler.GetResult(context.TODO(), params)
+		res, err := thonHandler.GetResult(params.HTTPRequest.Context(), params)
 		if err != nil {
 			return swagutils.Error(err)
 		}
 		return result.NewGetResultOK().WithPayload(res)
 	})
 	api.RankingGetRankingHandler = ranking.GetRankingHandlerFunc(func(params ranking.GetRankingParams) middleware.Responder {
-		res, err := thonHandler.GetRanking(context.TODO(), params)
+		res, err := thonHandler.GetRanking(params.HTTPRequest.Context(), params)
 		if err != nil {
 			return swagutils.Error(err)
 		}
