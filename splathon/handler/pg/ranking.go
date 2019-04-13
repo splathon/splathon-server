@@ -98,6 +98,9 @@ func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
 
 // ref: https://dic.nicovideo.jp/a/%E3%82%B9%E3%82%A4%E3%82%B9%E3%83%89%E3%83%AD%E3%83%BC
 func omwp(teamID int64, teamMap map[int64]*teamResult) float64 {
+	if len(teamMap[teamID].opponentTeamIDs) == 0 {
+		return 0
+	}
 	sum := 0.0
 	for _, opID := range teamMap[teamID].opponentTeamIDs {
 		sum += teamMap[opID].totalPoint / float64(len(teamMap[opID].opponentTeamIDs)*3)
