@@ -35,12 +35,12 @@ type GetMatchParams struct {
 	  Required: true
 	  In: path
 	*/
-	EventID float64
+	EventID int64
 	/*match id
 	  Required: true
 	  In: path
 	*/
-	MatchID float64
+	MatchID int64
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -78,9 +78,9 @@ func (o *GetMatchParams) bindEventID(rawData []string, hasKey bool, formats strf
 	// Required: true
 	// Parameter is provided by construction from the route
 
-	value, err := swag.ConvertFloat64(raw)
+	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("eventId", "path", "float64", raw)
+		return errors.InvalidType("eventId", "path", "int64", raw)
 	}
 	o.EventID = value
 
@@ -97,9 +97,9 @@ func (o *GetMatchParams) bindMatchID(rawData []string, hasKey bool, formats strf
 	// Required: true
 	// Parameter is provided by construction from the route
 
-	value, err := swag.ConvertFloat64(raw)
+	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("matchId", "path", "float64", raw)
+		return errors.InvalidType("matchId", "path", "int64", raw)
 	}
 	o.MatchID = value
 

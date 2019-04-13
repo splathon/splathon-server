@@ -1,16 +1,12 @@
 package pg
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"os"
 	"sync"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/splathon/splathon-server/swagger/models"
-	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 )
 
 // Handler is splathon API handler backed by PostgreSQL.
@@ -18,7 +14,7 @@ type Handler struct {
 	db *gorm.DB
 
 	eventCacheMu sync.Mutex
-	eventCache   map[float64]int64
+	eventCache   map[int64]int64
 }
 
 type Option struct {
@@ -74,10 +70,10 @@ func NewHandler(opt *Option) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Handler{db: db, eventCache: make(map[float64]int64)}, nil
+	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
 }
 
-func (h *Handler) queryInternalEventID(eventIDInPath float64) (int64, error) {
+func (h *Handler) queryInternalEventID(eventIDInPath int64) (int64, error) {
 	h.eventCacheMu.Lock()
 	defer h.eventCacheMu.Unlock()
 	if eid, ok := h.eventCache[eventIDInPath]; ok {
@@ -91,8 +87,4 @@ func (h *Handler) queryInternalEventID(eventIDInPath float64) (int64, error) {
 	}
 	h.eventCache[eventIDInPath] = event.Id
 	return event.Id, nil
-}
-
-func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*models.Match, error) {
-	return nil, errors.New("not implemented")
 }

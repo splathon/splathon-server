@@ -39,13 +39,15 @@ func init() {
         "operationId": "getMatch",
         "parameters": [
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "name": "eventId",
             "in": "path",
             "required": true
           },
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "description": "match id",
             "name": "matchId",
             "in": "path",
@@ -77,13 +79,15 @@ func init() {
         "operationId": "getResult",
         "parameters": [
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "name": "eventId",
             "in": "path",
             "required": true
           },
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "description": "team id",
             "name": "team_id",
             "in": "query"
@@ -372,13 +376,15 @@ func init() {
         "operationId": "getMatch",
         "parameters": [
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "name": "eventId",
             "in": "path",
             "required": true
           },
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "description": "match id",
             "name": "matchId",
             "in": "path",
@@ -410,13 +416,15 @@ func init() {
         "operationId": "getResult",
         "parameters": [
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "name": "eventId",
             "in": "path",
             "required": true
           },
           {
-            "type": "number",
+            "type": "integer",
+            "format": "int64",
             "description": "team id",
             "name": "team_id",
             "in": "query"

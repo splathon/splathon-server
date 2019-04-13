@@ -16,8 +16,8 @@ import (
 
 // GetMatchURL generates an URL for the get match operation
 type GetMatchURL struct {
-	EventID float64
-	MatchID float64
+	EventID int64
+	MatchID int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -45,14 +45,14 @@ func (o *GetMatchURL) Build() (*url.URL, error) {
 
 	var _path = "/v{eventId}/matches/{matchId}"
 
-	eventID := swag.FormatFloat64(o.EventID)
+	eventID := swag.FormatInt64(o.EventID)
 	if eventID != "" {
 		_path = strings.Replace(_path, "{eventId}", eventID, -1)
 	} else {
 		return nil, errors.New("eventId is required on GetMatchURL")
 	}
 
-	matchID := swag.FormatFloat64(o.MatchID)
+	matchID := swag.FormatInt64(o.MatchID)
 	if matchID != "" {
 		_path = strings.Replace(_path, "{matchId}", matchID, -1)
 	} else {
