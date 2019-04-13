@@ -142,8 +142,7 @@ func convertMatch(m *Match, teamMap map[int64]*Team) *models.Match {
 
 func convertTeam(t *Team) *models.Team {
 	return &models.Team{
-		ID:          swag.Int32(int32(t.Id)),
-		CompanyName: swag.String(t.CompanyName),
-		Name:        swag.String(t.Name),
+		ID:   swag.Int32(int32(t.Id)),
+		Name: swag.String(t.Name),
 	}
 }

@@ -19,10 +19,6 @@ import (
 // swagger:model Team
 type Team struct {
 
-	// company name
-	// Required: true
-	CompanyName *string `json:"companyName"`
-
 	// Team ID
 	// Required: true
 	ID *int32 `json:"id"`
@@ -39,10 +35,6 @@ type Team struct {
 func (m *Team) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateCompanyName(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateID(formats); err != nil {
 		res = append(res, err)
 	}
@@ -58,15 +50,6 @@ func (m *Team) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *Team) validateCompanyName(formats strfmt.Registry) error {
-
-	if err := validate.Required("companyName", "body", m.CompanyName); err != nil {
-		return err
-	}
-
 	return nil
 }
 
