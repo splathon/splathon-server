@@ -27,20 +27,16 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	}
 
 	eg.Go(func() error {
-		if err := h.db.Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error; err != nil {
-			return err
-		}
-		qids := make([]int64, 0, len(qualifiers))
-		for _, q := range qualifiers {
-			qids = append(qids, q.Id)
-		}
+		return h.db.Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error
+	})
 
+	eg.Go(func() error {
+		qids := h.db.Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
 		query := h.db.Where("qualifier_id in (?)", qids)
 		if params.TeamID != nil {
 			teamID := *params.TeamID
 			query = h.db.Where("qualifier_id in (?) AND (team_id = ? OR opponent_id = ?)", qids, teamID, teamID)
 		}
-
 		return query.Find(&matches).Error
 	})
 
