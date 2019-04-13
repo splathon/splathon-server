@@ -11,6 +11,7 @@ jobs:
           name: System information
           command: 'echo "Golang $(go version)"'
       - run: 'curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh| sh -s -- -b $(go env GOPATH)/bin'
+      - run: 'go mod download'
       - run:
           name: Install Linters
           command: |-
