@@ -97,12 +97,12 @@ func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
 }
 
 // ref: https://dic.nicovideo.jp/a/%E3%82%B9%E3%82%A4%E3%82%B9%E3%83%89%E3%83%AD%E3%83%BC
-func omwp(teamId int64, teamMap map[int64]*teamResult) float64 {
-	var sum float64 = 0
-	for _, opID := range teamMap[teamId].opponentTeamIDs {
+func omwp(teamID int64, teamMap map[int64]*teamResult) float64 {
+	sum := 0.0
+	for _, opID := range teamMap[teamID].opponentTeamIDs {
 		sum += teamMap[opID].totalPoint / float64(len(teamMap[opID].opponentTeamIDs)*3)
 	}
-	return sum / float64(len(teamMap[teamId].opponentTeamIDs))
+	return sum / float64(len(teamMap[teamID].opponentTeamIDs))
 }
 
 const eps = 0.00000001
