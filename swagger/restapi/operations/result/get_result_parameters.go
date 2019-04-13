@@ -36,11 +36,11 @@ type GetResultParams struct {
 	  Required: true
 	  In: path
 	*/
-	EventID float64
+	EventID int64
 	/*team id
 	  In: query
 	*/
-	TeamID *float64
+	TeamID *int64
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -80,9 +80,9 @@ func (o *GetResultParams) bindEventID(rawData []string, hasKey bool, formats str
 	// Required: true
 	// Parameter is provided by construction from the route
 
-	value, err := swag.ConvertFloat64(raw)
+	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("eventId", "path", "float64", raw)
+		return errors.InvalidType("eventId", "path", "int64", raw)
 	}
 	o.EventID = value
 
@@ -102,9 +102,9 @@ func (o *GetResultParams) bindTeamID(rawData []string, hasKey bool, formats strf
 		return nil
 	}
 
-	value, err := swag.ConvertFloat64(raw)
+	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("team_id", "query", "float64", raw)
+		return errors.InvalidType("team_id", "query", "int64", raw)
 	}
 	o.TeamID = &value
 

@@ -16,9 +16,9 @@ import (
 
 // GetResultURL generates an URL for the get result operation
 type GetResultURL struct {
-	EventID float64
+	EventID int64
 
-	TeamID *float64
+	TeamID *int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -46,7 +46,7 @@ func (o *GetResultURL) Build() (*url.URL, error) {
 
 	var _path = "/v{eventId}/results"
 
-	eventID := swag.FormatFloat64(o.EventID)
+	eventID := swag.FormatInt64(o.EventID)
 	if eventID != "" {
 		_path = strings.Replace(_path, "{eventId}", eventID, -1)
 	} else {
@@ -63,7 +63,7 @@ func (o *GetResultURL) Build() (*url.URL, error) {
 
 	var teamID string
 	if o.TeamID != nil {
-		teamID = swag.FormatFloat64(*o.TeamID)
+		teamID = swag.FormatInt64(*o.TeamID)
 	}
 	if teamID != "" {
 		qs.Set("team_id", teamID)
