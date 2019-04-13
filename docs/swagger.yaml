@@ -10,6 +10,8 @@ schemes:
 tags:
 - name: "result"
   description: "リザルト一覧"
+- name: "match"
+  description: "マッチ"
 
 paths:
   "/v{eventId}/results":
@@ -34,6 +36,30 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Results"
+
+  "/v{eventId}/matches/{matchId}":
+    get:
+      tags:
+      - "match"
+      description: "マッチの詳細を返す。スコアボードとかで使える。"
+      operationId: "getMatch"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: matchId
+        in: path
+        required: true
+        description: match id
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/Match"
 
 definitions:
   Results:
