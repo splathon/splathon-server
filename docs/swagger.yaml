@@ -279,6 +279,10 @@ definitions:
 
   Rank:
     type: object
+    required:
+      - rank
+      - team
+      - point
     properties:
       rank:
         description: "順位"
