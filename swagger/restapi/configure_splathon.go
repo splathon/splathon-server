@@ -16,6 +16,7 @@ import (
 	"github.com/splathon/splathon-server/splathon/swagutils"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
 )
 
@@ -57,6 +58,13 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 			return swagutils.Error(err)
 		}
 		return result.NewGetResultOK().WithPayload(res)
+	})
+	api.RankingGetRankingHandler = ranking.GetRankingHandlerFunc(func(params ranking.GetRankingParams) middleware.Responder {
+		res, err := thonHandler.GetRanking(context.TODO(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return ranking.NewGetRankingOK().WithPayload(res)
 	})
 
 	api.ServerShutdown = func() {}
