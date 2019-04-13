@@ -36,6 +36,10 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Results"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
 
   "/v{eventId}/matches/{matchId}":
     get:
@@ -60,8 +64,23 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Match"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
 
 definitions:
+  Error:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+      code:
+        type: integer
+        format: int64
+
   Results:
     description: "予選/決勝Tのリザルト。予選/決勝Tは同じ構造なのでフラットにできるがクライアントがトーナメント表だせる拡張性持たせるために別フィールドで持つ。"
     type: object
