@@ -12,6 +12,8 @@ tags:
   description: "リザルト一覧"
 - name: "match"
   description: "マッチ"
+- name: "ranking"
+  description: "予選ランキング"
 
 paths:
   "/v{eventId}/results":
@@ -64,6 +66,28 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Match"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
+  "/v{eventId}/ranking":
+    get:
+      tags:
+      - "ranking"
+      description: "予選ランキングを返す。"
+      operationId: "getRanking"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/Ranking"
         default:
           description: Generic error
           schema:
@@ -243,3 +267,34 @@ definitions:
           name:
             description: "Localized stage name."
             type: string
+
+  Ranking:
+    description: "予選ランキング"
+    type: object
+    properties:
+      rankings:
+        type: array
+        items:
+          $ref: "#/definitions/Rank"
+
+  Rank:
+    type: object
+    properties:
+      rank:
+        description: "順位"
+        type: integer
+        format: int32
+      team:
+        description: "member も fill される"
+        $ref: "#/definitions/Team"
+      point:
+        description: "勝ち点"
+        type: integer
+        format: int32
+      omwp:
+        description: "OMWP (Opponent Match Win Percentage)"
+        type: number
+      num_of_matches:
+        description: "何戦こなしたか。"
+        type: integer
+        format: int32
