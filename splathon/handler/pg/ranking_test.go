@@ -113,3 +113,55 @@ func TestBuildRanking(t *testing.T) {
 		t.Errorf("result has diff:\n%s", diff)
 	}
 }
+
+func TestBuildRanking_empty_matches(t *testing.T) {
+	teams := []*Team{
+		{Id: 3, Name: "team 3", Points: 0},
+		{Id: 1, Name: "team 1", Points: 1},
+		{Id: 2, Name: "team 2", Points: 1},
+	}
+	matches := []*Match{
+		{
+			// Not done yet.
+			TeamId:     1,
+			OpponentId: 2,
+		},
+	}
+	got := buildRanking(teams, matches)
+
+	want := &models.Ranking{
+		Rankings: []*models.Rank{
+			{
+				Rank:  swag.Int32(1),
+				Point: swag.Int32(1),
+				Omwp:  0.0,
+				Team: &models.Team{
+					ID:   swag.Int32(1),
+					Name: swag.String("team 1"),
+				},
+			},
+			{
+				Rank:  swag.Int32(1),
+				Point: swag.Int32(1),
+				Omwp:  0.0,
+				Team: &models.Team{
+					ID:   swag.Int32(2),
+					Name: swag.String("team 2"),
+				},
+			},
+			{
+				Rank:  swag.Int32(3),
+				Point: swag.Int32(0),
+				Omwp:  0.0,
+				Team: &models.Team{
+					ID:   swag.Int32(3),
+					Name: swag.String("team 3"),
+				},
+			},
+		},
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("result has diff:\n%s", diff)
+	}
+}
