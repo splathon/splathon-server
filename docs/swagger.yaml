@@ -24,11 +24,13 @@ paths:
       - name: eventId
         in: path
         required: true
-        type: number
+        type: integer
+        format: int64
       - name: team_id
         in: query
         description: team id
-        type: number
+        type: integer
+        format: int64
       responses:
         200:
           description: Success
@@ -49,12 +51,14 @@ paths:
       - name: eventId
         in: path
         required: true
-        type: number
+        type: integer
+        format: int64
       - name: matchId
         in: path
         required: true
         description: match id
-        type: number
+        type: integer
+        format: int64
       responses:
         200:
           description: Success
