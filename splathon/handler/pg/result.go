@@ -32,7 +32,14 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		for _, q := range qualifiers {
 			qids = append(qids, q.Id)
 		}
-		return h.db.Where("qualifier_id in (?)", qids).Find(&matches).Error
+
+		query := h.db.Where("qualifier_id in (?)", qids)
+		if params.TeamID != nil {
+			teamID := *params.TeamID
+			query = h.db.Where("qualifier_id in (?) AND (team_id = ? OR opponent_id = ?)", qids, teamID, teamID)
+		}
+
+		return query.Find(&matches).Error
 	})
 
 	eg.Go(func() error {
@@ -85,6 +92,7 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 		}
 
 		for _, r := range rooms {
+			addRoom := false
 			room := &models.Room{
 				ID:      int32(r.Id),
 				Name:    swag.String(r.Name),
@@ -92,13 +100,16 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 			}
 
 			for _, m := range ms[q.Id][r.Id] {
+				addRoom = true
 				room.Matches = append(room.Matches, convertMatch(m, teamMap))
 				sort.Slice(room.Matches, func(i, j int) bool {
 					return room.Matches[i].Order < room.Matches[j].Order
 				})
 			}
 
-			round.Rooms = append(round.Rooms, room)
+			if addRoom {
+				round.Rooms = append(round.Rooms, room)
+			}
 		}
 
 		result.Qualifiers = append(result.Qualifiers, round)
