@@ -26,10 +26,12 @@ type Team struct {
 	EventId     int64
 	Name        string
 	CompanyName string
-	Points      int32
 	Rank        int32
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+
+	// Deprecated: Calculate by matches instead.
+	Points int32
 }
 
 type Room struct {

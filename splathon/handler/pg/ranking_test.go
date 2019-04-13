@@ -117,9 +117,9 @@ func TestBuildRanking(t *testing.T) {
 
 func TestBuildRanking_empty_matches(t *testing.T) {
 	teams := []*Team{
+		{Id: 1, Name: "team 1", Points: 0},
+		{Id: 2, Name: "team 2", Points: 0},
 		{Id: 3, Name: "team 3", Points: 0},
-		{Id: 1, Name: "team 1", Points: 1},
-		{Id: 2, Name: "team 2", Points: 1},
 	}
 	matches := []*Match{}
 	got := buildRanking(teams, matches)
@@ -128,7 +128,7 @@ func TestBuildRanking_empty_matches(t *testing.T) {
 		Rankings: []*models.Rank{
 			{
 				Rank:  swag.Int32(1),
-				Point: swag.Int32(1),
+				Point: swag.Int32(0),
 				Omwp:  0.0,
 				Team: &models.Team{
 					ID:   swag.Int32(1),
@@ -137,7 +137,7 @@ func TestBuildRanking_empty_matches(t *testing.T) {
 			},
 			{
 				Rank:  swag.Int32(1),
-				Point: swag.Int32(1),
+				Point: swag.Int32(0),
 				Omwp:  0.0,
 				Team: &models.Team{
 					ID:   swag.Int32(2),
@@ -145,7 +145,7 @@ func TestBuildRanking_empty_matches(t *testing.T) {
 				},
 			},
 			{
-				Rank:  swag.Int32(3),
+				Rank:  swag.Int32(1),
 				Point: swag.Int32(0),
 				Omwp:  0.0,
 				Team: &models.Team{
