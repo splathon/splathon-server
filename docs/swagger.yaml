@@ -191,15 +191,12 @@ definitions:
     required:
       - id
       - name
-      - companyName
     properties:
       id:
         description: "Team ID"
         type: integer
         format: int32
       name:
-        type: string
-      companyName:
         type: string
       members:
         type: array
