@@ -38,13 +38,43 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		return nil, err
 	}
 
-	return buildRanking(teams, matches), nil
+	return buildRanking(teams, filterCompletedMatches(teams, matches)), nil
 }
 
 type teamResult struct {
 	teamID          int64
 	opponentTeamIDs []int64
-	totalPoint      float64
+	totalPoint      int64
+}
+
+func filterCompletedMatches(teams []*Team, matches []*Match) []*Match {
+	ms := make([]*Match, 0, len(matches))
+	completedQIDs := completedQualifierIDs(teams, matches)
+	for _, m := range matches {
+		if completedQIDs[m.QualifierId] {
+			ms = append(ms, m)
+		}
+	}
+	return ms
+}
+
+func completedQualifierIDs(teams []*Team, matches []*Match) map[int64]bool {
+	q2tc := make(map[int64]int) // QualifierId to Team Counts
+	for _, m := range matches {
+		if m.TeamPoints == 0 && m.OpponentPoints == 0 {
+			// Skip matches which has not been done yet.
+			continue
+		}
+		q2tc[m.QualifierId] += 2
+	}
+	teamNum := len(teams)
+	qids := make(map[int64]bool)
+	for q, tc := range q2tc {
+		if tc == teamNum {
+			qids[q] = true
+		}
+	}
+	return qids
 }
 
 func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
@@ -53,16 +83,13 @@ func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
 		teamMap[t.Id] = &teamResult{
 			teamID:          t.Id,
 			opponentTeamIDs: make([]int64, 0),
-			totalPoint:      float64(t.Points),
 		}
 	}
 	for _, m := range matches {
-		if m.TeamPoints == 0 && m.OpponentPoints == 0 {
-			// Skip matches which has not been done yet.
-			continue
-		}
 		teamMap[m.TeamId].opponentTeamIDs = append(teamMap[m.TeamId].opponentTeamIDs, m.OpponentId)
+		teamMap[m.TeamId].totalPoint += m.TeamPoints
 		teamMap[m.OpponentId].opponentTeamIDs = append(teamMap[m.OpponentId].opponentTeamIDs, m.TeamId)
+		teamMap[m.OpponentId].totalPoint += m.OpponentPoints
 	}
 
 	rs := make([]*models.Rank, 0, len(teams))
@@ -104,7 +131,7 @@ func omwp(teamID int64, teamMap map[int64]*teamResult) float64 {
 	}
 	sum := 0.0
 	for _, opID := range teamMap[teamID].opponentTeamIDs {
-		sum += teamMap[opID].totalPoint / float64(len(teamMap[opID].opponentTeamIDs)*3)
+		sum += float64(teamMap[opID].totalPoint) / float64(len(teamMap[opID].opponentTeamIDs)*3)
 	}
 	return sum / float64(len(teamMap[teamID].opponentTeamIDs))
 }

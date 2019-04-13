@@ -42,11 +42,6 @@ func TestBuildRanking(t *testing.T) {
 			TeamPoints:     3,
 			OpponentPoints: 0,
 		},
-		{
-			// Not done yet.
-			TeamId:     1,
-			OpponentId: 2,
-		},
 	}
 	got := buildRanking(teams, matches)
 
@@ -126,13 +121,7 @@ func TestBuildRanking_empty_matches(t *testing.T) {
 		{Id: 1, Name: "team 1", Points: 1},
 		{Id: 2, Name: "team 2", Points: 1},
 	}
-	matches := []*Match{
-		{
-			// Not done yet.
-			TeamId:     1,
-			OpponentId: 2,
-		},
-	}
+	matches := []*Match{}
 	got := buildRanking(teams, matches)
 
 	want := &models.Ranking{
@@ -167,6 +156,40 @@ func TestBuildRanking_empty_matches(t *testing.T) {
 		},
 	}
 
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("result has diff:\n%s", diff)
+	}
+}
+
+func TestFilterCompletedMatches(t *testing.T) {
+	teams := []*Team{
+		{Id: 1}, {Id: 2}, {Id: 3}, {Id: 4},
+	}
+	ms := []*Match{
+		{
+			Id: 1, QualifierId: 1,
+			TeamId: 1, TeamPoints: 1,
+			OpponentId: 2, OpponentPoints: 1,
+		},
+		{
+			Id: 2, QualifierId: 1,
+			TeamId: 3, TeamPoints: 1,
+			OpponentId: 4, OpponentPoints: 1,
+		},
+		{
+			// Not done yet.
+			Id: 1, QualifierId: 2,
+			TeamId:     1,
+			OpponentId: 2,
+		},
+		{
+			Id: 2, QualifierId: 2,
+			TeamId: 3, TeamPoints: 1,
+			OpponentId: 4, OpponentPoints: 1,
+		},
+	}
+	got := filterCompletedMatches(teams, ms)
+	want := ms[:2]
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("result has diff:\n%s", diff)
 	}
