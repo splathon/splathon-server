@@ -70,6 +70,9 @@ func NewHandler(opt *Option) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
+	if os.Getenv("DB_DEBUGMODE") == "1" {
+		db.LogMode(true)
+	}
 	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
 }
 
