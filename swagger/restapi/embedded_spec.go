@@ -70,6 +70,38 @@ func init() {
         }
       }
     },
+    "/v{eventId}/ranking": {
+      "get": {
+        "description": "予選ランキングを返す。",
+        "tags": [
+          "ranking"
+        ],
+        "operationId": "getRanking",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Ranking"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/results": {
       "get": {
         "description": "リザルト一覧を返す。リザルトと言いつつ終了していない未来のマッチも返す。ゲスト・管理アプリ両方から使う。team_idを指定するとそのチームのみの結果が返ってくる。",
@@ -249,6 +281,51 @@ func init() {
         }
       }
     },
+    "Rank": {
+      "type": "object",
+      "required": [
+        "rank",
+        "team",
+        "point"
+      ],
+      "properties": {
+        "num_of_matches": {
+          "description": "何戦こなしたか。",
+          "type": "integer",
+          "format": "int32"
+        },
+        "omwp": {
+          "description": "OMWP (Opponent Match Win Percentage)",
+          "type": "number"
+        },
+        "point": {
+          "description": "勝ち点",
+          "type": "integer",
+          "format": "int32"
+        },
+        "rank": {
+          "description": "順位",
+          "type": "integer",
+          "format": "int32"
+        },
+        "team": {
+          "description": "member も fill される",
+          "$ref": "#/definitions/Team"
+        }
+      }
+    },
+    "Ranking": {
+      "description": "予選ランキング",
+      "type": "object",
+      "properties": {
+        "rankings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Rank"
+          }
+        }
+      }
+    },
     "Results": {
       "description": "予選/決勝Tのリザルト。予選/決勝Tは同じ構造なのでフラットにできるがクライアントがトーナメント表だせる拡張性持たせるために別フィールドで持つ。",
       "type": "object",
@@ -319,13 +396,9 @@ func init() {
       "type": "object",
       "required": [
         "id",
-        "name",
-        "companyName"
+        "name"
       ],
       "properties": {
-        "companyName": {
-          "type": "string"
-        },
         "id": {
           "description": "Team ID",
           "type": "integer",
@@ -351,6 +424,10 @@ func init() {
     {
       "description": "マッチ",
       "name": "match"
+    },
+    {
+      "description": "予選ランキング",
+      "name": "ranking"
     }
   ]
 }`))
@@ -407,6 +484,38 @@ func init() {
         }
       }
     },
+    "/v{eventId}/ranking": {
+      "get": {
+        "description": "予選ランキングを返す。",
+        "tags": [
+          "ranking"
+        ],
+        "operationId": "getRanking",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Ranking"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/results": {
       "get": {
         "description": "リザルト一覧を返す。リザルトと言いつつ終了していない未来のマッチも返す。ゲスト・管理アプリ両方から使う。team_idを指定するとそのチームのみの結果が返ってくる。",
@@ -586,6 +695,51 @@ func init() {
         }
       }
     },
+    "Rank": {
+      "type": "object",
+      "required": [
+        "rank",
+        "team",
+        "point"
+      ],
+      "properties": {
+        "num_of_matches": {
+          "description": "何戦こなしたか。",
+          "type": "integer",
+          "format": "int32"
+        },
+        "omwp": {
+          "description": "OMWP (Opponent Match Win Percentage)",
+          "type": "number"
+        },
+        "point": {
+          "description": "勝ち点",
+          "type": "integer",
+          "format": "int32"
+        },
+        "rank": {
+          "description": "順位",
+          "type": "integer",
+          "format": "int32"
+        },
+        "team": {
+          "description": "member も fill される",
+          "$ref": "#/definitions/Team"
+        }
+      }
+    },
+    "Ranking": {
+      "description": "予選ランキング",
+      "type": "object",
+      "properties": {
+        "rankings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Rank"
+          }
+        }
+      }
+    },
     "Results": {
       "description": "予選/決勝Tのリザルト。予選/決勝Tは同じ構造なのでフラットにできるがクライアントがトーナメント表だせる拡張性持たせるために別フィールドで持つ。",
       "type": "object",
@@ -656,13 +810,9 @@ func init() {
       "type": "object",
       "required": [
         "id",
-        "name",
-        "companyName"
+        "name"
       ],
       "properties": {
-        "companyName": {
-          "type": "string"
-        },
         "id": {
           "description": "Team ID",
           "type": "integer",
@@ -688,6 +838,10 @@ func init() {
     {
       "description": "マッチ",
       "name": "match"
+    },
+    {
+      "description": "予選ランキング",
+      "name": "ranking"
     }
   ]
 }`))

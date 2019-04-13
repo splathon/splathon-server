@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
 )
 
@@ -42,6 +43,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		JSONProducer:        runtime.JSONProducer(),
 		MatchGetMatchHandler: match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
 			return middleware.NotImplemented("operation MatchGetMatch has not yet been implemented")
+		}),
+		RankingGetRankingHandler: ranking.GetRankingHandlerFunc(func(params ranking.GetRankingParams) middleware.Responder {
+			return middleware.NotImplemented("operation RankingGetRanking has not yet been implemented")
 		}),
 		ResultGetResultHandler: result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 			return middleware.NotImplemented("operation ResultGetResult has not yet been implemented")
@@ -79,6 +83,8 @@ type SplathonAPI struct {
 
 	// MatchGetMatchHandler sets the operation handler for the get match operation
 	MatchGetMatchHandler match.GetMatchHandler
+	// RankingGetRankingHandler sets the operation handler for the get ranking operation
+	RankingGetRankingHandler ranking.GetRankingHandler
 	// ResultGetResultHandler sets the operation handler for the get result operation
 	ResultGetResultHandler result.GetResultHandler
 
@@ -146,6 +152,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.MatchGetMatchHandler == nil {
 		unregistered = append(unregistered, "match.GetMatchHandler")
+	}
+
+	if o.RankingGetRankingHandler == nil {
+		unregistered = append(unregistered, "ranking.GetRankingHandler")
 	}
 
 	if o.ResultGetResultHandler == nil {
@@ -254,6 +264,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/matches/{matchId}"] = match.NewGetMatch(o.context, o.MatchGetMatchHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/ranking"] = ranking.NewGetRanking(o.context, o.RankingGetRankingHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
