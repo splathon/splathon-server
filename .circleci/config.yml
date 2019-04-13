@@ -2,7 +2,7 @@ version: 2
 
 jobs:
   lint:
-    working_directory: ~/reviewdog
+    working_directory: ~/splathon-server
     docker:
       - image: circleci/golang:1.11
     steps:
