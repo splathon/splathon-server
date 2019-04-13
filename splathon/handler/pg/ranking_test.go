@@ -53,54 +53,60 @@ func TestBuildRanking(t *testing.T) {
 	want := &models.Ranking{
 		Rankings: []*models.Rank{
 			{
-				Rank:  swag.Int32(1),
-				Point: swag.Int32(3),
-				Omwp:  0.1111111111111111,
+				Rank:         swag.Int32(1),
+				Point:        swag.Int32(3),
+				Omwp:         0.1111111111111111,
+				NumOfMatches: 1,
 				Team: &models.Team{
 					ID:   swag.Int32(1),
 					Name: swag.String("team 1"),
 				},
 			},
 			{
-				Rank:  swag.Int32(1),
-				Point: swag.Int32(3),
-				Omwp:  0.1111111111111111,
+				Rank:         swag.Int32(1),
+				Point:        swag.Int32(3),
+				Omwp:         0.1111111111111111,
+				NumOfMatches: 1,
 				Team: &models.Team{
 					ID:   swag.Int32(2),
 					Name: swag.String("team 2"),
 				},
 			},
 			{
-				Rank:  swag.Int32(3),
-				Point: swag.Int32(3),
-				Omwp:  0.0,
+				Rank:         swag.Int32(3),
+				Point:        swag.Int32(3),
+				Omwp:         0.0,
+				NumOfMatches: 1,
 				Team: &models.Team{
 					ID:   swag.Int32(5),
 					Name: swag.String("team 5"),
 				},
 			},
 			{
-				Rank:  swag.Int32(4),
-				Point: swag.Int32(1),
-				Omwp:  0.7777777777777778,
+				Rank:         swag.Int32(4),
+				Point:        swag.Int32(1),
+				Omwp:         0.7777777777777778,
+				NumOfMatches: 3,
 				Team: &models.Team{
 					ID:   swag.Int32(3),
 					Name: swag.String("team 3"),
 				},
 			},
 			{
-				Rank:  swag.Int32(5),
-				Point: swag.Int32(1),
-				Omwp:  0.1111111111111111,
+				Rank:         swag.Int32(5),
+				Point:        swag.Int32(1),
+				Omwp:         0.1111111111111111,
+				NumOfMatches: 1,
 				Team: &models.Team{
 					ID:   swag.Int32(4),
 					Name: swag.String("team 4"),
 				},
 			},
 			{
-				Rank:  swag.Int32(6),
-				Point: swag.Int32(0),
-				Omwp:  1,
+				Rank:         swag.Int32(6),
+				Point:        swag.Int32(0),
+				Omwp:         1,
+				NumOfMatches: 1,
 				Team: &models.Team{
 					ID:   swag.Int32(6),
 					Name: swag.String("team 6"),
