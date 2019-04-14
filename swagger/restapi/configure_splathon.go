@@ -4,6 +4,7 @@ package restapi
 
 import (
 	"crypto/tls"
+	"io"
 	"log"
 	"net/http"
 
@@ -66,7 +67,13 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		return ranking.NewGetRankingOK().WithPayload(res)
 	})
 
-	api.ServerShutdown = func() {}
+	api.ServerShutdown = func() {
+		if closer, ok := thonHandler.(io.Closer); ok {
+			if err := closer.Close(); err != nil {
+				api.Logger("failed to close handler: %v", err)
+			}
+		}
+	}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
