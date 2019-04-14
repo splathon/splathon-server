@@ -18,17 +18,22 @@ type Handler struct {
 }
 
 type Option struct {
-	Host     string
-	Port     string
-	User     string
-	DBName   string
-	Password string
-	SSLMode  string
+	Host            string
+	Port            string
+	User            string
+	DBName          string
+	Password        string
+	SSLMode         string
+	ApplicationName string
 }
 
 func (opt *Option) DBArg() string {
-	arg := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
-		opt.Host, opt.Port, opt.User, opt.DBName, opt.Password)
+	appname := "splathon-api-server"
+	if opt.ApplicationName != "" {
+		appname = opt.ApplicationName
+	}
+	arg := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s fallback_application_name=%s",
+		opt.Host, opt.Port, opt.User, opt.DBName, opt.Password, appname)
 	if opt.SSLMode != "" {
 		arg = fmt.Sprintf("%s sslmode=%s", arg, opt.SSLMode)
 	}
@@ -54,6 +59,7 @@ func NewOptionFromEnv() (*Option, error) {
 		return nil, err
 	}
 	opt.SSLMode = os.Getenv("DB_SSLMODE")
+	opt.ApplicationName = os.Getenv("DB_APPLICATION_NAME")
 	return opt, nil
 }
 
