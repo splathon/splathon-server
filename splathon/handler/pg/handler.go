@@ -76,6 +76,7 @@ func NewHandler(opt *Option) (*Handler, error) {
 	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
 }
 
+// Close closes the DB connections.
 func (h *Handler) Close() error {
 	return h.db.Close()
 }

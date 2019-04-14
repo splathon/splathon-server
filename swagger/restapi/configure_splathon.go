@@ -69,7 +69,9 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 
 	api.ServerShutdown = func() {
 		if closer, ok := thonHandler.(io.Closer); ok {
-			closer.Close()
+			if err := closer.Close(); err != nil {
+				api.Logger("failed to close handler: %v", err)
+			}
 		}
 	}
 
