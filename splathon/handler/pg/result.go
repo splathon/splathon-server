@@ -21,31 +21,31 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	var teams []*Team
 	var rooms []*Room
 
-	eventID, err := h.queryInternalEventID(params.EventID)
+	eventID, err := h.queryInternalEventID(ctx, params.EventID)
 	if err != nil {
 		return nil, err
 	}
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error
+		return h.db.WithContext(ctx).Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error
 	})
 
 	eg.Go(func() error {
-		qids := h.db.Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
-		query := h.db.Where("qualifier_id in (?)", qids)
+		qids := h.db.WithContext(ctx).Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
+		query := h.db.WithContext(ctx).Where("qualifier_id in (?)", qids)
 		if params.TeamID != nil {
 			teamID := *params.TeamID
-			query = h.db.Where("qualifier_id in (?) AND (team_id = ? OR opponent_id = ?)", qids, teamID, teamID)
+			query = h.db.WithContext(ctx).Where("qualifier_id in (?) AND (team_id = ? OR opponent_id = ?)", qids, teamID, teamID)
 		}
 		return query.Find(&matches).Error
 	})
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ?", eventID).Find(&teams).Error
+		return h.db.WithContext(ctx).Where("event_id = ?", eventID).Find(&teams).Error
 	})
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ?", eventID).Order("id asc").Find(&rooms).Error
+		return h.db.WithContext(ctx).Where("event_id = ?", eventID).Order("id asc").Find(&rooms).Error
 	})
 
 	if err := eg.Wait(); err != nil {

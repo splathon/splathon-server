@@ -1,17 +1,19 @@
 package pg
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"sync"
 
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/splathon/splathon-server/gormctx"
 )
 
 // Handler is splathon API handler backed by PostgreSQL.
 type Handler struct {
-	db *gorm.DB
+	db *gormctx.DB
 
 	eventCacheMu sync.Mutex
 	eventCache   map[int64]int64
@@ -66,7 +68,11 @@ func nonEmptyEnv(envname string) (string, error) {
 }
 
 func NewHandler(opt *Option) (*Handler, error) {
-	db, err := gorm.Open("postgres", opt.DBArg())
+	sqldb, err := sql.Open("postgres", opt.DBArg())
+	if err != nil {
+		return nil, err
+	}
+	db, err := gormctx.FromDB("postgres", sqldb)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +82,7 @@ func NewHandler(opt *Option) (*Handler, error) {
 	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
 }
 
-func (h *Handler) queryInternalEventID(eventIDInPath int64) (int64, error) {
+func (h *Handler) queryInternalEventID(ctx context.Context, eventIDInPath int64) (int64, error) {
 	h.eventCacheMu.Lock()
 	defer h.eventCacheMu.Unlock()
 	if eid, ok := h.eventCache[eventIDInPath]; ok {
@@ -85,7 +91,7 @@ func (h *Handler) queryInternalEventID(eventIDInPath int64) (int64, error) {
 
 	var event Event
 	q := fmt.Sprintf("Splathon#%d", int32(eventIDInPath)) + "%"
-	if err := h.db.Where("name LIKE ?", q).Find(&event).Error; err != nil {
+	if err := h.db.WithContext(ctx).Where("name LIKE ?", q).Find(&event).Error; err != nil {
 		return 0, fmt.Errorf("event not found (event_id=%d): %v", int32(eventIDInPath), err)
 	}
 	h.eventCache[eventIDInPath] = event.Id

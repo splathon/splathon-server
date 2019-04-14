@@ -12,7 +12,7 @@ import (
 )
 
 func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParams) (*models.Ranking, error) {
-	eventID, err := h.queryInternalEventID(params.EventID)
+	eventID, err := h.queryInternalEventID(ctx, params.EventID)
 	if err != nil {
 		return nil, err
 	}
@@ -25,13 +25,13 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 	var eg errgroup.Group
 
 	eg.Go(func() error {
-		qids := h.db.Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
+		qids := h.db.WithContext(ctx).Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
 		query := "qualifier_id in (?) AND team_points IS NOT NULL AND opponent_points IS NOT NULL"
-		return h.db.Where(query, qids).Find(&matches).Error
+		return h.db.WithContext(ctx).Where(query, qids).Find(&matches).Error
 	})
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ?", eventID).Find(&teams).Error
+		return h.db.WithContext(ctx).Where("event_id = ?", eventID).Find(&teams).Error
 	})
 
 	if err := eg.Wait(); err != nil {
