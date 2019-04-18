@@ -12,17 +12,10 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 	var eg errgroup.Group
 
 	var (
-		eventID int64
 		match   Match
 		teams   []*Team
 		battles []*Battle
 	)
-
-	eg.Go(func() error {
-		var err error
-		eventID, err = h.queryInternalEventID(params.EventID)
-		return err
-	})
 
 	eg.Go(func() error {
 		if err := h.db.Where("id = ?", params.MatchID).Find(&match).Error; err != nil {
