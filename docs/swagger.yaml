@@ -97,6 +97,26 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/teams":
+    get:
+      description: "Return team list"
+      operationId: "listTeams"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/Teams"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object
@@ -303,3 +323,11 @@ definitions:
         description: "何戦こなしたか。"
         type: integer
         format: int32
+
+  Teams:
+    type: object
+    properties:
+      teams:
+        type: array
+        items:
+          $ref: "#/definitions/Team"
