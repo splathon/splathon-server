@@ -1,7 +1,7 @@
 // Ref: https://splatoon2.ink/data/locale/ja.json
 package spldata
 
-var stages map[int]string = map[int]string{
+var stages = map[int]string{
 	0:    "バッテラストリート",
 	1:    "フジツボスポーツクラブ",
 	2:    "ガンガゼ野外音楽堂",
