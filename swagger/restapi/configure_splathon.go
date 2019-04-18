@@ -66,6 +66,13 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return ranking.NewGetRankingOK().WithPayload(res)
 	})
+	api.ListTeamsHandler = operations.ListTeamsHandlerFunc(func(params operations.ListTeamsParams) middleware.Responder {
+		res, err := thonHandler.ListTeams(params.HTTPRequest.Context(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return operations.NewListTeamsOK().WithPayload(res)
+	})
 
 	api.ServerShutdown = func() {
 		if closer, ok := thonHandler.(io.Closer); ok {
