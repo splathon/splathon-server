@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -54,4 +55,15 @@ type Match struct {
 	Order          int64
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
+}
+
+type Battle struct {
+	Id        int64 `gorm:"primary_key"`
+	MatchId   int64
+	RuleId    sql.NullInt64
+	StageId   sql.NullInt64
+	WinnerId  int64
+	Order     int32
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
