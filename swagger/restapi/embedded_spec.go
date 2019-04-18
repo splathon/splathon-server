@@ -146,6 +146,35 @@ func init() {
           }
         }
       }
+    },
+    "/v{eventId}/teams": {
+      "get": {
+        "description": "Return team list",
+        "operationId": "listTeams",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Teams"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -418,6 +447,17 @@ func init() {
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "Teams": {
+      "type": "object",
+      "properties": {
+        "teams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Team"
+          }
         }
       }
     }
@@ -566,6 +606,35 @@ func init() {
           }
         }
       }
+    },
+    "/v{eventId}/teams": {
+      "get": {
+        "description": "Return team list",
+        "operationId": "listTeams",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Teams"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -838,6 +907,17 @@ func init() {
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "Teams": {
+      "type": "object",
+      "properties": {
+        "teams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Team"
+          }
         }
       }
     }

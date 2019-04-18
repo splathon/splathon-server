@@ -50,6 +50,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		ResultGetResultHandler: result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 			return middleware.NotImplemented("operation ResultGetResult has not yet been implemented")
 		}),
+		ListTeamsHandler: ListTeamsHandlerFunc(func(params ListTeamsParams) middleware.Responder {
+			return middleware.NotImplemented("operation ListTeams has not yet been implemented")
+		}),
 	}
 }
 
@@ -87,6 +90,8 @@ type SplathonAPI struct {
 	RankingGetRankingHandler ranking.GetRankingHandler
 	// ResultGetResultHandler sets the operation handler for the get result operation
 	ResultGetResultHandler result.GetResultHandler
+	// ListTeamsHandler sets the operation handler for the list teams operation
+	ListTeamsHandler ListTeamsHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -160,6 +165,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ResultGetResultHandler == nil {
 		unregistered = append(unregistered, "result.GetResultHandler")
+	}
+
+	if o.ListTeamsHandler == nil {
+		unregistered = append(unregistered, "ListTeamsHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -274,6 +283,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/results"] = result.NewGetResult(o.context, o.ResultGetResultHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/teams"] = NewListTeams(o.context, o.ListTeamsHandler)
 
 }
 
