@@ -7,6 +7,10 @@ host: "localhost"
 basePath: "/splathon/"
 schemes:
   - "https"
+consumes:
+  - "application/json; charset=utf-8"
+produces:
+  - "application/json; charset=utf-8"
 tags:
 - name: "result"
   description: "リザルト一覧"
