@@ -75,10 +75,10 @@ type SplathonAPI struct {
 	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
-	// JSONConsumer registers a consumer for a "application/json" mime type
+	// JSONConsumer registers a consumer for a "application/json; charset=utf-8" mime type
 	JSONConsumer runtime.Consumer
 
-	// JSONProducer registers a producer for a "application/json" mime type
+	// JSONProducer registers a producer for a "application/json; charset=utf-8" mime type
 	JSONProducer runtime.Producer
 
 	// MatchGetMatchHandler sets the operation handler for the get match operation
