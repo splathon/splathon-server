@@ -16,6 +16,7 @@ var (
 
 func init() {
 	for _, r := range ListRules() {
+		r := r // Capture
 		rulesByKey[r.Key] = &r
 		rulesByID[r.ID] = &r
 	}
