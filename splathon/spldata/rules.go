@@ -28,7 +28,7 @@ type Rule struct {
 }
 
 func ListRules() []Rule {
-	return []Rule{turfWar, splatZones, towerControl, clamBlitz}
+	return []Rule{turfWar, splatZones, towerControl, rainmaker, clamBlitz}
 }
 
 func GetRuleByKey(key string) (*Rule, bool) {
