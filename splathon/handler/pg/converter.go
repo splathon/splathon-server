@@ -38,24 +38,20 @@ func convertMatch(m *Match, teamMap map[int64]*Team) *models.Match {
 
 func convertBattle(b *Battle, m *models.Match) *models.Battle {
 	result := &models.Battle{
-		ID:    swag.Int32(int32(b.Id)),
+		ID:    b.Id,
 		Order: swag.Int32(b.Order),
 	}
-	switch b.WinnerId {
+	switch b.WinnerId.Int64 {
 	case int64(*m.TeamAlpha.ID):
 		result.Winner = "alpha"
 	case int64(*m.TeamBravo.ID):
 		result.Winner = "bravo"
 	}
-	if b.StageId.Valid {
-		if n, ok := spldata.GetStageByID(int(b.StageId.Int64)); ok {
-			result.Stage = &models.BattleStage{ID: int32(b.StageId.Int64), Name: n}
-		}
+	if n, ok := spldata.GetStageByID(int(b.StageId)); ok {
+		result.Stage = &models.BattleStage{ID: swag.Int32(int32(b.StageId)), Name: n}
 	}
-	if b.RuleId.Valid {
-		if key, name, ok := spldata.GetRuleByID(int(b.RuleId.Int64)); ok {
-			result.Rule = &models.BattleRule{Key: key, Name: name}
-		}
+	if key, name, ok := spldata.GetRuleByID(int(b.RuleId)); ok {
+		result.Rule = &models.BattleRule{Key: swag.String(key), Name: name}
 	}
 	return result
 }

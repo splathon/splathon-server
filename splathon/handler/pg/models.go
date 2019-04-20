@@ -60,9 +60,9 @@ type Match struct {
 type Battle struct {
 	Id        int64 `gorm:"primary_key"`
 	MatchId   int64
-	RuleId    sql.NullInt64
-	StageId   sql.NullInt64
-	WinnerId  int64
+	RuleId    int64
+	StageId   int64
+	WinnerId  sql.NullInt64
 	Order     int32
 	CreatedAt time.Time
 	UpdatedAt time.Time
