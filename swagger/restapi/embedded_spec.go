@@ -19,7 +19,7 @@ var (
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
   "consumes": [
-    "application/json; charset=utf-8"
+    "application/json"
   ],
   "produces": [
     "application/json; charset=utf-8"
@@ -66,6 +66,50 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Match"
             }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Update a battle data in the match.",
+        "tags": [
+          "match",
+          "admin"
+        ],
+        "operationId": "updateBattle",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "match id",
+            "name": "matchId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "battle",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Battle"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
           },
           "default": {
             "description": "Generic error",
@@ -182,14 +226,13 @@ func init() {
       "description": "バトル。勝敗などは決まってない状態のこともある。",
       "type": "object",
       "required": [
-        "id",
         "order"
       ],
       "properties": {
         "id": {
           "description": "Battle ID",
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "order": {
           "description": "何戦目か",
@@ -198,6 +241,9 @@ func init() {
         },
         "rule": {
           "type": "object",
+          "required": [
+            "key"
+          ],
           "properties": {
             "key": {
               "description": "Rule key. ref: https://splatoon2.ink/data/locale/ja.json",
@@ -218,6 +264,9 @@ func init() {
         },
         "stage": {
           "type": "object",
+          "required": [
+            "id"
+          ],
           "properties": {
             "id": {
               "description": "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json",
@@ -479,7 +528,7 @@ func init() {
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
   "consumes": [
-    "application/json; charset=utf-8"
+    "application/json"
   ],
   "produces": [
     "application/json; charset=utf-8"
@@ -526,6 +575,50 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Match"
             }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Update a battle data in the match.",
+        "tags": [
+          "match",
+          "admin"
+        ],
+        "operationId": "updateBattle",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "match id",
+            "name": "matchId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "battle",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Battle"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
           },
           "default": {
             "description": "Generic error",
@@ -642,14 +735,13 @@ func init() {
       "description": "バトル。勝敗などは決まってない状態のこともある。",
       "type": "object",
       "required": [
-        "id",
         "order"
       ],
       "properties": {
         "id": {
           "description": "Battle ID",
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "order": {
           "description": "何戦目か",
@@ -658,6 +750,9 @@ func init() {
         },
         "rule": {
           "type": "object",
+          "required": [
+            "key"
+          ],
           "properties": {
             "key": {
               "description": "Rule key. ref: https://splatoon2.ink/data/locale/ja.json",
@@ -678,6 +773,9 @@ func init() {
         },
         "stage": {
           "type": "object",
+          "required": [
+            "id"
+          ],
           "properties": {
             "id": {
               "description": "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json",

@@ -22,6 +22,15 @@ func GetRuleNameByKey(key string) (string, bool) {
 	return n, b
 }
 
+func GetRuleIDByKey(key string) (int, bool) {
+	for id, k := range rulesByID {
+		if k == key {
+			return id, true
+		}
+	}
+	return 0, false
+}
+
 func GetRuleByID(id int) (key string, name string, ok bool) {
 	k, b := rulesByID[id]
 	if !b {

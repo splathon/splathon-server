@@ -8,7 +8,7 @@ basePath: "/splathon/"
 schemes:
   - "https"
 consumes:
-  - "application/json; charset=utf-8"
+  - "application/json"
 produces:
   - "application/json; charset=utf-8"
 tags:
@@ -70,6 +70,37 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Match"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
+    post:
+      tags:
+      - "match"
+      - "admin"
+      description: "Update a battle data in the match."
+      operationId: "updateBattle"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: matchId
+        in: path
+        required: true
+        description: match id
+        type: integer
+        format: int64
+      - name: battle
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/Battle"
+      responses:
+        200:
+          description: Success
         default:
           description: Generic error
           schema:
@@ -246,13 +277,12 @@ definitions:
     description: "バトル。勝敗などは決まってない状態のこともある。"
     type: object
     required:
-      - id
       - order
     properties:
       id:
         description: "Battle ID"
         type: integer
-        format: int32
+        format: int64
       winner:
         type: string
         description: "勝者がどちらか。"
@@ -265,6 +295,8 @@ definitions:
         format: int32
       rule:
         type: object
+        required:
+          - key
         properties:
           key:
             type: string
@@ -280,6 +312,8 @@ definitions:
             type: string
       stage:
         type: object
+        required:
+          - id
         properties:
           id:
             description: "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json"

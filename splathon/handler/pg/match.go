@@ -2,11 +2,15 @@ package pg
 
 import (
 	"context"
+	"sort"
 
+	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"golang.org/x/sync/errgroup"
 )
+
+const qualifierMaxBattleNum = 2
 
 func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*models.Match, error) {
 	var eg errgroup.Group
@@ -38,8 +42,27 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 		teamMap[t.Id] = t
 	}
 	m := convertMatch(&match, teamMap)
+
+	seenBattleOrders := make(map[int]bool)
 	for _, b := range battles {
 		m.Battles = append(m.Battles, convertBattle(b, m))
+		seenBattleOrders[int(b.Order)] = true
 	}
+
+	// Fill in not-finished battles.
+	// TODO(haya14busa): register and get theses magic numbers from database.
+	maxBattleNum := qualifierMaxBattleNum
+	if match.QualifierId == 0 {
+		maxBattleNum = 3
+	}
+	for order := 1; order <= maxBattleNum; order++ {
+		if seenBattleOrders[order] {
+			continue
+		}
+		m.Battles = append(m.Battles, &models.Battle{Order: swag.Int32(int32(order))})
+	}
+	sort.Slice(m.Battles, func(i, j int) bool {
+		return *m.Battles[i].Order < *m.Battles[j].Order
+	})
 	return m, nil
 }

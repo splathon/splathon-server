@@ -12,7 +12,7 @@ Splathonで使うAPI
     Version: 1.0.0
 
     Consumes:
-    - application/json; charset=utf-8
+    - application/json
 
     Produces:
     - application/json; charset=utf-8

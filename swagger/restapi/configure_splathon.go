@@ -73,6 +73,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return operations.NewListTeamsOK().WithPayload(res)
 	})
+	api.UpdateBattleHandler = operations.UpdateBattleHandlerFunc(func(params operations.UpdateBattleParams) middleware.Responder {
+		if err := thonHandler.UpdateBattle(params.HTTPRequest.Context(), params); err != nil {
+			return swagutils.Error(err)
+		}
+		return operations.NewUpdateBattleOK()
+	})
 
 	api.ServerShutdown = func() {
 		if closer, ok := thonHandler.(io.Closer); ok {
