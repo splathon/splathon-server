@@ -35,7 +35,7 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 	}
 	ruleID, ok := spldata.GetRuleIDByKey(*params.Battle.Rule.Key)
 	if !ok {
-		return fmt.Errorf("invalid rule key: %q", params.Battle.Rule.Key)
+		return fmt.Errorf("invalid rule key: %q", *params.Battle.Rule.Key)
 	}
 
 	if params.Battle.Stage == nil {
