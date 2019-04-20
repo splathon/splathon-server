@@ -12,6 +12,7 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
+	"github.com/rs/cors"
 	"github.com/splathon/splathon-server/splathon"
 	"github.com/splathon/splathon-server/splathon/swagutils"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
@@ -113,7 +114,10 @@ func configureServer(s *http.Server, scheme, addr string) {
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
 func setupMiddlewares(handler http.Handler) http.Handler {
-	return handler
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"https://splathon.github.io", "http://petstore.swagger.io"},
+	})
+	return c.Handler(handler)
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.

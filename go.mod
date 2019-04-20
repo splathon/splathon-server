@@ -15,6 +15,7 @@ require (
 	github.com/jinzhu/gorm v1.9.2
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
 	github.com/lib/pq v1.0.0 // indirect
+	github.com/rs/cors v1.6.0
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
 )
