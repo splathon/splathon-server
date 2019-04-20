@@ -45,6 +45,9 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		log.Fatal(err)
 	}
 
+	api.GetEventHandler = operations.GetEventHandlerFunc(func(params operations.GetEventParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEvent has not yet been implemented")
+	})
 	api.MatchGetMatchHandler = match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
 		res, err := thonHandler.GetMatch(params.HTTPRequest.Context(), params)
 		if err != nil {
