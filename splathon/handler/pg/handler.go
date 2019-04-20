@@ -2,6 +2,7 @@ package pg
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"sync"
@@ -81,9 +82,11 @@ func NewHandler(opt *Option) (*Handler, error) {
 		db.LogMode(true)
 	}
 	if n, ok := getIntEnv("DB_MAX_IDLE_CONNS"); ok {
+		log.Printf("SET DB_MAX_IDLE_CONNS=%d", n)
 		db.DB().SetMaxIdleConns(n)
 	}
 	if n, ok := getIntEnv("DB_MAX_OPEN_CONNS"); ok {
+		log.Printf("SET DB_MAX_OPEN_CONNS=%d", n)
 		db.DB().SetMaxOpenConns(n)
 	}
 	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
