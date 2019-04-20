@@ -3,6 +3,7 @@ package pg
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -79,6 +80,12 @@ func NewHandler(opt *Option) (*Handler, error) {
 	if os.Getenv("DB_DEBUGMODE") == "1" {
 		db.LogMode(true)
 	}
+	if n, ok := getIntEnv("DB_MAX_IDLE_CONNS"); ok {
+		db.DB().SetMaxIdleConns(n)
+	}
+	if n, ok := getIntEnv("DB_MAX_OPEN_CONNS"); ok {
+		db.DB().SetMaxOpenConns(n)
+	}
 	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
 }
 
@@ -101,4 +108,13 @@ func (h *Handler) queryInternalEventID(eventIDInPath int64) (int64, error) {
 	}
 	h.eventCache[eventIDInPath] = event.Id
 	return event.Id, nil
+}
+
+func getIntEnv(env string) (int, bool) {
+	s := os.Getenv(env)
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, false
+	}
+	return n, true
 }
