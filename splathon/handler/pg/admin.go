@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/splathon/splathon-server/splathon/spldata"
 	"github.com/splathon/splathon-server/swagger/models"
@@ -13,6 +14,11 @@ import (
 )
 
 func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBattleParams) error {
+	// TODO(haya14busa): implement LOGIN API.
+	if os.Getenv("SPLATHON_APP_READONLY") == "1" {
+		return errors.New("SPLATHON_APP_READONLY=1: write admin API is not available")
+	}
+
 	var eg errgroup.Group
 	var (
 		match Match
