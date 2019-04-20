@@ -44,8 +44,8 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 
 	battle := Battle{
 		Order:   *params.Battle.Order,
-		RuleId:  int64(rule.ID),
-		StageId: int64(*params.Battle.Stage.ID),
+		RuleId:  sql.NullInt64{Int64: int64(rule.ID), Valid: true},
+		StageId: sql.NullInt64{Int64: int64(*params.Battle.Stage.ID), Valid: true},
 	}
 	switch params.Battle.Winner {
 	case models.BattleWinnerAlpha:

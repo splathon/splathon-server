@@ -58,10 +58,12 @@ type Match struct {
 }
 
 type Battle struct {
-	Id        int64 `gorm:"primary_key"`
-	MatchId   int64
-	RuleId    int64
-	StageId   int64
+	Id      int64 `gorm:"primary_key"`
+	MatchId int64
+	// RuleId/StageId are actually non-null but use NullInt64 to update zero
+	// value.
+	RuleId    sql.NullInt64
+	StageId   sql.NullInt64
 	WinnerId  sql.NullInt64
 	Order     int32
 	CreatedAt time.Time
