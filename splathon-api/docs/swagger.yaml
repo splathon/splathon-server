@@ -3,7 +3,7 @@ info:
   description: "Splathonで使うAPI"
   version: "1.0.0"
   title: "SplathonAPI"
-host: "localhost"
+host: "splathon-api-us.appspot.com"
 basePath: "/splathon/"
 schemes:
   - "https"
