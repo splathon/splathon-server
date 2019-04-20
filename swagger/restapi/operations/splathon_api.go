@@ -53,6 +53,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		ListTeamsHandler: ListTeamsHandlerFunc(func(params ListTeamsParams) middleware.Responder {
 			return middleware.NotImplemented("operation ListTeams has not yet been implemented")
 		}),
+		UpdateBattleHandler: UpdateBattleHandlerFunc(func(params UpdateBattleParams) middleware.Responder {
+			return middleware.NotImplemented("operation UpdateBattle has not yet been implemented")
+		}),
 	}
 }
 
@@ -78,7 +81,7 @@ type SplathonAPI struct {
 	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
-	// JSONConsumer registers a consumer for a "application/json; charset=utf-8" mime type
+	// JSONConsumer registers a consumer for a "application/json" mime type
 	JSONConsumer runtime.Consumer
 
 	// JSONProducer registers a producer for a "application/json; charset=utf-8" mime type
@@ -92,6 +95,8 @@ type SplathonAPI struct {
 	ResultGetResultHandler result.GetResultHandler
 	// ListTeamsHandler sets the operation handler for the list teams operation
 	ListTeamsHandler ListTeamsHandler
+	// UpdateBattleHandler sets the operation handler for the update battle operation
+	UpdateBattleHandler UpdateBattleHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -169,6 +174,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ListTeamsHandler == nil {
 		unregistered = append(unregistered, "ListTeamsHandler")
+	}
+
+	if o.UpdateBattleHandler == nil {
+		unregistered = append(unregistered, "UpdateBattleHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -288,6 +297,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/teams"] = NewListTeams(o.context, o.ListTeamsHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/matches/{matchId}"] = NewUpdateBattle(o.context, o.UpdateBattleHandler)
 
 }
 

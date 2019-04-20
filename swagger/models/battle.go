@@ -20,8 +20,7 @@ import (
 type Battle struct {
 
 	// Battle ID
-	// Required: true
-	ID *int32 `json:"id"`
+	ID int64 `json:"id,omitempty"`
 
 	// 何戦目か
 	// Required: true
@@ -42,10 +41,6 @@ type Battle struct {
 func (m *Battle) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateOrder(formats); err != nil {
 		res = append(res, err)
 	}
@@ -65,15 +60,6 @@ func (m *Battle) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *Battle) validateID(formats strfmt.Registry) error {
-
-	if err := validate.Required("id", "body", m.ID); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -188,8 +174,9 @@ func (m *Battle) UnmarshalBinary(b []byte) error {
 type BattleRule struct {
 
 	// Rule key. ref: https://splatoon2.ink/data/locale/ja.json
+	// Required: true
 	// Enum: [turf_war splat_zones tower_control rainmaker clam_blitz]
-	Key string `json:"key,omitempty"`
+	Key *string `json:"key"`
 
 	// Localized rule name.
 	Name string `json:"name,omitempty"`
@@ -249,12 +236,12 @@ func (m *BattleRule) validateKeyEnum(path, location string, value string) error 
 
 func (m *BattleRule) validateKey(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Key) { // not required
-		return nil
+	if err := validate.Required("rule"+"."+"key", "body", m.Key); err != nil {
+		return err
 	}
 
 	// value enum
-	if err := m.validateKeyEnum("rule"+"."+"key", "body", m.Key); err != nil {
+	if err := m.validateKeyEnum("rule"+"."+"key", "body", *m.Key); err != nil {
 		return err
 	}
 
@@ -284,7 +271,8 @@ func (m *BattleRule) UnmarshalBinary(b []byte) error {
 type BattleStage struct {
 
 	// Stage ID. ref: https://splatoon2.ink/data/locale/ja.json
-	ID int32 `json:"id,omitempty"`
+	// Required: true
+	ID *int32 `json:"id"`
 
 	// Localized stage name.
 	Name string `json:"name,omitempty"`
@@ -292,6 +280,24 @@ type BattleStage struct {
 
 // Validate validates this battle stage
 func (m *BattleStage) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *BattleStage) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("stage"+"."+"id", "body", m.ID); err != nil {
+		return err
+	}
+
 	return nil
 }
 
