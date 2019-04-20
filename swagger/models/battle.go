@@ -27,10 +27,10 @@ type Battle struct {
 	Order *int32 `json:"order"`
 
 	// rule
-	Rule *BattleRule `json:"rule,omitempty"`
+	Rule *Rule `json:"rule,omitempty"`
 
 	// stage
-	Stage *BattleStage `json:"stage,omitempty"`
+	Stage *Stage `json:"stage,omitempty"`
 
 	// 勝者がどちらか。
 	// Enum: [alpha bravo]
@@ -162,156 +162,6 @@ func (m *Battle) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *Battle) UnmarshalBinary(b []byte) error {
 	var res Battle
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// BattleRule battle rule
-// swagger:model BattleRule
-type BattleRule struct {
-
-	// Rule key. ref: https://splatoon2.ink/data/locale/ja.json
-	// Required: true
-	// Enum: [turf_war splat_zones tower_control rainmaker clam_blitz]
-	Key *string `json:"key"`
-
-	// Localized rule name.
-	Name string `json:"name,omitempty"`
-}
-
-// Validate validates this battle rule
-func (m *BattleRule) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateKey(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-var battleRuleTypeKeyPropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["turf_war","splat_zones","tower_control","rainmaker","clam_blitz"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		battleRuleTypeKeyPropEnum = append(battleRuleTypeKeyPropEnum, v)
-	}
-}
-
-const (
-
-	// BattleRuleKeyTurfWar captures enum value "turf_war"
-	BattleRuleKeyTurfWar string = "turf_war"
-
-	// BattleRuleKeySplatZones captures enum value "splat_zones"
-	BattleRuleKeySplatZones string = "splat_zones"
-
-	// BattleRuleKeyTowerControl captures enum value "tower_control"
-	BattleRuleKeyTowerControl string = "tower_control"
-
-	// BattleRuleKeyRainmaker captures enum value "rainmaker"
-	BattleRuleKeyRainmaker string = "rainmaker"
-
-	// BattleRuleKeyClamBlitz captures enum value "clam_blitz"
-	BattleRuleKeyClamBlitz string = "clam_blitz"
-)
-
-// prop value enum
-func (m *BattleRule) validateKeyEnum(path, location string, value string) error {
-	if err := validate.Enum(path, location, value, battleRuleTypeKeyPropEnum); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *BattleRule) validateKey(formats strfmt.Registry) error {
-
-	if err := validate.Required("rule"+"."+"key", "body", m.Key); err != nil {
-		return err
-	}
-
-	// value enum
-	if err := m.validateKeyEnum("rule"+"."+"key", "body", *m.Key); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *BattleRule) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *BattleRule) UnmarshalBinary(b []byte) error {
-	var res BattleRule
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// BattleStage battle stage
-// swagger:model BattleStage
-type BattleStage struct {
-
-	// Stage ID. ref: https://splatoon2.ink/data/locale/ja.json
-	// Required: true
-	ID *int32 `json:"id"`
-
-	// Localized stage name.
-	Name string `json:"name,omitempty"`
-}
-
-// Validate validates this battle stage
-func (m *BattleStage) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *BattleStage) validateID(formats strfmt.Registry) error {
-
-	if err := validate.Required("stage"+"."+"id", "body", m.ID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *BattleStage) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *BattleStage) UnmarshalBinary(b []byte) error {
-	var res BattleStage
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

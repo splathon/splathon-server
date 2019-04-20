@@ -12,6 +12,7 @@ import (
 )
 
 type Handler interface {
+	GetEvent(context.Context, operations.GetEventParams) (*models.Event, error)
 	GetResult(context.Context, result.GetResultParams) (*models.Results, error)
 	GetMatch(context.Context, match.GetMatchParams) (*models.Match, error)
 	GetRanking(context.Context, ranking.GetRankingParams) (*models.Ranking, error)

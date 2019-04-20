@@ -36,6 +36,35 @@ func init() {
   "host": "localhost",
   "basePath": "/splathon/",
   "paths": {
+    "/v{eventId}/event": {
+      "get": {
+        "description": "Return event data",
+        "operationId": "getEvent",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/matches/{matchId}": {
       "get": {
         "description": "マッチの詳細を返す。スコアボードとかで使える。",
@@ -240,44 +269,10 @@ func init() {
           "format": "int32"
         },
         "rule": {
-          "type": "object",
-          "required": [
-            "key"
-          ],
-          "properties": {
-            "key": {
-              "description": "Rule key. ref: https://splatoon2.ink/data/locale/ja.json",
-              "type": "string",
-              "enum": [
-                "turf_war",
-                "splat_zones",
-                "tower_control",
-                "rainmaker",
-                "clam_blitz"
-              ]
-            },
-            "name": {
-              "description": "Localized rule name.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/Rule"
         },
         "stage": {
-          "type": "object",
-          "required": [
-            "id"
-          ],
-          "properties": {
-            "id": {
-              "description": "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json",
-              "type": "integer",
-              "format": "int32"
-            },
-            "name": {
-              "description": "Localized stage name.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/Stage"
         },
         "winner": {
           "description": "勝者がどちらか。",
@@ -301,6 +296,34 @@ func init() {
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "Event": {
+      "type": "object",
+      "required": [
+        "name",
+        "numbering"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "numbering": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Rule"
+          }
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Stage"
+          }
         }
       }
     },
@@ -473,6 +496,46 @@ func init() {
           "description": "何ラウンドか。i.e. 予選第Nラウンド, 決勝T N回戦",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "Rule": {
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "properties": {
+        "key": {
+          "description": "Rule key. ref: https://splatoon2.ink/data/locale/ja.json",
+          "type": "string",
+          "enum": [
+            "turf_war",
+            "splat_zones",
+            "tower_control",
+            "rainmaker",
+            "clam_blitz"
+          ]
+        },
+        "name": {
+          "description": "Localized rule name.",
+          "type": "string"
+        }
+      }
+    },
+    "Stage": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "description": "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json",
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "description": "Localized stage name.",
+          "type": "string"
         }
       }
     },
@@ -545,6 +608,35 @@ func init() {
   "host": "localhost",
   "basePath": "/splathon/",
   "paths": {
+    "/v{eventId}/event": {
+      "get": {
+        "description": "Return event data",
+        "operationId": "getEvent",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/matches/{matchId}": {
       "get": {
         "description": "マッチの詳細を返す。スコアボードとかで使える。",
@@ -749,44 +841,10 @@ func init() {
           "format": "int32"
         },
         "rule": {
-          "type": "object",
-          "required": [
-            "key"
-          ],
-          "properties": {
-            "key": {
-              "description": "Rule key. ref: https://splatoon2.ink/data/locale/ja.json",
-              "type": "string",
-              "enum": [
-                "turf_war",
-                "splat_zones",
-                "tower_control",
-                "rainmaker",
-                "clam_blitz"
-              ]
-            },
-            "name": {
-              "description": "Localized rule name.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/Rule"
         },
         "stage": {
-          "type": "object",
-          "required": [
-            "id"
-          ],
-          "properties": {
-            "id": {
-              "description": "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json",
-              "type": "integer",
-              "format": "int32"
-            },
-            "name": {
-              "description": "Localized stage name.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/Stage"
         },
         "winner": {
           "description": "勝者がどちらか。",
@@ -810,6 +868,34 @@ func init() {
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "Event": {
+      "type": "object",
+      "required": [
+        "name",
+        "numbering"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "numbering": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Rule"
+          }
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Stage"
+          }
         }
       }
     },
@@ -982,6 +1068,46 @@ func init() {
           "description": "何ラウンドか。i.e. 予選第Nラウンド, 決勝T N回戦",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "Rule": {
+      "type": "object",
+      "required": [
+        "key"
+      ],
+      "properties": {
+        "key": {
+          "description": "Rule key. ref: https://splatoon2.ink/data/locale/ja.json",
+          "type": "string",
+          "enum": [
+            "turf_war",
+            "splat_zones",
+            "tower_control",
+            "rainmaker",
+            "clam_blitz"
+          ]
+        },
+        "name": {
+          "description": "Localized rule name.",
+          "type": "string"
+        }
+      }
+    },
+    "Stage": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "description": "Stage ID. ref: https://splatoon2.ink/data/locale/ja.json",
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "description": "Localized stage name.",
+          "type": "string"
         }
       }
     },

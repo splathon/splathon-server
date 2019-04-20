@@ -41,6 +41,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		GetEventHandler: GetEventHandlerFunc(func(params GetEventParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetEvent has not yet been implemented")
+		}),
 		MatchGetMatchHandler: match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
 			return middleware.NotImplemented("operation MatchGetMatch has not yet been implemented")
 		}),
@@ -87,6 +90,8 @@ type SplathonAPI struct {
 	// JSONProducer registers a producer for a "application/json; charset=utf-8" mime type
 	JSONProducer runtime.Producer
 
+	// GetEventHandler sets the operation handler for the get event operation
+	GetEventHandler GetEventHandler
 	// MatchGetMatchHandler sets the operation handler for the get match operation
 	MatchGetMatchHandler match.GetMatchHandler
 	// RankingGetRankingHandler sets the operation handler for the get ranking operation
@@ -158,6 +163,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
+	}
+
+	if o.GetEventHandler == nil {
+		unregistered = append(unregistered, "GetEventHandler")
 	}
 
 	if o.MatchGetMatchHandler == nil {
@@ -277,6 +286,11 @@ func (o *SplathonAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/event"] = NewGetEvent(o.context, o.GetEventHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

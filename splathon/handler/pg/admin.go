@@ -33,7 +33,7 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 	if params.Battle.Rule == nil {
 		return errors.New("rule key is required")
 	}
-	ruleID, ok := spldata.GetRuleIDByKey(*params.Battle.Rule.Key)
+	rule, ok := spldata.GetRuleByKey(*params.Battle.Rule.Key)
 	if !ok {
 		return fmt.Errorf("invalid rule key: %q", *params.Battle.Rule.Key)
 	}
@@ -44,7 +44,7 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 
 	battle := Battle{
 		Order:   *params.Battle.Order,
-		RuleId:  int64(ruleID),
+		RuleId:  int64(rule.ID),
 		StageId: int64(*params.Battle.Stage.ID),
 	}
 	switch params.Battle.Winner {

@@ -48,10 +48,10 @@ func convertBattle(b *Battle, m *models.Match) *models.Battle {
 		result.Winner = "bravo"
 	}
 	if n, ok := spldata.GetStageByID(int(b.StageId)); ok {
-		result.Stage = &models.BattleStage{ID: swag.Int32(int32(b.StageId)), Name: n}
+		result.Stage = &models.Stage{ID: swag.Int32(int32(b.StageId)), Name: n}
 	}
-	if key, name, ok := spldata.GetRuleByID(int(b.RuleId)); ok {
-		result.Rule = &models.BattleRule{Key: swag.String(key), Name: name}
+	if rule, ok := spldata.GetRuleByID(int(b.RuleId)); ok {
+		result.Rule = &models.Rule{Key: swag.String(rule.Key), Name: rule.Name}
 	}
 	return result
 }
