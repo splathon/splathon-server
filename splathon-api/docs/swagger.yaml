@@ -408,6 +408,9 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Battle"
+      round_name:
+        type: string
+        description: "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦. Match APIから読んだときに埋まっている"
 
   Team:
     type: object
@@ -421,6 +424,9 @@ definitions:
         format: int32
       name:
         type: string
+      short_comment:
+        description: "Team の大会にむけての意気込みコメント"
+        type: string
       members:
         type: array
         items:
@@ -428,6 +434,7 @@ definitions:
 
   Member:
     type: object
+    description: "チーム一覧表示などのAPIではdetailが埋まってることもある"
     required:
       - name
     properties:
@@ -439,6 +446,27 @@ definitions:
         type: string
       icon:
         description: "Slack icon URL"
+        type: string
+      detail:
+        $ref: "#/definitions/MemberDetail"
+
+  MemberDetail:
+    type: object
+    properties:
+      short_comment:
+        description: "一言コメント"
+        type: string
+      rank_splat_zones:
+        description: "A+, X (2401~2500)"
+        type: string
+      rank_tower_control:
+        description: "A+, X (2401~2500)"
+        type: string
+      rank_clam_blitz:
+        description: "A+, X (2401~2500)"
+        type: string
+      main_weapon:
+        description: "メインウェポン/好きなブキ"
         type: string
 
   Battle:

@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"github.com/go-openapi/swag"
@@ -11,6 +12,10 @@ import (
 )
 
 const qualifierMaxBattleNum = 2
+
+func qualifierRoundName(round int) string {
+	return fmt.Sprintf("予選第%dラウンド", round)
+}
 
 func getMaxBattleNum(m Match) int {
 	// TODO(haya14busa): register and get theses magic numbers from database.
@@ -25,16 +30,37 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 	var eg errgroup.Group
 
 	var (
-		match   Match
-		teams   []*Team
-		battles []*Battle
+		match     Match
+		teams     []*Team
+		battles   []*Battle
+		roundName string
 	)
 
 	eg.Go(func() error {
 		if err := h.db.Where("id = ?", params.MatchID).Find(&match).Error; err != nil {
 			return err
 		}
-		return h.db.Where("id = ? OR id = ?", match.TeamId, match.OpponentId).Find(&teams).Error
+
+		// Fetch team.
+		eg.Go(func() error {
+			return h.db.Where("id = ? OR id = ?", match.TeamId, match.OpponentId).Find(&teams).Error
+		})
+
+		// Fetch round name.
+		eg.Go(func() error {
+			if match.QualifierId != 0 {
+				// var round int
+				var q Qualifier
+				if err := h.db.Select("round").Where("id = ?", match.QualifierId).Find(&q).Error; err != nil {
+					return err
+				}
+				roundName = qualifierRoundName(int(q.Round))
+			}
+			// TODO(haya14busa): fill in round name for tornament cases.
+			return nil
+		})
+
+		return nil
 	})
 
 	eg.Go(func() error {
@@ -51,6 +77,7 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 		teamMap[t.Id] = t
 	}
 	m := convertMatch(&match, teamMap)
+	m.RoundName = roundName
 
 	seenBattleOrders := make(map[int]bool)
 	for _, b := range battles {

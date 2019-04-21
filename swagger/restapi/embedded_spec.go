@@ -555,6 +555,10 @@ func init() {
           "type": "integer",
           "format": "int32"
         },
+        "round_name": {
+          "description": "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦. Match APIから読んだときに埋まっている",
+          "type": "string"
+        },
         "teamAlpha": {
           "$ref": "#/definitions/Team"
         },
@@ -573,11 +577,15 @@ func init() {
       }
     },
     "Member": {
+      "description": "チーム一覧表示などのAPIではdetailが埋まってることもある",
       "type": "object",
       "required": [
         "name"
       ],
       "properties": {
+        "detail": {
+          "$ref": "#/definitions/MemberDetail"
+        },
         "icon": {
           "description": "Slack icon URL",
           "type": "string"
@@ -588,6 +596,31 @@ func init() {
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "MemberDetail": {
+      "type": "object",
+      "properties": {
+        "main_weapon": {
+          "description": "メインウェポン/好きなブキ",
+          "type": "string"
+        },
+        "rank_clam_blitz": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "rank_splat_zones": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "rank_tower_control": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "short_comment": {
+          "description": "一言コメント",
           "type": "string"
         }
       }
@@ -878,6 +911,10 @@ func init() {
           }
         },
         "name": {
+          "type": "string"
+        },
+        "short_comment": {
+          "description": "Team の大会にむけての意気込みコメント",
           "type": "string"
         }
       }
@@ -1455,6 +1492,10 @@ func init() {
           "type": "integer",
           "format": "int32"
         },
+        "round_name": {
+          "description": "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦. Match APIから読んだときに埋まっている",
+          "type": "string"
+        },
         "teamAlpha": {
           "$ref": "#/definitions/Team"
         },
@@ -1473,11 +1514,15 @@ func init() {
       }
     },
     "Member": {
+      "description": "チーム一覧表示などのAPIではdetailが埋まってることもある",
       "type": "object",
       "required": [
         "name"
       ],
       "properties": {
+        "detail": {
+          "$ref": "#/definitions/MemberDetail"
+        },
         "icon": {
           "description": "Slack icon URL",
           "type": "string"
@@ -1488,6 +1533,31 @@ func init() {
           "format": "int32"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "MemberDetail": {
+      "type": "object",
+      "properties": {
+        "main_weapon": {
+          "description": "メインウェポン/好きなブキ",
+          "type": "string"
+        },
+        "rank_clam_blitz": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "rank_splat_zones": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "rank_tower_control": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "short_comment": {
+          "description": "一言コメント",
           "type": "string"
         }
       }
@@ -1778,6 +1848,10 @@ func init() {
           }
         },
         "name": {
+          "type": "string"
+        },
+        "short_comment": {
+          "description": "Team の大会にむけての意気込みコメント",
           "type": "string"
         }
       }

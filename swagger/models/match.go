@@ -30,6 +30,9 @@ type Match struct {
 	// Room内でのマッチの順番
 	Order int32 `json:"order,omitempty"`
 
+	// ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦. Match APIから読んだときに埋まっている
+	RoundName string `json:"round_name,omitempty"`
+
 	// team alpha
 	// Required: true
 	TeamAlpha *Team `json:"teamAlpha"`

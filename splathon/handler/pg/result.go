@@ -103,7 +103,7 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 	}
 	for _, q := range qualifiers {
 		round := &models.Round{
-			Name:  swag.String(fmt.Sprintf("予選第%dラウンド", q.Round)),
+			Name:  swag.String(qualifierRoundName(int(q.Round))),
 			Round: q.Round,
 			Rooms: make([]*models.Room, 0, len(rooms)),
 		}
