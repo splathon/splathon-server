@@ -12,7 +12,7 @@ type TokenSession struct {
 	// Optional.
 	TeamID int64 `json:"team_id,omitempty"`
 	// Optional.
-	SlackUsername string `json:"slack_username,omitempty"`
+	SlackUserID string `json:"slack_userid,omitempty"`
 }
 
 // Cipher is crypt interface to encrypt/decrypt cookie.
