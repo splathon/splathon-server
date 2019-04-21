@@ -23,13 +23,14 @@ type Qualifier struct {
 }
 
 type Team struct {
-	Id          int64 `gorm:"primary_key"`
-	EventId     int64
-	Name        string
-	CompanyName string
-	Rank        int32
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id           int64 `gorm:"primary_key"`
+	EventId      int64
+	Name         string
+	CompanyName  string
+	Rank         int32
+	ShortComment string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 
 	// Deprecated: Calculate by matches instead.
 	Points int32

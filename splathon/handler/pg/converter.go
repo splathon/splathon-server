@@ -8,8 +8,9 @@ import (
 
 func convertTeam(t *Team) *models.Team {
 	return &models.Team{
-		ID:   swag.Int32(int32(t.Id)),
-		Name: swag.String(t.Name),
+		ID:           swag.Int32(int32(t.Id)),
+		Name:         swag.String(t.Name),
+		ShortComment: t.ShortComment,
 	}
 }
 

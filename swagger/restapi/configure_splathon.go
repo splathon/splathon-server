@@ -90,7 +90,11 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		return operations.NewListTeamsOK().WithPayload(res)
 	})
 	api.GetTeamDetailHandler = operations.GetTeamDetailHandlerFunc(func(params operations.GetTeamDetailParams) middleware.Responder {
-		return middleware.NotImplemented("operation .GetTeamDetail has not yet been implemented")
+		res, err := thonHandler.GetTeamDetail(params.HTTPRequest.Context(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return operations.NewGetTeamDetailOK().WithPayload(res)
 	})
 	api.UpdateBattleHandler = operations.UpdateBattleHandlerFunc(func(params operations.UpdateBattleParams) middleware.Responder {
 		if err := thonHandler.UpdateBattle(params.HTTPRequest.Context(), params); err != nil {
