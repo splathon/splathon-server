@@ -60,6 +60,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		ResultGetResultHandler: result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 			return middleware.NotImplemented("operation ResultGetResult has not yet been implemented")
 		}),
+		GetTeamDetailHandler: GetTeamDetailHandlerFunc(func(params GetTeamDetailParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetTeamDetail has not yet been implemented")
+		}),
 		ListTeamsHandler: ListTeamsHandlerFunc(func(params ListTeamsParams) middleware.Responder {
 			return middleware.NotImplemented("operation ListTeams has not yet been implemented")
 		}),
@@ -115,6 +118,8 @@ type SplathonAPI struct {
 	ReceptionGetReceptionHandler reception.GetReceptionHandler
 	// ResultGetResultHandler sets the operation handler for the get result operation
 	ResultGetResultHandler result.GetResultHandler
+	// GetTeamDetailHandler sets the operation handler for the get team detail operation
+	GetTeamDetailHandler GetTeamDetailHandler
 	// ListTeamsHandler sets the operation handler for the list teams operation
 	ListTeamsHandler ListTeamsHandler
 	// LoginHandler sets the operation handler for the login operation
@@ -208,6 +213,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ResultGetResultHandler == nil {
 		unregistered = append(unregistered, "result.GetResultHandler")
+	}
+
+	if o.GetTeamDetailHandler == nil {
+		unregistered = append(unregistered, "GetTeamDetailHandler")
 	}
 
 	if o.ListTeamsHandler == nil {
@@ -353,6 +362,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/results"] = result.NewGetResult(o.context, o.ResultGetResultHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/teams/{team_id}"] = NewGetTeamDetail(o.context, o.GetTeamDetailHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
