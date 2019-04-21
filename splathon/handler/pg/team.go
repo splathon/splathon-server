@@ -33,6 +33,6 @@ func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDe
 		return nil, err
 	}
 	team := convertTeam(&t)
-	// TOOD(haya14busa): fill in members with detail data.
+	// TODO(haya14busa): fill in members with detail data.
 	return team, nil
 }
