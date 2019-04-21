@@ -94,8 +94,10 @@ func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
 
 	rs := make([]*models.Rank, 0, len(teams))
 	for _, t := range teams {
+		team := convertTeam(t)
+		fillInDummyMembers(false, team)
 		rank := &models.Rank{
-			Team:         convertTeam(t),
+			Team:         team,
 			Point:        swag.Int32(int32(teamMap[t.Id].totalPoint)),
 			Omwp:         omwp(t.Id, teamMap),
 			NumOfMatches: int32(len(teamMap[t.Id].opponentTeamIDs)),
