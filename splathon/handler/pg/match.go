@@ -12,6 +12,15 @@ import (
 
 const qualifierMaxBattleNum = 2
 
+func getMaxBattleNum(m Match) int {
+	// TODO(haya14busa): register and get theses magic numbers from database.
+	n := qualifierMaxBattleNum
+	if m.QualifierId == 0 {
+		n = 3
+	}
+	return n
+}
+
 func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*models.Match, error) {
 	var eg errgroup.Group
 
@@ -50,11 +59,7 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 	}
 
 	// Fill in not-finished battles.
-	// TODO(haya14busa): register and get theses magic numbers from database.
-	maxBattleNum := qualifierMaxBattleNum
-	if match.QualifierId == 0 {
-		maxBattleNum = 3
-	}
+	maxBattleNum := getMaxBattleNum(match)
 	for order := 1; order <= maxBattleNum; order++ {
 		if seenBattleOrders[order] {
 			continue
