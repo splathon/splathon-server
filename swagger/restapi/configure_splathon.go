@@ -103,7 +103,11 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		return middleware.NotImplemented("operation .RegisterParticipants has not yet been implemented")
 	})
 	api.ReceptionGetReceptionHandler = reception.GetReceptionHandlerFunc(func(params reception.GetReceptionParams) middleware.Responder {
-		return middleware.NotImplemented("operation reception.GetReception has not yet been implemented")
+		res, err := thonHandler.GetReception(params.HTTPRequest.Context(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return reception.NewGetReceptionOK().WithPayload(res)
 	})
 
 	api.ServerShutdown = func() {

@@ -8,6 +8,7 @@ import (
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
 )
 
@@ -19,6 +20,7 @@ type Handler interface {
 	ListTeams(context.Context, operations.ListTeamsParams) (*models.Teams, error)
 	UpdateBattle(context.Context, operations.UpdateBattleParams) error
 	Login(context.Context, operations.LoginParams) (*models.LoginResponse, error)
+	GetReception(context.Context, reception.GetReceptionParams) (*models.ReceptionResponse, error)
 }
 
 func NewDefaultHandler() (Handler, error) {
