@@ -77,6 +77,11 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 		teamMap[t.Id] = t
 	}
 	m := convertMatch(&match, teamMap)
+
+	// TODO(haya14busa): fill in real members.
+	fillInDummyMembers(false, m.TeamAlpha)
+	fillInDummyMembers(false, m.TeamBravo)
+
 	m.RoundName = roundName
 
 	seenBattleOrders := make(map[int]bool)

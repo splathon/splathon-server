@@ -23,6 +23,8 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 	}
 	for i, t := range teams {
 		r.Teams[i] = convertTeam(t)
+		// TODO(haya14busa): fill in real members.
+		fillInDummyMembers(false, r.Teams[i])
 	}
 	return r, nil
 }
@@ -33,6 +35,7 @@ func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDe
 		return nil, err
 	}
 	team := convertTeam(&t)
-	// TODO(haya14busa): fill in members with detail data.
+	// TODO(haya14busa): fill in real members with detail data.
+	fillInDummyMembers(true, team)
 	return team, nil
 }
