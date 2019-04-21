@@ -204,6 +204,7 @@ paths:
     get:
       tags:
       - "reception"
+      operationId: "getReception"
       parameters:
       - name: eventId
         in: path
@@ -226,6 +227,7 @@ paths:
 
   "/v{eventId}/reception/{splathonReceptionCode}":
     get:
+      operationId: "getParticipantsDataForReception"
       description: "参加者情報取得API"
       tags:
       - "reception"
@@ -257,6 +259,7 @@ paths:
 
   "/v{eventId}/reception/{splathonReceptionCode}/register":
     post:
+      operationId: "registerParticipants"
       description: "参加登録API"
       tags:
       - "reception"
