@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/haya14busa/secretbox"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -17,6 +18,10 @@ type Handler struct {
 
 	eventCacheMu sync.Mutex
 	eventCache   map[int64]int64
+
+	tm      *TokenManager
+	adminID string
+	adminPW string
 }
 
 type Option struct {
@@ -74,6 +79,9 @@ func nonEmptyEnv(envname string) (string, error) {
 }
 
 func NewHandler(opt *Option) (*Handler, error) {
+	handler := &Handler{eventCache: make(map[int64]int64)}
+
+	// Setup DB.
 	db, err := gorm.Open("postgres", opt.DBArg())
 	if err != nil {
 		return nil, err
@@ -89,7 +97,28 @@ func NewHandler(opt *Option) (*Handler, error) {
 		log.Printf("SET DB_MAX_OPEN_CONNS=%d", n)
 		db.DB().SetMaxOpenConns(n)
 	}
-	return &Handler{db: db, eventCache: make(map[int64]int64)}, nil
+	handler.db = db
+
+	// Setup admin ID/PASS.
+	if handler.adminID, err = nonEmptyEnv("SPLATHON_ADMIN_ID"); err != nil {
+		return nil, err
+	}
+	if handler.adminPW, err = nonEmptyEnv("SPLATHON_ADMIN_PASSWORD"); err != nil {
+		return nil, err
+	}
+
+	// Setup API token manager.
+	sec, err := nonEmptyEnv("SPLATHON_SECRETBOX_SECRET")
+	if err != nil {
+		return nil, err
+	}
+	cipher, err := secretbox.NewFromHexKey(sec)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secretbox: %v", err)
+	}
+	handler.tm = NewTokenManager(cipher)
+
+	return handler, nil
 }
 
 // Close closes the DB connections.
