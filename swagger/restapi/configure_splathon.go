@@ -18,6 +18,7 @@ import (
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
 )
 
@@ -93,6 +94,16 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 			return swagutils.Error(err)
 		}
 		return operations.NewUpdateBattleOK()
+	})
+
+	api.GetParticipantsDataForReceptionHandler = operations.GetParticipantsDataForReceptionHandlerFunc(func(params operations.GetParticipantsDataForReceptionParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetParticipantsDataForReception has not yet been implemented")
+	})
+	api.RegisterParticipantsHandler = operations.RegisterParticipantsHandlerFunc(func(params operations.RegisterParticipantsParams) middleware.Responder {
+		return middleware.NotImplemented("operation .RegisterParticipants has not yet been implemented")
+	})
+	api.ReceptionGetReceptionHandler = reception.GetReceptionHandlerFunc(func(params reception.GetReceptionParams) middleware.Responder {
+		return middleware.NotImplemented("operation reception.GetReception has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {
