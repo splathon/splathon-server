@@ -29,6 +29,9 @@ type Team struct {
 	// name
 	// Required: true
 	Name *string `json:"name"`
+
+	// Team の大会にむけての意気込みコメント
+	ShortComment string `json:"short_comment,omitempty"`
 }
 
 // Validate validates this team
