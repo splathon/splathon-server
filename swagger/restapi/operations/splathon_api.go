@@ -21,6 +21,7 @@ import (
 
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/result"
 )
 
@@ -47,8 +48,14 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		MatchGetMatchHandler: match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
 			return middleware.NotImplemented("operation MatchGetMatch has not yet been implemented")
 		}),
+		GetParticipantsDataForReceptionHandler: GetParticipantsDataForReceptionHandlerFunc(func(params GetParticipantsDataForReceptionParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetParticipantsDataForReception has not yet been implemented")
+		}),
 		RankingGetRankingHandler: ranking.GetRankingHandlerFunc(func(params ranking.GetRankingParams) middleware.Responder {
 			return middleware.NotImplemented("operation RankingGetRanking has not yet been implemented")
+		}),
+		ReceptionGetReceptionHandler: reception.GetReceptionHandlerFunc(func(params reception.GetReceptionParams) middleware.Responder {
+			return middleware.NotImplemented("operation ReceptionGetReception has not yet been implemented")
 		}),
 		ResultGetResultHandler: result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 			return middleware.NotImplemented("operation ResultGetResult has not yet been implemented")
@@ -58,6 +65,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		}),
 		LoginHandler: LoginHandlerFunc(func(params LoginParams) middleware.Responder {
 			return middleware.NotImplemented("operation Login has not yet been implemented")
+		}),
+		RegisterParticipantsHandler: RegisterParticipantsHandlerFunc(func(params RegisterParticipantsParams) middleware.Responder {
+			return middleware.NotImplemented("operation RegisterParticipants has not yet been implemented")
 		}),
 		UpdateBattleHandler: UpdateBattleHandlerFunc(func(params UpdateBattleParams) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateBattle has not yet been implemented")
@@ -97,14 +107,20 @@ type SplathonAPI struct {
 	GetEventHandler GetEventHandler
 	// MatchGetMatchHandler sets the operation handler for the get match operation
 	MatchGetMatchHandler match.GetMatchHandler
+	// GetParticipantsDataForReceptionHandler sets the operation handler for the get participants data for reception operation
+	GetParticipantsDataForReceptionHandler GetParticipantsDataForReceptionHandler
 	// RankingGetRankingHandler sets the operation handler for the get ranking operation
 	RankingGetRankingHandler ranking.GetRankingHandler
+	// ReceptionGetReceptionHandler sets the operation handler for the get reception operation
+	ReceptionGetReceptionHandler reception.GetReceptionHandler
 	// ResultGetResultHandler sets the operation handler for the get result operation
 	ResultGetResultHandler result.GetResultHandler
 	// ListTeamsHandler sets the operation handler for the list teams operation
 	ListTeamsHandler ListTeamsHandler
 	// LoginHandler sets the operation handler for the login operation
 	LoginHandler LoginHandler
+	// RegisterParticipantsHandler sets the operation handler for the register participants operation
+	RegisterParticipantsHandler RegisterParticipantsHandler
 	// UpdateBattleHandler sets the operation handler for the update battle operation
 	UpdateBattleHandler UpdateBattleHandler
 
@@ -178,8 +194,16 @@ func (o *SplathonAPI) Validate() error {
 		unregistered = append(unregistered, "match.GetMatchHandler")
 	}
 
+	if o.GetParticipantsDataForReceptionHandler == nil {
+		unregistered = append(unregistered, "GetParticipantsDataForReceptionHandler")
+	}
+
 	if o.RankingGetRankingHandler == nil {
 		unregistered = append(unregistered, "ranking.GetRankingHandler")
+	}
+
+	if o.ReceptionGetReceptionHandler == nil {
+		unregistered = append(unregistered, "reception.GetReceptionHandler")
 	}
 
 	if o.ResultGetResultHandler == nil {
@@ -192,6 +216,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.LoginHandler == nil {
 		unregistered = append(unregistered, "LoginHandler")
+	}
+
+	if o.RegisterParticipantsHandler == nil {
+		unregistered = append(unregistered, "RegisterParticipantsHandler")
 	}
 
 	if o.UpdateBattleHandler == nil {
@@ -309,7 +337,17 @@ func (o *SplathonAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/v{eventId}/reception/{splathonReceptionCode}"] = NewGetParticipantsDataForReception(o.context, o.GetParticipantsDataForReceptionHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/v{eventId}/ranking"] = ranking.NewGetRanking(o.context, o.RankingGetRankingHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/reception"] = reception.NewGetReception(o.context, o.ReceptionGetReceptionHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -325,6 +363,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/v{eventId}/login"] = NewLogin(o.context, o.LoginHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/reception/{splathonReceptionCode}/register"] = NewRegisterParticipants(o.context, o.RegisterParticipantsHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

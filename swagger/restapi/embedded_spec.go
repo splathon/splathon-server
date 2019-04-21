@@ -223,6 +223,132 @@ func init() {
         }
       }
     },
+    "/v{eventId}/reception": {
+      "get": {
+        "tags": [
+          "reception"
+        ],
+        "operationId": "getReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ReceptionResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/reception/{splathonReceptionCode}": {
+      "get": {
+        "description": "参加者情報取得API",
+        "tags": [
+          "reception",
+          "admin"
+        ],
+        "operationId": "getParticipantsDataForReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ReceptionResponse.splathon.code と同じもの(たぶん内部SlackID).",
+            "name": "splathonReceptionCode",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ReceptionPartcipantsDataResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/reception/{splathonReceptionCode}/register": {
+      "post": {
+        "description": "参加登録API",
+        "tags": [
+          "reception",
+          "admin"
+        ],
+        "operationId": "registerParticipants",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ReceptionResponse.splathon.code と同じもの(たぶん内部SlackID).",
+            "name": "splathonReceptionCode",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/results": {
       "get": {
         "description": "リザルト一覧を返す。リザルトと言いつつ終了していない未来のマッチも返す。ゲスト・管理アプリ両方から使う。team_idを指定するとそのチームのみの結果が返ってくる。",
@@ -466,6 +592,57 @@ func init() {
         }
       }
     },
+    "ParticipantReception": {
+      "type": "object",
+      "properties": {
+        "company_name": {
+          "description": "所属企業名",
+          "type": "string"
+        },
+        "fullname_kana": {
+          "description": "カタカナのフルネーム。 e.g. ヤマダタロウ",
+          "type": "string"
+        },
+        "has_companion": {
+          "description": "同伴者がいるかどうか。いる場合は用スプレッドシート確認。",
+          "type": "boolean"
+        },
+        "has_switch_dock": {
+          "description": "Nintendo Switch doc を持ってきたか",
+          "type": "boolean"
+        },
+        "is_player": {
+          "description": "playerとして参加するかどうか。falseならスタッフか観戦",
+          "type": "boolean"
+        },
+        "is_staff": {
+          "description": "スタッフかどうか",
+          "type": "boolean"
+        },
+        "join_party": {
+          "description": "懇親会に参加するか否か",
+          "type": "boolean"
+        },
+        "nickname": {
+          "description": "ハンドルネーム。 e.g. みーくん",
+          "type": "string"
+        },
+        "participant_fee": {
+          "description": "合計参加費(円)",
+          "type": "integer",
+          "format": "int32"
+        },
+        "team_id": {
+          "description": "チームID(一応)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "team_name": {
+          "description": "チーム名",
+          "type": "string"
+        }
+      }
+    },
     "Rank": {
       "type": "object",
       "required": [
@@ -508,6 +685,71 @@ func init() {
           "items": {
             "$ref": "#/definitions/Rank"
           }
+        }
+      }
+    },
+    "ReceptionCode": {
+      "description": "ビル入館情報/Splathon会場受付情報",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "code_type": {
+          "type": "string",
+          "enum": [
+            "qrcode",
+            "barcode"
+          ]
+        },
+        "description": {
+          "description": "入場の説明",
+          "type": "string"
+        },
+        "name": {
+          "description": "Splathon会場入場コード/XXXビル入館コード",
+          "type": "string"
+        },
+        "qrcode_img": {
+          "description": "Image URL of QR code",
+          "type": "string"
+        },
+        "short_text": {
+          "description": "コードの説明",
+          "type": "string"
+        }
+      }
+    },
+    "ReceptionPartcipantsDataResponse": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "受付の仕方の説明や注意点などのフリーテキスト。",
+          "type": "string"
+        },
+        "participants": {
+          "description": "1つのSlackIDで複数の参加者をカバーしている。また participants とは別に参加者情報のない同伴者が存在する可能性があり、 もしいる場合は has_companion flag が true となる",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParticipantReception"
+          }
+        },
+        "slack_internal_id": {
+          "description": "参加者の Slack Internal ID",
+          "type": "string"
+        }
+      }
+    },
+    "ReceptionResponse": {
+      "type": "object",
+      "properties": {
+        "building": {
+          "description": "ビル入館情報",
+          "$ref": "#/definitions/ReceptionCode"
+        },
+        "splathon": {
+          "description": "Splathon会場受付情報",
+          "$ref": "#/definitions/ReceptionCode"
         }
       }
     },
@@ -664,6 +906,14 @@ func init() {
     {
       "description": "予選ランキング",
       "name": "ranking"
+    },
+    {
+      "description": "管理機能",
+      "name": "admin"
+    },
+    {
+      "description": "受付機能",
+      "name": "reception"
     }
   ]
 }`))
@@ -873,6 +1123,132 @@ func init() {
         }
       }
     },
+    "/v{eventId}/reception": {
+      "get": {
+        "tags": [
+          "reception"
+        ],
+        "operationId": "getReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ReceptionResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/reception/{splathonReceptionCode}": {
+      "get": {
+        "description": "参加者情報取得API",
+        "tags": [
+          "reception",
+          "admin"
+        ],
+        "operationId": "getParticipantsDataForReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ReceptionResponse.splathon.code と同じもの(たぶん内部SlackID).",
+            "name": "splathonReceptionCode",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ReceptionPartcipantsDataResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/reception/{splathonReceptionCode}/register": {
+      "post": {
+        "description": "参加登録API",
+        "tags": [
+          "reception",
+          "admin"
+        ],
+        "operationId": "registerParticipants",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ReceptionResponse.splathon.code と同じもの(たぶん内部SlackID).",
+            "name": "splathonReceptionCode",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/results": {
       "get": {
         "description": "リザルト一覧を返す。リザルトと言いつつ終了していない未来のマッチも返す。ゲスト・管理アプリ両方から使う。team_idを指定するとそのチームのみの結果が返ってくる。",
@@ -1116,6 +1492,57 @@ func init() {
         }
       }
     },
+    "ParticipantReception": {
+      "type": "object",
+      "properties": {
+        "company_name": {
+          "description": "所属企業名",
+          "type": "string"
+        },
+        "fullname_kana": {
+          "description": "カタカナのフルネーム。 e.g. ヤマダタロウ",
+          "type": "string"
+        },
+        "has_companion": {
+          "description": "同伴者がいるかどうか。いる場合は用スプレッドシート確認。",
+          "type": "boolean"
+        },
+        "has_switch_dock": {
+          "description": "Nintendo Switch doc を持ってきたか",
+          "type": "boolean"
+        },
+        "is_player": {
+          "description": "playerとして参加するかどうか。falseならスタッフか観戦",
+          "type": "boolean"
+        },
+        "is_staff": {
+          "description": "スタッフかどうか",
+          "type": "boolean"
+        },
+        "join_party": {
+          "description": "懇親会に参加するか否か",
+          "type": "boolean"
+        },
+        "nickname": {
+          "description": "ハンドルネーム。 e.g. みーくん",
+          "type": "string"
+        },
+        "participant_fee": {
+          "description": "合計参加費(円)",
+          "type": "integer",
+          "format": "int32"
+        },
+        "team_id": {
+          "description": "チームID(一応)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "team_name": {
+          "description": "チーム名",
+          "type": "string"
+        }
+      }
+    },
     "Rank": {
       "type": "object",
       "required": [
@@ -1158,6 +1585,71 @@ func init() {
           "items": {
             "$ref": "#/definitions/Rank"
           }
+        }
+      }
+    },
+    "ReceptionCode": {
+      "description": "ビル入館情報/Splathon会場受付情報",
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "code_type": {
+          "type": "string",
+          "enum": [
+            "qrcode",
+            "barcode"
+          ]
+        },
+        "description": {
+          "description": "入場の説明",
+          "type": "string"
+        },
+        "name": {
+          "description": "Splathon会場入場コード/XXXビル入館コード",
+          "type": "string"
+        },
+        "qrcode_img": {
+          "description": "Image URL of QR code",
+          "type": "string"
+        },
+        "short_text": {
+          "description": "コードの説明",
+          "type": "string"
+        }
+      }
+    },
+    "ReceptionPartcipantsDataResponse": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "受付の仕方の説明や注意点などのフリーテキスト。",
+          "type": "string"
+        },
+        "participants": {
+          "description": "1つのSlackIDで複数の参加者をカバーしている。また participants とは別に参加者情報のない同伴者が存在する可能性があり、 もしいる場合は has_companion flag が true となる",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParticipantReception"
+          }
+        },
+        "slack_internal_id": {
+          "description": "参加者の Slack Internal ID",
+          "type": "string"
+        }
+      }
+    },
+    "ReceptionResponse": {
+      "type": "object",
+      "properties": {
+        "building": {
+          "description": "ビル入館情報",
+          "$ref": "#/definitions/ReceptionCode"
+        },
+        "splathon": {
+          "description": "Splathon会場受付情報",
+          "$ref": "#/definitions/ReceptionCode"
         }
       }
     },
@@ -1314,6 +1806,14 @@ func init() {
     {
       "description": "予選ランキング",
       "name": "ranking"
+    },
+    {
+      "description": "管理機能",
+      "name": "admin"
+    },
+    {
+      "description": "受付機能",
+      "name": "reception"
     }
   ]
 }`))
