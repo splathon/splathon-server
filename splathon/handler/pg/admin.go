@@ -6,10 +6,17 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jinzhu/gorm"
 	"github.com/splathon/splathon-server/splathon/spldata"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"golang.org/x/sync/errgroup"
+)
+
+const (
+	qualifierWinPt  = 3
+	qualifierLosePt = 0
+	qualifierDrawPt = 1
 )
 
 func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBattleParams) error {
@@ -40,21 +47,93 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 		return errors.New("stage id is required")
 	}
 
-	battle := Battle{
-		Order:   *params.Battle.Order,
-		RuleId:  sql.NullInt64{Int64: int64(rule.ID), Valid: true},
-		StageId: sql.NullInt64{Int64: int64(*params.Battle.Stage.ID), Valid: true},
+	tx := h.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := h.updateBattleAndMatch(ctx, tx, updateBattleAndMatchParams{
+		updateBattleParams: params,
+		matchID:            match.Id,
+		order:              *params.Battle.Order,
+		ruleID:             rule.ID,
+		stageID:            int(*params.Battle.Stage.ID),
+		alphaTeamID:        match.TeamId,
+		bravoTeamID:        match.OpponentId,
+	}, match); err != nil {
+		tx.Rollback()
+		return err
 	}
-	switch params.Battle.Winner {
+	return tx.Commit().Error
+}
+
+type updateBattleAndMatchParams struct {
+	updateBattleParams operations.UpdateBattleParams
+	matchID            int64
+	order              int32
+	ruleID             int
+	stageID            int
+	alphaTeamID        int64
+	bravoTeamID        int64
+}
+
+func (h *Handler) updateBattleAndMatch(ctx context.Context, tx *gorm.DB, params updateBattleAndMatchParams, match Match) error {
+	// Update the battle result.
+	battle := Battle{
+		Order:   params.order,
+		RuleId:  sql.NullInt64{Int64: int64(params.ruleID), Valid: true},
+		StageId: sql.NullInt64{Int64: int64(params.stageID), Valid: true},
+	}
+	switch params.updateBattleParams.Battle.Winner {
 	case models.BattleWinnerAlpha:
-		battle.WinnerId = sql.NullInt64{Int64: match.TeamId, Valid: true}
+		battle.WinnerId = sql.NullInt64{Int64: params.alphaTeamID, Valid: true}
 	case models.BattleWinnerBravo:
-		battle.WinnerId = sql.NullInt64{Int64: match.OpponentId, Valid: true}
+		battle.WinnerId = sql.NullInt64{Int64: params.bravoTeamID, Valid: true}
 	}
 	var res Battle
 	query := Battle{
-		Order:   *params.Battle.Order,
-		MatchId: match.Id,
+		Order:   params.order,
+		MatchId: params.matchID,
 	}
-	return h.db.Where(query).Assign(&battle).FirstOrCreate(&res).Error
+	if err := tx.Where(query).Assign(&battle).FirstOrCreate(&res).Error; err != nil {
+		return err
+	}
+
+	// Fetch battles.
+	var battles []*Battle
+	if err := tx.Where("match_id = ?", params.matchID).Find(&battles).Error; err != nil {
+		return err
+	}
+
+	maxBattleNum := getMaxBattleNum(match)
+	alphaWin := 0
+	bravoWin := 0
+	for _, b := range battles {
+		if !b.WinnerId.Valid {
+			continue
+		}
+		switch b.WinnerId.Int64 {
+		case match.TeamId:
+			alphaWin++
+		case match.OpponentId:
+			bravoWin++
+		}
+	}
+
+	if match.QualifierId != 0 && alphaWin+bravoWin == maxBattleNum {
+		// Update the match in qualifier.
+		if alphaWin > bravoWin {
+			match.TeamPoints = qualifierWinPt
+			match.OpponentPoints = qualifierLosePt
+		} else if alphaWin < bravoWin {
+			match.TeamPoints = qualifierLosePt
+			match.OpponentPoints = qualifierWinPt
+		} else {
+			match.TeamPoints = qualifierDrawPt
+			match.OpponentPoints = qualifierDrawPt
+		}
+		tx.Save(match)
+	}
+	return nil
 }
