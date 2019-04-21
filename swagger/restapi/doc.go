@@ -7,7 +7,7 @@ Splathonで使うAPI
 
     Schemes:
       https
-    Host: localhost
+    Host: splathon-api-us.appspot.com
     BasePath: /splathon/
     Version: 1.0.0
 

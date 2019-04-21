@@ -33,7 +33,7 @@ func init() {
     "title": "SplathonAPI",
     "version": "1.0.0"
   },
-  "host": "localhost",
+  "host": "splathon-api-us.appspot.com",
   "basePath": "/splathon/",
   "paths": {
     "/v{eventId}/event": {
@@ -54,6 +54,42 @@ func init() {
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/Event"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/login": {
+      "post": {
+        "operationId": "login",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
             }
           },
           "default": {
@@ -134,6 +170,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Battle"
             }
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
           }
         ],
         "responses": {
@@ -324,6 +366,42 @@ func init() {
           "items": {
             "$ref": "#/definitions/Stage"
           }
+        }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": [
+        "user_id",
+        "password"
+      ],
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "user_id": {
+          "description": "Slack username (https://splathon.slack.com/account/settings#username)",
+          "type": "string"
+        }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "required": [
+        "token"
+      ],
+      "properties": {
+        "is_admin": {
+          "description": "管理者かどうか。(e.g. true なら battle data を送信できる。)",
+          "type": "boolean"
+        },
+        "team": {
+          "description": "所属チーム。観戦だとないこともある。またloginユーザーはSlack アカウントを共有している複数の参加者と紐ずいていることもあるが、所属チームは必ず1つ以下。",
+          "$ref": "#/definitions/Team"
+        },
+        "token": {
+          "description": "Session API token. Send this token via X-SPLATHON-API-TOKEN HTTP hader. 'X-SPLATHON-API-TOKEN: \u003ctoken\u003e'",
+          "type": "string"
         }
       }
     },
@@ -605,7 +683,7 @@ func init() {
     "title": "SplathonAPI",
     "version": "1.0.0"
   },
-  "host": "localhost",
+  "host": "splathon-api-us.appspot.com",
   "basePath": "/splathon/",
   "paths": {
     "/v{eventId}/event": {
@@ -626,6 +704,42 @@ func init() {
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/Event"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/login": {
+      "post": {
+        "operationId": "login",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
             }
           },
           "default": {
@@ -706,6 +820,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Battle"
             }
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
           }
         ],
         "responses": {
@@ -896,6 +1016,42 @@ func init() {
           "items": {
             "$ref": "#/definitions/Stage"
           }
+        }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "required": [
+        "user_id",
+        "password"
+      ],
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "user_id": {
+          "description": "Slack username (https://splathon.slack.com/account/settings#username)",
+          "type": "string"
+        }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "required": [
+        "token"
+      ],
+      "properties": {
+        "is_admin": {
+          "description": "管理者かどうか。(e.g. true なら battle data を送信できる。)",
+          "type": "boolean"
+        },
+        "team": {
+          "description": "所属チーム。観戦だとないこともある。またloginユーザーはSlack アカウントを共有している複数の参加者と紐ずいていることもあるが、所属チームは必ず1つ以下。",
+          "$ref": "#/definitions/Team"
+        },
+        "token": {
+          "description": "Session API token. Send this token via X-SPLATHON-API-TOKEN HTTP hader. 'X-SPLATHON-API-TOKEN: \u003ctoken\u003e'",
+          "type": "string"
         }
       }
     },

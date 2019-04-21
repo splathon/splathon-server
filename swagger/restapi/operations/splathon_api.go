@@ -56,6 +56,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		ListTeamsHandler: ListTeamsHandlerFunc(func(params ListTeamsParams) middleware.Responder {
 			return middleware.NotImplemented("operation ListTeams has not yet been implemented")
 		}),
+		LoginHandler: LoginHandlerFunc(func(params LoginParams) middleware.Responder {
+			return middleware.NotImplemented("operation Login has not yet been implemented")
+		}),
 		UpdateBattleHandler: UpdateBattleHandlerFunc(func(params UpdateBattleParams) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateBattle has not yet been implemented")
 		}),
@@ -100,6 +103,8 @@ type SplathonAPI struct {
 	ResultGetResultHandler result.GetResultHandler
 	// ListTeamsHandler sets the operation handler for the list teams operation
 	ListTeamsHandler ListTeamsHandler
+	// LoginHandler sets the operation handler for the login operation
+	LoginHandler LoginHandler
 	// UpdateBattleHandler sets the operation handler for the update battle operation
 	UpdateBattleHandler UpdateBattleHandler
 
@@ -183,6 +188,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ListTeamsHandler == nil {
 		unregistered = append(unregistered, "ListTeamsHandler")
+	}
+
+	if o.LoginHandler == nil {
+		unregistered = append(unregistered, "LoginHandler")
 	}
 
 	if o.UpdateBattleHandler == nil {
@@ -311,6 +320,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/teams"] = NewListTeams(o.context, o.ListTeamsHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/login"] = NewLogin(o.context, o.LoginHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
