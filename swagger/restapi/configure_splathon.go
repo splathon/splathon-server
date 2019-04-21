@@ -47,7 +47,11 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 	}
 
 	api.LoginHandler = operations.LoginHandlerFunc(func(params operations.LoginParams) middleware.Responder {
-		return middleware.NotImplemented("operation .Login has not yet been implemented")
+		res, err := thonHandler.Login(params.HTTPRequest.Context(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return operations.NewLoginOK().WithPayload(res)
 	})
 	api.GetEventHandler = operations.GetEventHandlerFunc(func(params operations.GetEventParams) middleware.Responder {
 		res, err := thonHandler.GetEvent(params.HTTPRequest.Context(), params)
