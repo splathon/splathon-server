@@ -20,6 +20,30 @@ tags:
   description: "予選ランキング"
 
 paths:
+  "/v{eventId}/login":
+    post:
+      operationId: "login"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: request
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/LoginRequest"
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/LoginResponse"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
   "/v{eventId}/event":
     get:
       description: "Return event data"
@@ -118,6 +142,10 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Battle"
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
       responses:
         200:
           description: Success
@@ -179,6 +207,35 @@ definitions:
       code:
         type: integer
         format: int64
+
+  LoginRequest:
+    type: object
+    required:
+      - user_id
+      - password
+    properties:
+      user_id:
+        description: "Slack username (https://splathon.slack.com/account/settings#username)"
+        type: string
+      password:
+        type: string
+
+  LoginResponse:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        description: "Session API token. Send this token via X-SPLATHON-API-TOKEN HTTP hader. 'X-SPLATHON-API-TOKEN: <token>'"
+        type: string
+      is_admin:
+        description: "管理者かどうか。(e.g. true なら battle data を送信できる。)"
+        type: boolean
+      team:
+        description:
+          "所属チーム。観戦だとないこともある。またloginユーザーはSlack
+          アカウントを共有している複数の参加者と紐ずいていることもあるが、所属チームは必ず1つ以下。"
+        $ref: "#/definitions/Team"
 
   Results:
     description: "予選/決勝Tのリザルト。予選/決勝Tは同じ構造なのでフラットにできるがクライアントがトーナメント表だせる拡張性持たせるために別フィールドで持つ。"

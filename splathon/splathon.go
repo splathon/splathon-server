@@ -18,6 +18,7 @@ type Handler interface {
 	GetRanking(context.Context, ranking.GetRankingParams) (*models.Ranking, error)
 	ListTeams(context.Context, operations.ListTeamsParams) (*models.Teams, error)
 	UpdateBattle(context.Context, operations.UpdateBattleParams) error
+	Login(context.Context, operations.LoginParams) (*models.LoginResponse, error)
 }
 
 func NewDefaultHandler() (Handler, error) {
