@@ -18,6 +18,7 @@ type Handler interface {
 	GetMatch(context.Context, match.GetMatchParams) (*models.Match, error)
 	GetRanking(context.Context, ranking.GetRankingParams) (*models.Ranking, error)
 	ListTeams(context.Context, operations.ListTeamsParams) (*models.Teams, error)
+	GetTeamDetail(context.Context, operations.GetTeamDetailParams) (*models.Team, error)
 	UpdateBattle(context.Context, operations.UpdateBattleParams) error
 	Login(context.Context, operations.LoginParams) (*models.LoginResponse, error)
 	GetReception(context.Context, reception.GetReceptionParams) (*models.ReceptionResponse, error)

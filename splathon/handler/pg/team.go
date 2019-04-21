@@ -26,3 +26,13 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 	}
 	return r, nil
 }
+
+func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDetailParams) (*models.Team, error) {
+	var t Team
+	if err := h.db.Where("id = ?", params.TeamID).Find(&t).Error; err != nil {
+		return nil, err
+	}
+	team := convertTeam(&t)
+	// TODO(haya14busa): fill in members with detail data.
+	return team, nil
+}
