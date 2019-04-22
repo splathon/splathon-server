@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"database/sql"
 	"testing"
 
 	"github.com/go-openapi/swag"
@@ -167,23 +168,23 @@ func TestFilterCompletedMatches(t *testing.T) {
 	}
 	ms := []*Match{
 		{
-			Id: 1, QualifierId: 1,
+			Id: 1, QualifierId: sql.NullInt64{Int64: 1, Valid: true},
 			TeamId: 1, TeamPoints: 1,
 			OpponentId: 2, OpponentPoints: 1,
 		},
 		{
-			Id: 2, QualifierId: 1,
+			Id: 2, QualifierId: sql.NullInt64{Int64: 1, Valid: true},
 			TeamId: 3, TeamPoints: 1,
 			OpponentId: 4, OpponentPoints: 1,
 		},
 		{
 			// Not done yet.
-			Id: 1, QualifierId: 2,
+			Id: 1, QualifierId: sql.NullInt64{Int64: 2, Valid: true},
 			TeamId:     1,
 			OpponentId: 2,
 		},
 		{
-			Id: 2, QualifierId: 2,
+			Id: 2, QualifierId: sql.NullInt64{Int64: 2, Valid: true},
 			TeamId: 3, TeamPoints: 1,
 			OpponentId: 4, OpponentPoints: 1,
 		},
