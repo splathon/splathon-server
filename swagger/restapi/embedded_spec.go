@@ -306,14 +306,14 @@ func init() {
         }
       }
     },
-    "/v{eventId}/reception/{splathonReceptionCode}/register": {
+    "/v{eventId}/reception/{splathonReceptionCode}/complete": {
       "post": {
         "description": "参加登録API",
         "tags": [
           "reception",
           "admin"
         ],
-        "operationId": "registerParticipants",
+        "operationId": "completeReception",
         "parameters": [
           {
             "type": "integer",
@@ -1280,14 +1280,14 @@ func init() {
         }
       }
     },
-    "/v{eventId}/reception/{splathonReceptionCode}/register": {
+    "/v{eventId}/reception/{splathonReceptionCode}/complete": {
       "post": {
         "description": "参加登録API",
         "tags": [
           "reception",
           "admin"
         ],
-        "operationId": "registerParticipants",
+        "operationId": "completeReception",
         "parameters": [
           {
             "type": "integer",

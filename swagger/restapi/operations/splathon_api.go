@@ -42,6 +42,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		CompleteReceptionHandler: CompleteReceptionHandlerFunc(func(params CompleteReceptionParams) middleware.Responder {
+			return middleware.NotImplemented("operation CompleteReception has not yet been implemented")
+		}),
 		GetEventHandler: GetEventHandlerFunc(func(params GetEventParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetEvent has not yet been implemented")
 		}),
@@ -68,9 +71,6 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		}),
 		LoginHandler: LoginHandlerFunc(func(params LoginParams) middleware.Responder {
 			return middleware.NotImplemented("operation Login has not yet been implemented")
-		}),
-		RegisterParticipantsHandler: RegisterParticipantsHandlerFunc(func(params RegisterParticipantsParams) middleware.Responder {
-			return middleware.NotImplemented("operation RegisterParticipants has not yet been implemented")
 		}),
 		UpdateBattleHandler: UpdateBattleHandlerFunc(func(params UpdateBattleParams) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateBattle has not yet been implemented")
@@ -106,6 +106,8 @@ type SplathonAPI struct {
 	// JSONProducer registers a producer for a "application/json; charset=utf-8" mime type
 	JSONProducer runtime.Producer
 
+	// CompleteReceptionHandler sets the operation handler for the complete reception operation
+	CompleteReceptionHandler CompleteReceptionHandler
 	// GetEventHandler sets the operation handler for the get event operation
 	GetEventHandler GetEventHandler
 	// MatchGetMatchHandler sets the operation handler for the get match operation
@@ -124,8 +126,6 @@ type SplathonAPI struct {
 	ListTeamsHandler ListTeamsHandler
 	// LoginHandler sets the operation handler for the login operation
 	LoginHandler LoginHandler
-	// RegisterParticipantsHandler sets the operation handler for the register participants operation
-	RegisterParticipantsHandler RegisterParticipantsHandler
 	// UpdateBattleHandler sets the operation handler for the update battle operation
 	UpdateBattleHandler UpdateBattleHandler
 
@@ -191,6 +191,10 @@ func (o *SplathonAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.CompleteReceptionHandler == nil {
+		unregistered = append(unregistered, "CompleteReceptionHandler")
+	}
+
 	if o.GetEventHandler == nil {
 		unregistered = append(unregistered, "GetEventHandler")
 	}
@@ -225,10 +229,6 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.LoginHandler == nil {
 		unregistered = append(unregistered, "LoginHandler")
-	}
-
-	if o.RegisterParticipantsHandler == nil {
-		unregistered = append(unregistered, "RegisterParticipantsHandler")
 	}
 
 	if o.UpdateBattleHandler == nil {
@@ -333,6 +333,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/reception/{splathonReceptionCode}/complete"] = NewCompleteReception(o.context, o.CompleteReceptionHandler)
+
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -377,11 +382,6 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/v{eventId}/login"] = NewLogin(o.context, o.LoginHandler)
-
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/v{eventId}/reception/{splathonReceptionCode}/register"] = NewRegisterParticipants(o.context, o.RegisterParticipantsHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
