@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/go-openapi/swag"
@@ -28,12 +29,18 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 		}, nil
 	}
 
-	var p Participant
-	if err := h.db.Select("slack_user_id, team_id").Where("slack_username = ? AND raw_password = ?", params.Request.UserID, params.Request.Password).Find(&p).Error; err != nil {
-		return nil, errors.New("login failed. ID or Password is wrong. (general login feature has not been implemented yet except admin login)")
+	// Fetch multiple participants as multiple participants are associated with single user id (and associated with the same password).
+	// Assuming they are not associated with different teams, use team_id from one of them as a primary team id.
+	var ps []*Participant
+	if err := h.db.Select("slack_user_id, team_id").Where("slack_username = ? AND raw_password = ?", params.Request.UserID, params.Request.Password).Find(&ps).Error; err != nil || len(ps) == 0 {
+		return nil, errors.New("login failed. ID or Password is wrong")
 	}
+	sort.Slice(ps, func(i, j int) bool {
+		return ps[i].TeamId.Int64 > ps[j].TeamId.Int64
+	})
+	p := ps[0]
 	if p.SlackUserId == "" {
-		return nil, errors.New("login failed. slack user ID not found.")
+		return nil, errors.New("login failed. slack user ID not found")
 	}
 	token.SlackUserID = p.SlackUserId
 	if p.TeamId.Valid {
