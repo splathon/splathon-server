@@ -50,8 +50,13 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 					return err
 				}
 				roundName = q.GetName()
+			} else if match.TournamentId.Valid {
+				var t Tournament
+				if err := h.db.Select("name").Where("id = ?", match.TournamentId).Find(&t).Error; err != nil {
+					return err
+				}
+				roundName = t.GetName()
 			}
-			// TODO(haya14busa): fill in round name for tornament cases.
 			return nil
 		})
 
