@@ -124,3 +124,10 @@ type Participant struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
+
+type Reception struct {
+	Id            int64 `gorm:"primary_key"`
+	ParticipantId int64
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}

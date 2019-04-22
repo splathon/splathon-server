@@ -111,7 +111,10 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		return operations.NewGetParticipantsDataForReceptionOK().WithPayload(res)
 	})
 	api.CompleteReceptionHandler = operations.CompleteReceptionHandlerFunc(func(params operations.CompleteReceptionParams) middleware.Responder {
-		return middleware.NotImplemented("operation .CompleteReception has not yet been implemented")
+		if err := thonHandler.CompleteReception(params.HTTPRequest.Context(), params); err != nil {
+			return swagutils.Error(err)
+		}
+		return operations.NewCompleteReceptionOK()
 	})
 	api.ReceptionGetReceptionHandler = reception.GetReceptionHandlerFunc(func(params reception.GetReceptionParams) middleware.Responder {
 		res, err := thonHandler.GetReception(params.HTTPRequest.Context(), params)

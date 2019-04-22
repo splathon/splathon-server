@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
@@ -78,12 +79,9 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 
 	slackID := params.SplathonReceptionCode
 
-	var ps []*Participant
-	if err := h.db.Where("slack_user_id = ?", slackID).Find(&ps).Error; err != nil || len(ps) == 0 {
+	ps, err := h.participantsByReceptionCode(params.SplathonReceptionCode)
+	if err != nil {
 		return nil, err
-	}
-	if len(ps) == 0 {
-		return nil, fmt.Errorf("participants not found (code=%q)", slackID)
 	}
 
 	response := &models.ReceptionPartcipantsDataResponse{
@@ -115,6 +113,49 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 		response.Participants[i] = r
 	}
 	return response, nil
+}
+
+func (h *Handler) CompleteReception(ctx context.Context, params operations.CompleteReceptionParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
+
+	ps, err := h.participantsByReceptionCode(params.SplathonReceptionCode)
+	if err != nil {
+		return err
+	}
+
+	tx := h.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, p := range ps {
+		r := &Reception{
+			ParticipantId: p.Id,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+		}
+		if err := tx.Create(r).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("complete reception failed: %v (id=%q, slack_user_id=%q)", err, p.Id, p.SlackUserId)
+		}
+	}
+	return tx.Commit().Error
+}
+
+func (h *Handler) participantsByReceptionCode(code string) ([]*Participant, error) {
+	slackID := code
+	var ps []*Participant
+	if err := h.db.Where("slack_user_id = ?", slackID).Find(&ps).Error; err != nil {
+		return nil, err
+	}
+	if len(ps) == 0 {
+		return nil, fmt.Errorf("participants not found (code=%q)", slackID)
+	}
+	return ps, nil
 }
 
 func googleQRCodeImageURL(code string) string {

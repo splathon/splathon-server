@@ -23,6 +23,7 @@ type Handler interface {
 	Login(context.Context, operations.LoginParams) (*models.LoginResponse, error)
 	GetReception(context.Context, reception.GetReceptionParams) (*models.ReceptionResponse, error)
 	GetParticipantsDataForReception(context.Context, operations.GetParticipantsDataForReceptionParams) (*models.ReceptionPartcipantsDataResponse, error)
+	CompleteReception(context.Context, operations.CompleteReceptionParams) error
 }
 
 func NewDefaultHandler() (Handler, error) {
