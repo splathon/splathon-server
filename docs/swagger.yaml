@@ -283,9 +283,9 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  "/v{eventId}/reception/{splathonReceptionCode}/register":
+  "/v{eventId}/reception/{splathonReceptionCode}/complete":
     post:
-      operationId: "registerParticipants"
+      operationId: "completeReception"
       description: "参加登録API"
       tags:
       - "reception"
