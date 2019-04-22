@@ -100,7 +100,6 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 			JoinParty:      p.JoinParty,
 			Nickname:       p.Nickname,
 			ParticipantFee: p.Fee,
-			// TODO: team
 		}
 		if p.TeamId.Valid {
 			var team Team
