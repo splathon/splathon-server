@@ -49,7 +49,7 @@ type Match struct {
 	Id             int64 `gorm:"primary_key"`
 	TeamId         int64
 	OpponentId     int64
-	QualifierId    int64
+	QualifierId    sql.NullInt64
 	TeamPoints     int64
 	OpponentPoints int64
 	RoomId         int64

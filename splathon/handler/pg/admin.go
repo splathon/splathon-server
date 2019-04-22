@@ -121,7 +121,7 @@ func (h *Handler) updateBattleAndMatch(ctx context.Context, tx *gorm.DB, params 
 		}
 	}
 
-	if match.QualifierId != 0 && alphaWin+bravoWin == maxBattleNum {
+	if match.QualifierId.Valid && alphaWin+bravoWin == maxBattleNum {
 		// Update the match in qualifier.
 		if alphaWin > bravoWin {
 			match.TeamPoints = qualifierWinPt

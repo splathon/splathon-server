@@ -78,13 +78,17 @@ func buildResult(qualifiers []*Qualifier, matches []*Match, teams []*Team, rooms
 	// qualifier_id => room_id => Match
 	ms := make(map[int64]map[int64][]*Match)
 	for _, m := range matches {
-		if _, ok := ms[m.QualifierId]; !ok {
-			ms[m.QualifierId] = make(map[int64][]*Match)
+		if !m.QualifierId.Valid {
+			continue
 		}
-		if _, ok := ms[m.QualifierId][m.RoomId]; !ok {
-			ms[m.QualifierId][m.RoomId] = make([]*Match, 0)
+		qid := m.QualifierId.Int64
+		if _, ok := ms[qid]; !ok {
+			ms[qid] = make(map[int64][]*Match)
 		}
-		ms[m.QualifierId][m.RoomId] = append(ms[m.QualifierId][m.RoomId], m)
+		if _, ok := ms[qid][m.RoomId]; !ok {
+			ms[qid][m.RoomId] = make([]*Match, 0)
+		}
+		ms[qid][m.RoomId] = append(ms[qid][m.RoomId], m)
 	}
 
 	// Past splathon may not have room.

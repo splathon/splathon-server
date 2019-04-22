@@ -20,7 +20,7 @@ func qualifierRoundName(round int) string {
 func getMaxBattleNum(m Match) int {
 	// TODO(haya14busa): register and get theses magic numbers from database.
 	n := qualifierMaxBattleNum
-	if m.QualifierId == 0 {
+	if !m.QualifierId.Valid {
 		n = 3
 	}
 	return n
@@ -48,7 +48,7 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 
 		// Fetch round name.
 		eg.Go(func() error {
-			if match.QualifierId != 0 {
+			if match.QualifierId.Valid {
 				// var round int
 				var q Qualifier
 				if err := h.db.Select("round").Where("id = ?", match.QualifierId).Find(&q).Error; err != nil {

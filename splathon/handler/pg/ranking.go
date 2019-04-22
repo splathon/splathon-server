@@ -51,7 +51,7 @@ func filterCompletedMatches(teams []*Team, matches []*Match) []*Match {
 	ms := make([]*Match, 0, len(matches))
 	completedQIDs := completedQualifierIDs(teams, matches)
 	for _, m := range matches {
-		if completedQIDs[m.QualifierId] {
+		if completedQIDs[m.QualifierId.Int64] {
 			ms = append(ms, m)
 		}
 	}
@@ -65,7 +65,7 @@ func completedQualifierIDs(teams []*Team, matches []*Match) map[int64]bool {
 			// Skip matches which has not been done yet.
 			continue
 		}
-		q2tc[m.QualifierId] += 2
+		q2tc[m.QualifierId.Int64] += 2
 	}
 	teamNum := len(teams)
 	qids := make(map[int64]bool)
