@@ -123,18 +123,26 @@ func buildResult(qualifiers []*Qualifier, tournaments []*Tournament, qmatches []
 
 	result := &models.Results{
 		Qualifiers: make([]*models.Round, 0, len(qualifiers)),
-		Tournament: make([]*models.Round, 0, len(tournaments)),
 	}
 	for _, q := range qualifiers {
-		result.Qualifiers = append(result.Qualifiers, buildRound(q, rooms, teams, qms))
+		if r, ok := buildRound(q, rooms, teams, qms); ok {
+			result.Qualifiers = append(result.Qualifiers, r)
+		}
 	}
+	ts := make([]*models.Round, 0, len(tournaments))
 	for _, t := range tournaments {
-		result.Tournament = append(result.Tournament, buildRound(t, rooms, teams, tms))
+		if r, ok := buildRound(t, rooms, teams, tms); ok {
+			ts = append(ts, r)
+		}
+	}
+	if len(ts) > 0 {
+		result.Tournament = ts
 	}
 	return result
 }
 
-func buildRound(in Round, rooms []*Room, teams []*Team, mmap matchMap) *models.Round {
+func buildRound(in Round, rooms []*Room, teams []*Team, mmap matchMap) (*models.Round, bool) {
+	ok := false
 	round := &models.Round{
 		Name:  swag.String(in.GetName()),
 		Round: in.GetRoundNumber(),
@@ -157,6 +165,7 @@ func buildRound(in Round, rooms []*Room, teams []*Team, mmap matchMap) *models.R
 
 		for _, m := range mmap[in.GetID()][r.Id] {
 			addRoom = true
+			ok = true
 			room.Matches = append(room.Matches, convertMatch(m, teamMap))
 			sort.Slice(room.Matches, func(i, j int) bool {
 				return room.Matches[i].Order < room.Matches[j].Order
@@ -167,5 +176,5 @@ func buildRound(in Round, rooms []*Room, teams []*Team, mmap matchMap) *models.R
 			round.Rooms = append(round.Rooms, room)
 		}
 	}
-	return round
+	return round, ok
 }
