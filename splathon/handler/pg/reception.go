@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
@@ -17,16 +18,34 @@ func (h *Handler) GetReception(ctx context.Context, params reception.GetReceptio
 		return nil, err
 	}
 	slackUserID := token.SlackUserID
-	if token.IsAdmin && token.SlackUserID == "" {
-		slackUserID = "admin" // HACK for testing with admin account.
-	}
-
 	if slackUserID == "" {
 		return nil, &serror.Error{
 			Code:    http.StatusUnauthorized,
 			Message: "login user doesn't have associated slack user ID.",
 		}
 	}
+
+	var ps []*Participant
+	if err := h.db.Where("slack_user_id = ?", slackUserID).Find(&ps).Error; err != nil || len(ps) == 0 {
+		return nil, fmt.Errorf("invalid token: participant not found with id=%q", slackUserID)
+	}
+
+	sumFee := 0
+	nicknames := make([]string, len(ps))
+	hasCompanion := false
+	joinParty := false
+	for i, p := range ps {
+		sumFee += int(p.Fee)
+		nicknames[i] = p.Nickname
+		hasCompanion = hasCompanion || p.HasCompanion
+		joinParty = joinParty || p.JoinParty
+	}
+	thonShortData := fmt.Sprintf("[%s] 合計支払い金額: %d円 (懇親会参加: %s)", strings.Join(nicknames, ","), sumFee, boolToJapanese(joinParty))
+
+	if hasCompanion {
+		thonShortData = fmt.Sprintf("[%s] 参考支払い金額: %d円, 同伴者様の懇親会参加の有無などで金額が前後するので受付でお申し付けください。", strings.Join(nicknames, ","), sumFee)
+	}
+
 	resp := &models.ReceptionResponse{
 		Building: &models.ReceptionCode{
 			Name: "ビル入館コード",
@@ -39,12 +58,10 @@ func (h *Handler) GetReception(ctx context.Context, params reception.GetReceptio
 			QrcodeImg: os.Getenv("SPLATHON_BUILDING_QRCODE_URL"),
 		},
 		Splathon: &models.ReceptionCode{
-			Name: "会場入場コード",
-			Description: `Splathon 会場でこのQRコードを表示して受付してください。
-TODO(haya14busa): ここに最低限の参加者情報や払うべき金額を事前に表示する。
-`,
-			ShortText: "TODO(haya14busa): こっちに名前、参加費、同伴者(ないし運営チェック)の有無など簡潔に書いてもいいかも。",
-			CodeType:  models.ReceptionCodeCodeTypeQrcode,
+			Name:        "会場入場コード",
+			Description: `Splathon 会場でこのQRコードを表示して受付してください。`,
+			ShortText:   thonShortData,
+			CodeType:    models.ReceptionCodeCodeTypeQrcode,
 
 			Code:      slackUserID,
 			QrcodeImg: googleQRCodeImageURL(slackUserID),
@@ -55,4 +72,11 @@ TODO(haya14busa): ここに最低限の参加者情報や払うべき金額を�
 
 func googleQRCodeImageURL(code string) string {
 	return fmt.Sprintf("https://chart.apis.google.com/chart?chs=142x142&cht=qr&chl=%s", code)
+}
+
+func boolToJapanese(b bool) string {
+	if b {
+		return "あり"
+	}
+	return "なし"
 }
