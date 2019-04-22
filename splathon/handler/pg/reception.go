@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
+	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
 )
 
@@ -68,6 +70,91 @@ func (h *Handler) GetReception(ctx context.Context, params reception.GetReceptio
 		},
 	}
 	return resp, nil
+}
+
+func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params operations.GetParticipantsDataForReceptionParams) (*models.ReceptionPartcipantsDataResponse, error) {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return nil, err
+	}
+
+	slackID := params.SplathonReceptionCode
+
+	ps, err := h.participantsByReceptionCode(params.SplathonReceptionCode)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &models.ReceptionPartcipantsDataResponse{
+		Description:     "同伴者がいる場合は別途スプレッドシートを参照してください。",
+		SLACKInternalID: slackID,
+		Participants:    make([]*models.ParticipantReception, len(ps)),
+	}
+	for i, p := range ps {
+		r := &models.ParticipantReception{
+			CompanyName:    p.CompanyName,
+			FullnameKana:   p.FullnameKana,
+			HasCompanion:   p.HasCompanion,
+			HasSwitchDock:  false, // TODO(haya14busa): check db data later.
+			IsPlayer:       p.TeamId.Valid,
+			IsStaff:        p.IsStaff,
+			JoinParty:      p.JoinParty,
+			Nickname:       p.Nickname,
+			ParticipantFee: p.Fee,
+		}
+		if p.TeamId.Valid {
+			var team Team
+			if err := h.db.Select("name").Where("id = ?", p.TeamId.Int64).Find(&team).Error; err != nil {
+				return nil, err
+			}
+			r.TeamID = p.TeamId.Int64
+			r.TeamName = team.Name
+		}
+		response.Participants[i] = r
+	}
+	return response, nil
+}
+
+func (h *Handler) CompleteReception(ctx context.Context, params operations.CompleteReceptionParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
+
+	ps, err := h.participantsByReceptionCode(params.SplathonReceptionCode)
+	if err != nil {
+		return err
+	}
+
+	tx := h.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	for _, p := range ps {
+		r := &Reception{
+			ParticipantId: p.Id,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+		}
+		if err := tx.Create(r).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("complete reception failed: %v (id=%q, slack_user_id=%q)", err, p.Id, p.SlackUserId)
+		}
+	}
+	return tx.Commit().Error
+}
+
+func (h *Handler) participantsByReceptionCode(code string) ([]*Participant, error) {
+	slackID := code
+	var ps []*Participant
+	if err := h.db.Where("slack_user_id = ?", slackID).Find(&ps).Error; err != nil {
+		return nil, err
+	}
+	if len(ps) == 0 {
+		return nil, fmt.Errorf("participants not found (code=%q)", slackID)
+	}
+	return ps, nil
 }
 
 func googleQRCodeImageURL(code string) string {
