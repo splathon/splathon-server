@@ -9,6 +9,7 @@ import (
 
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
+	"github.com/splathon/splathon-server/swagger/restapi/operations"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
 )
 
@@ -68,6 +69,52 @@ func (h *Handler) GetReception(ctx context.Context, params reception.GetReceptio
 		},
 	}
 	return resp, nil
+}
+
+func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params operations.GetParticipantsDataForReceptionParams) (*models.ReceptionPartcipantsDataResponse, error) {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return nil, err
+	}
+
+	slackID := params.SplathonReceptionCode
+
+	var ps []*Participant
+	if err := h.db.Where("slack_user_id = ?", slackID).Find(&ps).Error; err != nil || len(ps) == 0 {
+		return nil, err
+	}
+	if len(ps) == 0 {
+		return nil, fmt.Errorf("participants not found (code=%q)", slackID)
+	}
+
+	response := &models.ReceptionPartcipantsDataResponse{
+		Description:     "同伴者がいる場合は別途スプレッドシートを参照してください。",
+		SLACKInternalID: slackID,
+		Participants:    make([]*models.ParticipantReception, len(ps)),
+	}
+	for i, p := range ps {
+		r := &models.ParticipantReception{
+			CompanyName:    p.CompanyName,
+			FullnameKana:   p.FullnameKana,
+			HasCompanion:   p.HasCompanion,
+			HasSwitchDock:  false, // TODO(haya14busa): check db data later.
+			IsPlayer:       p.TeamId.Valid,
+			IsStaff:        p.IsStaff,
+			JoinParty:      p.JoinParty,
+			Nickname:       p.Nickname,
+			ParticipantFee: p.Fee,
+			// TODO: team
+		}
+		if p.TeamId.Valid {
+			var team Team
+			if err := h.db.Select("name").Where("id = ?", p.TeamId.Int64).Find(&team).Error; err != nil {
+				return nil, err
+			}
+			r.TeamID = p.TeamId.Int64
+			r.TeamName = team.Name
+		}
+		response.Participants[i] = r
+	}
+	return response, nil
 }
 
 func googleQRCodeImageURL(code string) string {
