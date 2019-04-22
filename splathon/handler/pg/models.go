@@ -99,3 +99,28 @@ type Battle struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type Participant struct {
+	Id               int64 `gorm:"primary_key"`
+	EventId          int64
+	SlackUserName    string
+	SlackUserId      string
+	Nickname         string
+	FullnameKana     string
+	CompanyName      string
+	RawPassword      string
+	IconUrl          string
+	IsStaff          bool
+	JoinParty        bool
+	HasCompanion     bool
+	Fee              int32
+	TeamId           sql.NullInt64
+	RankSplatZones   string
+	RankTowerControl string
+	RankRainMaker    string
+	RankClamBlitz    string
+	MainWeapon       string
+	ShortComment     string
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+}

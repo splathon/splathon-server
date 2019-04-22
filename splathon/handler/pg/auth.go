@@ -27,7 +27,23 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 			Token:   swag.String(apiToken),
 		}, nil
 	}
-	return nil, errors.New("login failed. ID or Password is wrong. (general login feature has not been implemented yet except admin login)")
+
+	var p Participant
+	if err := h.db.Select("slack_user_id, team_id").Where("slack_username = ? AND raw_password = ?", params.Request.UserID, params.Request.Password).Find(&p).Error; err != nil {
+		return nil, errors.New("login failed. ID or Password is wrong. (general login feature has not been implemented yet except admin login)")
+	}
+	if p.SlackUserId == "" {
+		return nil, errors.New("login failed. slack user ID not found.")
+	}
+	token.SlackUserID = p.SlackUserId
+	if p.TeamId.Valid {
+		token.TeamID = p.TeamId.Int64
+	}
+	apiToken, err := h.tm.Marhal(token)
+	if err != nil {
+		return nil, err
+	}
+	return &models.LoginResponse{Token: swag.String(apiToken)}, nil
 }
 
 func (h *Handler) isAdminLoginReq(params operations.LoginParams) bool {
