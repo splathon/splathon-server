@@ -2,7 +2,6 @@ package pg
 
 import (
 	"context"
-	"fmt"
 	"sort"
 
 	"github.com/go-openapi/swag"
@@ -12,10 +11,6 @@ import (
 )
 
 const qualifierMaxBattleNum = 2
-
-func qualifierRoundName(round int) string {
-	return fmt.Sprintf("予選第%dラウンド", round)
-}
 
 func getMaxBattleNum(m Match) int {
 	// TODO(haya14busa): register and get theses magic numbers from database.
@@ -54,7 +49,7 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 				if err := h.db.Select("round").Where("id = ?", match.QualifierId).Find(&q).Error; err != nil {
 					return err
 				}
-				roundName = qualifierRoundName(int(q.Round))
+				roundName = q.GetName()
 			}
 			// TODO(haya14busa): fill in round name for tornament cases.
 			return nil
