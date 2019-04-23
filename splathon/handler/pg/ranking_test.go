@@ -44,7 +44,7 @@ func TestBuildRanking(t *testing.T) {
 			OpponentPoints: 0,
 		},
 	}
-	got := buildRanking(teams, matches)
+	got := buildRanking(teams, matches, make(map[int64][]*models.Member))
 
 	want := &models.Ranking{
 		Rankings: []*models.Rank{
@@ -123,7 +123,7 @@ func TestBuildRanking_empty_matches(t *testing.T) {
 		{Id: 3, Name: "team 3", Points: 0},
 	}
 	matches := []*Match{}
-	got := buildRanking(teams, matches)
+	got := buildRanking(teams, matches, make(map[int64][]*models.Member))
 
 	want := &models.Ranking{
 		Rankings: []*models.Rank{
