@@ -8,7 +8,9 @@ package models
 import (
 	strfmt "github.com/go-openapi/strfmt"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // ParticipantReception participant reception
@@ -16,31 +18,40 @@ import (
 type ParticipantReception struct {
 
 	// 所属企業名
-	CompanyName string `json:"company_name,omitempty"`
+	// Required: true
+	CompanyName *string `json:"company_name"`
 
 	// カタカナのフルネーム。 e.g. ヤマダタロウ
-	FullnameKana string `json:"fullname_kana,omitempty"`
+	// Required: true
+	FullnameKana *string `json:"fullname_kana"`
 
 	// 同伴者がいるかどうか。いる場合は用スプレッドシート確認。
-	HasCompanion bool `json:"has_companion,omitempty"`
+	// Required: true
+	HasCompanion *bool `json:"has_companion"`
 
 	// Nintendo Switch doc を持ってきたか
-	HasSwitchDock bool `json:"has_switch_dock,omitempty"`
+	// Required: true
+	HasSwitchDock *bool `json:"has_switch_dock"`
 
 	// playerとして参加するかどうか。falseならスタッフか観戦
-	IsPlayer bool `json:"is_player,omitempty"`
+	// Required: true
+	IsPlayer *bool `json:"is_player"`
 
 	// スタッフかどうか
-	IsStaff bool `json:"is_staff,omitempty"`
+	// Required: true
+	IsStaff *bool `json:"is_staff"`
 
 	// 懇親会に参加するか否か
-	JoinParty bool `json:"join_party,omitempty"`
+	// Required: true
+	JoinParty *bool `json:"join_party"`
 
 	// ハンドルネーム。 e.g. みーくん
-	Nickname string `json:"nickname,omitempty"`
+	// Required: true
+	Nickname *string `json:"nickname"`
 
 	// 合計参加費(円)
-	ParticipantFee int32 `json:"participant_fee,omitempty"`
+	// Required: true
+	ParticipantFee *int32 `json:"participant_fee"`
 
 	// チームID(一応)
 	TeamID int64 `json:"team_id,omitempty"`
@@ -51,6 +62,128 @@ type ParticipantReception struct {
 
 // Validate validates this participant reception
 func (m *ParticipantReception) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateCompanyName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFullnameKana(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateHasCompanion(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateHasSwitchDock(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateIsPlayer(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateIsStaff(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateJoinParty(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNickname(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateParticipantFee(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *ParticipantReception) validateCompanyName(formats strfmt.Registry) error {
+
+	if err := validate.Required("company_name", "body", m.CompanyName); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateFullnameKana(formats strfmt.Registry) error {
+
+	if err := validate.Required("fullname_kana", "body", m.FullnameKana); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateHasCompanion(formats strfmt.Registry) error {
+
+	if err := validate.Required("has_companion", "body", m.HasCompanion); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateHasSwitchDock(formats strfmt.Registry) error {
+
+	if err := validate.Required("has_switch_dock", "body", m.HasSwitchDock); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateIsPlayer(formats strfmt.Registry) error {
+
+	if err := validate.Required("is_player", "body", m.IsPlayer); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateIsStaff(formats strfmt.Registry) error {
+
+	if err := validate.Required("is_staff", "body", m.IsStaff); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateJoinParty(formats strfmt.Registry) error {
+
+	if err := validate.Required("join_party", "body", m.JoinParty); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateNickname(formats strfmt.Registry) error {
+
+	if err := validate.Required("nickname", "body", m.Nickname); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateParticipantFee(formats strfmt.Registry) error {
+
+	if err := validate.Required("participant_fee", "body", m.ParticipantFee); err != nil {
+		return err
+	}
+
 	return nil
 }
 

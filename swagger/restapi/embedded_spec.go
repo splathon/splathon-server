@@ -668,6 +668,17 @@ func init() {
     },
     "ParticipantReception": {
       "type": "object",
+      "required": [
+        "nickname",
+        "fullname_kana",
+        "company_name",
+        "participant_fee",
+        "join_party",
+        "is_staff",
+        "is_player",
+        "has_switch_dock",
+        "has_companion"
+      ],
       "properties": {
         "company_name": {
           "description": "所属企業名",
@@ -1646,6 +1657,17 @@ func init() {
     },
     "ParticipantReception": {
       "type": "object",
+      "required": [
+        "nickname",
+        "fullname_kana",
+        "company_name",
+        "participant_fee",
+        "join_party",
+        "is_staff",
+        "is_player",
+        "has_switch_dock",
+        "has_companion"
+      ],
       "properties": {
         "company_name": {
           "description": "所属企業名",
