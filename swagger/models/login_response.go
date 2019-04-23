@@ -18,7 +18,8 @@ import (
 type LoginResponse struct {
 
 	// 管理者かどうか。(e.g. true なら battle data を送信できる。)
-	IsAdmin bool `json:"is_admin,omitempty"`
+	// Required: true
+	IsAdmin *bool `json:"is_admin"`
 
 	// 所属チーム。観戦だとないこともある。またloginユーザーはSlack アカウントを共有している複数の参加者と紐ずいていることもあるが、所属チームは必ず1つ以下。
 	Team *Team `json:"team,omitempty"`
@@ -32,6 +33,10 @@ type LoginResponse struct {
 func (m *LoginResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateIsAdmin(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateTeam(formats); err != nil {
 		res = append(res, err)
 	}
@@ -43,6 +48,15 @@ func (m *LoginResponse) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *LoginResponse) validateIsAdmin(formats strfmt.Registry) error {
+
+	if err := validate.Required("is_admin", "body", m.IsAdmin); err != nil {
+		return err
+	}
+
 	return nil
 }
 

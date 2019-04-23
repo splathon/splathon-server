@@ -551,7 +551,8 @@ func init() {
     "LoginResponse": {
       "type": "object",
       "required": [
-        "token"
+        "token",
+        "is_admin"
       ],
       "properties": {
         "is_admin": {
@@ -1540,7 +1541,8 @@ func init() {
     "LoginResponse": {
       "type": "object",
       "required": [
-        "token"
+        "token",
+        "is_admin"
       ],
       "properties": {
         "is_admin": {
