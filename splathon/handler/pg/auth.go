@@ -24,9 +24,13 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 			return nil, err
 		}
 		return &models.LoginResponse{
-			IsAdmin: true,
+			IsAdmin: swag.Bool(true),
 			Token:   swag.String(apiToken),
 		}, nil
+	}
+
+	resp := &models.LoginResponse{
+		IsAdmin: swag.Bool(false),
 	}
 
 	// Fetch multiple participants as multiple participants are associated with single user id (and associated with the same password).
@@ -45,12 +49,18 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 	token.SlackUserID = p.SlackUserId
 	if p.TeamId.Valid {
 		token.TeamID = p.TeamId.Int64
+		var team Team
+		if err := h.db.Where("id = ?", p.TeamId.Int64).Find(&team).Error; err != nil {
+			return nil, err
+		}
+		resp.Team = convertTeam(&team)
 	}
 	apiToken, err := h.tm.Marhal(token)
 	if err != nil {
 		return nil, err
 	}
-	return &models.LoginResponse{Token: swag.String(apiToken)}, nil
+	resp.Token = swag.String(apiToken)
+	return resp, nil
 }
 
 func (h *Handler) isAdminLoginReq(params operations.LoginParams) bool {
