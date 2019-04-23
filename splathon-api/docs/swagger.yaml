@@ -670,6 +670,16 @@ definitions:
 
   ParticipantReception:
     type: object
+    required:
+      - nickname
+      - fullname_kana
+      - company_name
+      - participant_fee
+      - join_party
+      - is_staff
+      - is_player
+      - has_switch_dock
+      - has_companion
     properties:
       nickname:
         type: string
