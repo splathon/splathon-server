@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
@@ -91,15 +92,15 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 	}
 	for i, p := range ps {
 		r := &models.ParticipantReception{
-			CompanyName:    p.CompanyName,
-			FullnameKana:   p.FullnameKana,
-			HasCompanion:   p.HasCompanion,
-			HasSwitchDock:  false, // TODO(haya14busa): check db data later.
-			IsPlayer:       p.TeamId.Valid,
-			IsStaff:        p.IsStaff,
-			JoinParty:      p.JoinParty,
-			Nickname:       p.Nickname,
-			ParticipantFee: p.Fee,
+			CompanyName:    swag.String(p.CompanyName),
+			FullnameKana:   swag.String(p.FullnameKana),
+			HasCompanion:   swag.Bool(p.HasCompanion),
+			HasSwitchDock:  swag.Bool(false), // TODO(haya14busa): check db data later.
+			IsPlayer:       swag.Bool(p.TeamId.Valid),
+			IsStaff:        swag.Bool(p.IsStaff),
+			JoinParty:      swag.Bool(p.JoinParty),
+			Nickname:       swag.String(p.Nickname),
+			ParticipantFee: swag.Int32(p.Fee),
 		}
 		if p.TeamId.Valid {
 			var team Team
