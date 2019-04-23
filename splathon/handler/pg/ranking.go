@@ -18,8 +18,9 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 	}
 
 	var (
-		teams   []*Team
-		matches []*Match
+		teams        []*Team
+		matches      []*Match
+		participants []*Participant
 	)
 
 	var eg errgroup.Group
@@ -34,11 +35,15 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		return h.db.Where("event_id = ?", eventID).Find(&teams).Error
 	})
 
+	eg.Go(func() error {
+		return h.db.Where("event_id = ? AND team_id IS NOT NULL", eventID).Order("id asc").Find(&participants).Error
+	})
+
 	if err := eg.Wait(); err != nil {
 		return nil, err
 	}
 
-	return buildRanking(teams, filterCompletedMatches(teams, matches)), nil
+	return buildRanking(teams, filterCompletedMatches(teams, matches), buildTeam2Members(participants)), nil
 }
 
 type teamResult struct {
@@ -77,7 +82,7 @@ func completedQualifierIDs(teams []*Team, matches []*Match) map[int64]bool {
 	return qids
 }
 
-func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
+func buildRanking(teams []*Team, matches []*Match, team2members map[int64][]*models.Member) *models.Ranking {
 	teamMap := make(map[int64]*teamResult)
 	for _, t := range teams {
 		teamMap[t.Id] = &teamResult{
@@ -95,7 +100,14 @@ func buildRanking(teams []*Team, matches []*Match) *models.Ranking {
 	rs := make([]*models.Rank, 0, len(teams))
 	for _, t := range teams {
 		team := convertTeam(t)
-		fillInDummyMembers(false, team)
+
+		if ms, ok := team2members[t.Id]; ok {
+			team.Members = ms
+		} else {
+			// TODO(haya14busa): Remove later when all participants data are in database.
+			fillInDummyMembers(false, team)
+		}
+
 		rank := &models.Rank{
 			Team:         team,
 			Point:        swag.Int32(int32(teamMap[t.Id].totalPoint)),

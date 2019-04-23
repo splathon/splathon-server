@@ -33,17 +33,7 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 		return nil, err
 	}
 
-	team2members := make(map[int64][]*models.Member)
-	for _, p := range participants {
-		if !p.TeamId.Valid {
-			continue
-		}
-		teamID := p.TeamId.Int64
-		if _, ok := team2members[teamID]; !ok {
-			team2members[teamID] = make([]*models.Member, 0)
-		}
-		team2members[teamID] = append(team2members[teamID], convertParticipant2TeamMember(p))
-	}
+	team2members := buildTeam2Members(participants)
 
 	r := &models.Teams{
 		Teams: make([]*models.Team, len(teams)),
@@ -86,4 +76,19 @@ func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDe
 		fillInDummyMembers(true, team)
 	}
 	return team, nil
+}
+
+func buildTeam2Members(ps []*Participant) map[int64][]*models.Member {
+	t2ms := make(map[int64][]*models.Member)
+	for _, p := range ps {
+		if !p.TeamId.Valid {
+			continue
+		}
+		teamID := p.TeamId.Int64
+		if _, ok := t2ms[teamID]; !ok {
+			t2ms[teamID] = make([]*models.Member, 0)
+		}
+		t2ms[teamID] = append(t2ms[teamID], convertParticipant2TeamMember(p))
+	}
+	return t2ms
 }
