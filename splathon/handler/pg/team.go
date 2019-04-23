@@ -26,7 +26,7 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 	})
 
 	eg.Go(func() error {
-		return h.db.Where("event_id = ? AND team_id IS NOT NULL", eventID).Find(&participants).Error
+		return h.db.Where("event_id = ? AND team_id IS NOT NULL", eventID).Order("id asc").Find(&participants).Error
 	})
 
 	if err := eg.Wait(); err != nil {
@@ -61,12 +61,29 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 }
 
 func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDetailParams) (*models.Team, error) {
-	var t Team
-	if err := h.db.Where("id = ?", params.TeamID).Find(&t).Error; err != nil {
+	var eg errgroup.Group
+	var (
+		t            Team
+		participants []*Participant
+	)
+	eg.Go(func() error {
+		return h.db.Where("id = ?", params.TeamID).Find(&t).Error
+	})
+	eg.Go(func() error {
+		return h.db.Where("team_id = ?", params.TeamID).Order("id asc").Find(&participants).Error
+	})
+	if err := eg.Wait(); err != nil {
 		return nil, err
 	}
 	team := convertTeam(&t)
-	// TODO(haya14busa): fill in real members with detail data.
-	fillInDummyMembers(true, team)
+	if len(participants) > 0 {
+		team.Members = make([]*models.Member, len(participants))
+		for i, p := range participants {
+			team.Members[i] = convertParticipant2TeamMember(p)
+		}
+	} else {
+		// TODO(haya14busa): Remove later when all participants data are in database.
+		fillInDummyMembers(true, team)
+	}
 	return team, nil
 }
