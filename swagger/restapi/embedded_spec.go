@@ -648,6 +648,10 @@ func init() {
           "description": "A+, X (2401~2500)",
           "type": "string"
         },
+        "rank_rainmaker": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
         "rank_splat_zones": {
           "description": "A+, X (2401~2500)",
           "type": "string"
@@ -1619,6 +1623,10 @@ func init() {
           "type": "string"
         },
         "rank_clam_blitz": {
+          "description": "A+, X (2401~2500)",
+          "type": "string"
+        },
+        "rank_rainmaker": {
           "description": "A+, X (2401~2500)",
           "type": "string"
         },

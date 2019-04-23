@@ -22,6 +22,9 @@ type MemberDetail struct {
 	RankClamBlitz string `json:"rank_clam_blitz,omitempty"`
 
 	// A+, X (2401~2500)
+	RankRainmaker string `json:"rank_rainmaker,omitempty"`
+
+	// A+, X (2401~2500)
 	RankSplatZones string `json:"rank_splat_zones,omitempty"`
 
 	// A+, X (2401~2500)

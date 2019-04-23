@@ -117,7 +117,7 @@ type Participant struct {
 	TeamId           sql.NullInt64
 	RankSplatZones   string
 	RankTowerControl string
-	RankRainMaker    string
+	RankRainmaker    string
 	RankClamBlitz    string
 	MainWeapon       string
 	ShortComment     string
