@@ -56,3 +56,19 @@ func convertBattle(b *Battle, m *models.Match) *models.Battle {
 	}
 	return result
 }
+
+func convertParticipant2TeamMember(p *Participant) *models.Member {
+	return &models.Member{
+		ID:   int32(p.Id),
+		Name: swag.String(p.Nickname),
+		Icon: p.IconUrl,
+		Detail: &models.MemberDetail{
+			MainWeapon:       p.MainWeapon,
+			RankSplatZones:   p.RankSplatZones,
+			RankTowerControl: p.RankTowerControl,
+			RankRainmaker:    p.RankRainmaker,
+			RankClamBlitz:    p.RankClamBlitz,
+			ShortComment:     p.ShortComment,
+		},
+	}
+}
