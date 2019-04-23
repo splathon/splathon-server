@@ -341,6 +341,7 @@ definitions:
     type: object
     required:
       - token
+      - is_admin
     properties:
       token:
         description: "Session API token. Send this token via X-SPLATHON-API-TOKEN HTTP hader. 'X-SPLATHON-API-TOKEN: <token>'"
