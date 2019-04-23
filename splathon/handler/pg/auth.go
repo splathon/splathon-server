@@ -14,6 +14,11 @@ import (
 )
 
 func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*models.LoginResponse, error) {
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	token := TokenSession{
 		CreatedTimestampSec: time.Now().Unix(),
 	}
@@ -36,7 +41,7 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 	// Fetch multiple participants as multiple participants are associated with single user id (and associated with the same password).
 	// Assuming they are not associated with different teams, use team_id from one of them as a primary team id.
 	var ps []*Participant
-	if err := h.db.Select("slack_user_id, team_id").Where("slack_username = ? AND raw_password = ?", params.Request.UserID, params.Request.Password).Find(&ps).Error; err != nil || len(ps) == 0 {
+	if err := h.db.Select("slack_user_id, team_id").Where("event_id = ? AND slack_username = ? AND raw_password = ?", eventID, params.Request.UserID, params.Request.Password).Find(&ps).Error; err != nil || len(ps) == 0 {
 		return nil, errors.New("login failed. ID or Password is wrong")
 	}
 	sort.Slice(ps, func(i, j int) bool {
