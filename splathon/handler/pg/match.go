@@ -25,10 +25,11 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 	var eg errgroup.Group
 
 	var (
-		match     Match
-		teams     []*Team
-		battles   []*Battle
-		roundName string
+		match        Match
+		teams        []*Team
+		participants []*Participant
+		battles      []*Battle
+		roundName    string
 	)
 
 	eg.Go(func() error {
@@ -39,6 +40,11 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 		// Fetch team.
 		eg.Go(func() error {
 			return h.db.Where("id = ? OR id = ?", match.TeamId, match.OpponentId).Find(&teams).Error
+		})
+
+		// Fetch participants.
+		eg.Go(func() error {
+			return h.db.Where("team_id = ? OR team_id = ?", match.TeamId, match.OpponentId).Order("id asc").Find(&participants).Error
 		})
 
 		// Fetch round name.
@@ -78,9 +84,27 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 	}
 	m := convertMatch(&match, teamMap)
 
-	// TODO(haya14busa): fill in real members.
-	fillInDummyMembers(false, m.TeamAlpha)
-	fillInDummyMembers(false, m.TeamBravo)
+	// Fill in members.
+	m.TeamAlpha.Members = make([]*models.Member, 0)
+	m.TeamBravo.Members = make([]*models.Member, 0)
+	for _, p := range participants {
+		var t *models.Team
+		switch p.TeamId.Int64 {
+		case match.TeamId:
+			t = m.TeamAlpha
+		case match.OpponentId:
+			t = m.TeamBravo
+		}
+		t.Members = append(t.Members, convertParticipant2TeamMember(p))
+	}
+
+	// TODO(haya14busa): Remove later when all participants data are in database.
+	if len(m.TeamAlpha.Members) == 0 {
+		fillInDummyMembers(false, m.TeamAlpha)
+	}
+	if len(m.TeamBravo.Members) == 0 {
+		fillInDummyMembers(false, m.TeamBravo)
+	}
 
 	m.RoundName = roundName
 
