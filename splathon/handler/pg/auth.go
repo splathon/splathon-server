@@ -76,7 +76,7 @@ func (h *Handler) isAdminLoginReq(params operations.LoginParams) bool {
 func (h *Handler) getTokenSession(token string) (*TokenSession, error) {
 	t, err := h.tm.Unmarhal(token)
 	if err != nil {
-		return nil, fmt.Errorf("invalid token: %v")
+		return nil, fmt.Errorf("invalid token: %v", err)
 	}
 	return t, nil
 }
