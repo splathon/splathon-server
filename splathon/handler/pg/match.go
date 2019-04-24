@@ -129,7 +129,7 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 		teamID = *params.TeamID
 	}
 	if teamID == 0 {
-		return nil, errors.New("team_id is not specified or you are not a member of any teams.")
+		return nil, errors.New("team_id is not specified or you are not a member of any teams")
 	}
 
 	var eg errgroup.Group
@@ -154,11 +154,11 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 		matchFound = true
 
 		eg.Go(func() error {
-			opponentId := match.OpponentId
-			if opponentId == teamID {
-				opponentId = match.TeamId
+			opponentID := match.OpponentId
+			if opponentID == teamID {
+				opponentID = match.TeamId
 			}
-			return h.db.Where("id = ?", opponentId).Find(&opponentTeam).Error
+			return h.db.Where("id = ?", opponentID).Find(&opponentTeam).Error
 		})
 
 		eg.Go(func() error {
