@@ -86,7 +86,7 @@ paths:
         200:
           description: Success
           schema:
-            $ref: "#/definitions/Event"
+            $ref: "#/definitions/ListNoticesResponse"
         default:
           description: Generic error
           schema:
