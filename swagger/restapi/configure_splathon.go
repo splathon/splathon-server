@@ -123,6 +123,9 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return reception.NewGetReceptionOK().WithPayload(res)
 	})
+	api.ListNoticesHandler = operations.ListNoticesHandlerFunc(func(params operations.ListNoticesParams) middleware.Responder {
+		return middleware.NotImplemented("operation .ListNotices has not yet been implemented")
+	})
 
 	api.ServerShutdown = func() {
 		if closer, ok := thonHandler.(io.Closer); ok {

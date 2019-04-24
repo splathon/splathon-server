@@ -66,6 +66,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		GetTeamDetailHandler: GetTeamDetailHandlerFunc(func(params GetTeamDetailParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetTeamDetail has not yet been implemented")
 		}),
+		ListNoticesHandler: ListNoticesHandlerFunc(func(params ListNoticesParams) middleware.Responder {
+			return middleware.NotImplemented("operation ListNotices has not yet been implemented")
+		}),
 		ListTeamsHandler: ListTeamsHandlerFunc(func(params ListTeamsParams) middleware.Responder {
 			return middleware.NotImplemented("operation ListTeams has not yet been implemented")
 		}),
@@ -122,6 +125,8 @@ type SplathonAPI struct {
 	ResultGetResultHandler result.GetResultHandler
 	// GetTeamDetailHandler sets the operation handler for the get team detail operation
 	GetTeamDetailHandler GetTeamDetailHandler
+	// ListNoticesHandler sets the operation handler for the list notices operation
+	ListNoticesHandler ListNoticesHandler
 	// ListTeamsHandler sets the operation handler for the list teams operation
 	ListTeamsHandler ListTeamsHandler
 	// LoginHandler sets the operation handler for the login operation
@@ -221,6 +226,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.GetTeamDetailHandler == nil {
 		unregistered = append(unregistered, "GetTeamDetailHandler")
+	}
+
+	if o.ListNoticesHandler == nil {
+		unregistered = append(unregistered, "ListNoticesHandler")
 	}
 
 	if o.ListTeamsHandler == nil {
@@ -372,6 +381,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/teams/{team_id}"] = NewGetTeamDetail(o.context, o.GetTeamDetailHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/notices"] = NewListNotices(o.context, o.ListNoticesHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
