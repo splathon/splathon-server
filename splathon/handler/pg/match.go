@@ -2,9 +2,12 @@ package pg
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"sort"
 
 	"github.com/go-openapi/swag"
+	"github.com/jinzhu/gorm"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"golang.org/x/sync/errgroup"
@@ -49,21 +52,9 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 
 		// Fetch round name.
 		eg.Go(func() error {
-			if match.QualifierId.Valid {
-				// var round int
-				var q Qualifier
-				if err := h.db.Select("round").Where("id = ?", match.QualifierId).Find(&q).Error; err != nil {
-					return err
-				}
-				roundName = q.GetName()
-			} else if match.TournamentId.Valid {
-				var t Tournament
-				if err := h.db.Select("name").Where("id = ?", match.TournamentId).Find(&t).Error; err != nil {
-					return err
-				}
-				roundName = t.GetName()
-			}
-			return nil
+			var err error
+			roundName, err = fetchRoundName(h.db, &match)
+			return err
 		})
 
 		return nil
@@ -126,4 +117,111 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 		return *m.Battles[i].Order < *m.Battles[j].Order
 	})
 	return m, nil
+}
+
+func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchParams) (*models.GetNextMatchResponse, error) {
+	token, err := h.getTokenSession(params.XSPLATHONAPITOKEN)
+	if err != nil {
+		return nil, err
+	}
+	teamID := token.TeamID
+	if params.TeamID != nil {
+		teamID = *params.TeamID
+	}
+	if teamID == 0 {
+		return nil, errors.New("team_id is not specified or you are not a member of any teams.")
+	}
+
+	var eg errgroup.Group
+	var (
+		match        Match
+		matchFound   bool
+		ownTeam      Team
+		opponentTeam Team
+		room         Room
+		roundName    string
+	)
+
+	eg.Go(func() error {
+		if err := h.db.Where(`
+(team_id = ? OR opponent_id = ?) AND team_points IS NULL AND opponent_points IS NULL`,
+			teamID, teamID).Order("created_at asc").Find(&match).Error; err != nil {
+			if gorm.IsRecordNotFoundError(err) {
+				return nil
+			}
+			return err
+		}
+		matchFound = true
+
+		eg.Go(func() error {
+			opponentId := match.OpponentId
+			if opponentId == teamID {
+				opponentId = match.TeamId
+			}
+			return h.db.Where("id = ?", opponentId).Find(&opponentTeam).Error
+		})
+
+		eg.Go(func() error {
+			return h.db.Select("id, name").Where("id = ?", match.RoomId).Find(&room).Error
+		})
+
+		// Fetch round name.
+		eg.Go(func() error {
+			var err error
+			roundName, err = fetchRoundName(h.db, &match)
+			return err
+		})
+
+		return nil
+	})
+
+	eg.Go(func() error {
+		return h.db.Where("id = ?", teamID).Find(&ownTeam).Error
+	})
+
+	if err := eg.Wait(); err != nil {
+		return nil, err
+	}
+	if !matchFound {
+		// Return non-error if the next match is not created yet.
+		return &models.GetNextMatchResponse{}, nil
+	}
+
+	// team_id => Team
+	teamMap := map[int64]*Team{
+		ownTeam.Id:      &ownTeam,
+		opponentTeam.Id: &opponentTeam,
+	}
+	resp := &models.GetNextMatchResponse{
+		NextMatch: &models.NextMatch{
+			MatchDetail:      convertMatch(&match, teamMap),
+			OwnTeam:          convertTeam(&ownTeam),
+			OpponentTeam:     convertTeam(&opponentTeam),
+			MatchOrderInRoom: int32(match.Order),
+			Room: &models.NextMatchRoom{
+				ID:   int32(room.Id),
+				Name: swag.String(room.Name),
+			},
+			RoundName: roundName,
+		},
+	}
+	return resp, nil
+}
+
+func fetchRoundName(db *gorm.DB, match *Match) (string, error) {
+	if match.QualifierId.Valid {
+		var q Qualifier
+		if err := db.Select("round").Where("id = ?", match.QualifierId).Find(&q).Error; err != nil {
+			return "", err
+		}
+		return q.GetName(), nil
+	}
+	if match.TournamentId.Valid {
+		var t Tournament
+		if err := db.Select("name").Where("id = ?", match.TournamentId).Find(&t).Error; err != nil {
+			return "", err
+		}
+		return t.GetName(), nil
+	}
+	return "", fmt.Errorf("room not found: match_id=%d", match.Id)
 }
