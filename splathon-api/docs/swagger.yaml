@@ -68,6 +68,30 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/notices":
+    get:
+      description: "Return notices"
+      operationId: "listNotices"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/ListNoticesResponse"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
   "/v{eventId}/results":
     get:
       tags:
@@ -354,6 +378,27 @@ definitions:
           "所属チーム。観戦だとないこともある。またloginユーザーはSlack
           アカウントを共有している複数の参加者と紐ずいていることもあるが、所属チームは必ず1つ以下。"
         $ref: "#/definitions/Team"
+
+  ListNoticesResponse:
+    type: object
+    properties:
+      notices:
+        description: "List of notices ordered by reverse chronological order."
+        type: array
+        items:
+          $ref: "#/definitions/Notice"
+
+  Notice:
+    type: object
+    required:
+      - text
+      - timestamp_sec
+    properties:
+      text:
+        type: string
+      timestamp_sec:
+        type: integer
+        format: int64
 
   Results:
     description: "予選/決勝Tのリザルト。予選/決勝Tは同じ構造なのでフラットにできるがクライアントがトーナメント表だせる拡張性持たせるために別フィールドで持つ。"

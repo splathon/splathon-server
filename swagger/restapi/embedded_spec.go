@@ -191,6 +191,41 @@ func init() {
         }
       }
     },
+    "/v{eventId}/notices": {
+      "get": {
+        "description": "Return notices",
+        "operationId": "listNotices",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ListNoticesResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/ranking": {
       "get": {
         "description": "予選ランキングを返す。",
@@ -532,6 +567,18 @@ func init() {
         }
       }
     },
+    "ListNoticesResponse": {
+      "type": "object",
+      "properties": {
+        "notices": {
+          "description": "List of notices ordered by reverse chronological order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Notice"
+          }
+        }
+      }
+    },
     "LoginRequest": {
       "type": "object",
       "required": [
@@ -664,6 +711,22 @@ func init() {
         "short_comment": {
           "description": "一言コメント",
           "type": "string"
+        }
+      }
+    },
+    "Notice": {
+      "type": "object",
+      "required": [
+        "text",
+        "timestamp_sec"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "timestamp_sec": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -1181,6 +1244,41 @@ func init() {
         }
       }
     },
+    "/v{eventId}/notices": {
+      "get": {
+        "description": "Return notices",
+        "operationId": "listNotices",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ListNoticesResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/ranking": {
       "get": {
         "description": "予選ランキングを返す。",
@@ -1522,6 +1620,18 @@ func init() {
         }
       }
     },
+    "ListNoticesResponse": {
+      "type": "object",
+      "properties": {
+        "notices": {
+          "description": "List of notices ordered by reverse chronological order.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Notice"
+          }
+        }
+      }
+    },
     "LoginRequest": {
       "type": "object",
       "required": [
@@ -1654,6 +1764,22 @@ func init() {
         "short_comment": {
           "description": "一言コメント",
           "type": "string"
+        }
+      }
+    },
+    "Notice": {
+      "type": "object",
+      "required": [
+        "text",
+        "timestamp_sec"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "timestamp_sec": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },

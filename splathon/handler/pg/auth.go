@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"sort"
 	"strings"
@@ -74,7 +75,11 @@ func (h *Handler) isAdminLoginReq(params operations.LoginParams) bool {
 }
 
 func (h *Handler) getTokenSession(token string) (*TokenSession, error) {
-	return h.tm.Unmarhal(token)
+	t, err := h.tm.Unmarhal(token)
+	if err != nil {
+		return nil, fmt.Errorf("invalid token: %v", err)
+	}
+	return t, nil
 }
 
 func (h *Handler) checkAdminAuth(token string) error {
