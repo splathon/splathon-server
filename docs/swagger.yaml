@@ -392,6 +392,7 @@ definitions:
     type: object
     required:
       - text
+      - timestamp_sec
     properties:
       text:
         type: string
