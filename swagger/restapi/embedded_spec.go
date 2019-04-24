@@ -191,6 +191,51 @@ func init() {
         }
       }
     },
+    "/v{eventId}/next-match": {
+      "get": {
+        "description": "次の試合を返す。team_id を指定した場合そのチームの、なければログインしている参加者のチームの 次のマッチをあれば返す。 team_idを指定せず参加者がチームに属して無い場合などはエラー。",
+        "tags": [
+          "match"
+        ],
+        "operationId": "getNextMatch",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "team id",
+            "name": "team_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetNextMatchResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/notices": {
       "get": {
         "description": "Return notices",
@@ -567,6 +612,15 @@ func init() {
         }
       }
     },
+    "GetNextMatchResponse": {
+      "type": "object",
+      "properties": {
+        "next_match": {
+          "description": "次のマッチがない、または決まってない場合nullになる。",
+          "$ref": "#/definitions/NextMatch"
+        }
+      }
+    },
     "ListNoticesResponse": {
       "type": "object",
       "properties": {
@@ -710,6 +764,46 @@ func init() {
         },
         "short_comment": {
           "description": "一言コメント",
+          "type": "string"
+        }
+      }
+    },
+    "NextMatch": {
+      "type": "object",
+      "properties": {
+        "match_detail": {
+          "$ref": "#/definitions/Match"
+        },
+        "match_order_in_room": {
+          "description": "Room内でのマッチの順番",
+          "type": "integer",
+          "format": "int32"
+        },
+        "opponent_team": {
+          "$ref": "#/definitions/Team"
+        },
+        "own_team": {
+          "$ref": "#/definitions/Team"
+        },
+        "room": {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "id": {
+              "description": "Room ID.",
+              "type": "integer",
+              "format": "int32"
+            },
+            "name": {
+              "description": "Room name. e.g. A卓",
+              "type": "string"
+            }
+          }
+        },
+        "round_name": {
+          "description": "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦.",
           "type": "string"
         }
       }
@@ -940,6 +1034,7 @@ func init() {
           }
         },
         "name": {
+          "description": "Room name. e.g. A卓",
           "type": "string"
         }
       }
@@ -1244,6 +1339,51 @@ func init() {
         }
       }
     },
+    "/v{eventId}/next-match": {
+      "get": {
+        "description": "次の試合を返す。team_id を指定した場合そのチームの、なければログインしている参加者のチームの 次のマッチをあれば返す。 team_idを指定せず参加者がチームに属して無い場合などはエラー。",
+        "tags": [
+          "match"
+        ],
+        "operationId": "getNextMatch",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "team id",
+            "name": "team_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetNextMatchResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/notices": {
       "get": {
         "description": "Return notices",
@@ -1620,6 +1760,15 @@ func init() {
         }
       }
     },
+    "GetNextMatchResponse": {
+      "type": "object",
+      "properties": {
+        "next_match": {
+          "description": "次のマッチがない、または決まってない場合nullになる。",
+          "$ref": "#/definitions/NextMatch"
+        }
+      }
+    },
     "ListNoticesResponse": {
       "type": "object",
       "properties": {
@@ -1763,6 +1912,46 @@ func init() {
         },
         "short_comment": {
           "description": "一言コメント",
+          "type": "string"
+        }
+      }
+    },
+    "NextMatch": {
+      "type": "object",
+      "properties": {
+        "match_detail": {
+          "$ref": "#/definitions/Match"
+        },
+        "match_order_in_room": {
+          "description": "Room内でのマッチの順番",
+          "type": "integer",
+          "format": "int32"
+        },
+        "opponent_team": {
+          "$ref": "#/definitions/Team"
+        },
+        "own_team": {
+          "$ref": "#/definitions/Team"
+        },
+        "room": {
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "id": {
+              "description": "Room ID.",
+              "type": "integer",
+              "format": "int32"
+            },
+            "name": {
+              "description": "Room name. e.g. A卓",
+              "type": "string"
+            }
+          }
+        },
+        "round_name": {
+          "description": "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦.",
           "type": "string"
         }
       }
@@ -1993,6 +2182,7 @@ func init() {
           }
         },
         "name": {
+          "description": "Room name. e.g. A卓",
           "type": "string"
         }
       }

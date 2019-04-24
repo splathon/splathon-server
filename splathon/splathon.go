@@ -25,6 +25,7 @@ type Handler interface {
 	GetParticipantsDataForReception(context.Context, operations.GetParticipantsDataForReceptionParams) (*models.ReceptionPartcipantsDataResponse, error)
 	CompleteReception(context.Context, operations.CompleteReceptionParams) error
 	ListNotices(context.Context, operations.ListNoticesParams) (*models.ListNoticesResponse, error)
+	GetNextMatch(context.Context, match.GetNextMatchParams) (*models.GetNextMatchResponse, error)
 }
 
 func NewDefaultHandler() (Handler, error) {

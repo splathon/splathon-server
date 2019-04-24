@@ -51,6 +51,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		MatchGetMatchHandler: match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
 			return middleware.NotImplemented("operation MatchGetMatch has not yet been implemented")
 		}),
+		MatchGetNextMatchHandler: match.GetNextMatchHandlerFunc(func(params match.GetNextMatchParams) middleware.Responder {
+			return middleware.NotImplemented("operation MatchGetNextMatch has not yet been implemented")
+		}),
 		GetParticipantsDataForReceptionHandler: GetParticipantsDataForReceptionHandlerFunc(func(params GetParticipantsDataForReceptionParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetParticipantsDataForReception has not yet been implemented")
 		}),
@@ -115,6 +118,8 @@ type SplathonAPI struct {
 	GetEventHandler GetEventHandler
 	// MatchGetMatchHandler sets the operation handler for the get match operation
 	MatchGetMatchHandler match.GetMatchHandler
+	// MatchGetNextMatchHandler sets the operation handler for the get next match operation
+	MatchGetNextMatchHandler match.GetNextMatchHandler
 	// GetParticipantsDataForReceptionHandler sets the operation handler for the get participants data for reception operation
 	GetParticipantsDataForReceptionHandler GetParticipantsDataForReceptionHandler
 	// RankingGetRankingHandler sets the operation handler for the get ranking operation
@@ -206,6 +211,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.MatchGetMatchHandler == nil {
 		unregistered = append(unregistered, "match.GetMatchHandler")
+	}
+
+	if o.MatchGetNextMatchHandler == nil {
+		unregistered = append(unregistered, "match.GetNextMatchHandler")
 	}
 
 	if o.GetParticipantsDataForReceptionHandler == nil {
@@ -356,6 +365,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/matches/{matchId}"] = match.NewGetMatch(o.context, o.MatchGetMatchHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/next-match"] = match.NewGetNextMatch(o.context, o.MatchGetNextMatchHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
