@@ -70,6 +70,8 @@ paths:
 
   "/v{eventId}/next-match":
     get:
+      tags:
+      - "match"
       description: "次の試合を返す。team_id
       を指定した場合そのチームの、なければログインしている参加者のチームの
       次のマッチをあれば返す。
