@@ -28,8 +28,13 @@ func (h *Handler) GetReception(ctx context.Context, params reception.GetReceptio
 		}
 	}
 
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	var ps []*Participant
-	if err := h.db.Where("slack_user_id = ?", slackUserID).Find(&ps).Error; err != nil || len(ps) == 0 {
+	if err := h.db.Where("event_id = ?  AND slack_user_id = ?", eventID, slackUserID).Find(&ps).Error; err != nil || len(ps) == 0 {
 		return nil, fmt.Errorf("invalid token: participant not found with id=%q", slackUserID)
 	}
 
@@ -78,9 +83,14 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 		return nil, err
 	}
 
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	slackID := params.SplathonReceptionCode
 
-	ps, err := h.participantsByReceptionCode(params.SplathonReceptionCode)
+	ps, err := h.participantsByReceptionCode(eventID, params.SplathonReceptionCode)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +130,12 @@ func (h *Handler) CompleteReception(ctx context.Context, params operations.Compl
 		return err
 	}
 
-	ps, err := h.participantsByReceptionCode(params.SplathonReceptionCode)
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return err
+	}
+
+	ps, err := h.participantsByReceptionCode(eventID, params.SplathonReceptionCode)
 	if err != nil {
 		return err
 	}
@@ -146,10 +161,10 @@ func (h *Handler) CompleteReception(ctx context.Context, params operations.Compl
 	return tx.Commit().Error
 }
 
-func (h *Handler) participantsByReceptionCode(code string) ([]*Participant, error) {
+func (h *Handler) participantsByReceptionCode(eventID int64, code string) ([]*Participant, error) {
 	slackID := code
 	var ps []*Participant
-	if err := h.db.Where("slack_user_id = ?", slackID).Find(&ps).Error; err != nil {
+	if err := h.db.Where("event_id AND slack_user_id = ?", eventID, slackID).Find(&ps).Error; err != nil {
 		return nil, err
 	}
 	if len(ps) == 0 {
