@@ -26,7 +26,7 @@ type Room struct {
 	// Required: true
 	Matches []*Match `json:"matches"`
 
-	// name
+	// Room name. e.g. A卓
 	// Required: true
 	Name *string `json:"name"`
 }

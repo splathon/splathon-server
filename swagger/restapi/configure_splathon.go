@@ -68,6 +68,9 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return match.NewGetMatchOK().WithPayload(res)
 	})
+	api.MatchGetNextMatchHandler = match.GetNextMatchHandlerFunc(func(params match.GetNextMatchParams) middleware.Responder {
+		return middleware.NotImplemented("operation match.GetNextMatch has not yet been implemented")
+	})
 	api.ResultGetResultHandler = result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 		res, err := thonHandler.GetResult(params.HTTPRequest.Context(), params)
 		if err != nil {
