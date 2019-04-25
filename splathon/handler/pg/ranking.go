@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"sort"
 
@@ -43,7 +44,13 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		return nil, err
 	}
 
-	return buildRanking(teams, filterCompletedMatches(teams, matches), buildTeam2Members(participants)), nil
+	rankResp := buildRanking(teams, filterCompletedMatches(teams, matches), buildTeam2Members(participants))
+	if len(rankResp.Rankings) > 0 {
+		rankResp.RankTime = fmt.Sprintf("予選第%dラウンド終了時点", rankResp.Rankings[0].NumOfMatches)
+	} else {
+		rankResp.RankTime = "開始時点"
+	}
+	return rankResp, nil
 }
 
 type teamResult struct {

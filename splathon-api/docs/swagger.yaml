@@ -644,6 +644,9 @@ definitions:
     description: "予選ランキング"
     type: object
     properties:
+      rank_time:
+        type: string
+        description: "ランキング計算時点の説明。e.g. 予選第2ラウンド終了時"
       rankings:
         type: array
         items:
