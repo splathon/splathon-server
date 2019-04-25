@@ -22,7 +22,7 @@ func dummyNotices() *models.ListNoticesResponse {
 		Notices: []*models.Notice{
 			{
 				Text: swag.String(`(ダミーテキスト) いよいよ明日はSplathon#10ですね！むっちゃドキドキしてきた。。。
-みなさんも今日くらいは練習休んで明日に備えますよね？？？`),
+みなさんも今日くらいは練習休んで明日に備えますよね？？？ Google https://www.google.com/ `),
 				TimestampSec: swag.Int64(now.Unix()),
 			},
 			{
