@@ -18,6 +18,9 @@ import (
 // swagger:model Ranking
 type Ranking struct {
 
+	// ランキング計算時点の説明。e.g. 予選第2ラウンド終了時
+	RankTime string `json:"rank_time,omitempty"`
+
 	// rankings
 	Rankings []*Rank `json:"rankings"`
 }

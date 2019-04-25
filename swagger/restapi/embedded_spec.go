@@ -923,6 +923,10 @@ func init() {
       "description": "予選ランキング",
       "type": "object",
       "properties": {
+        "rank_time": {
+          "description": "ランキング計算時点の説明。e.g. 予選第2ラウンド終了時",
+          "type": "string"
+        },
         "rankings": {
           "type": "array",
           "items": {
@@ -2071,6 +2075,10 @@ func init() {
       "description": "予選ランキング",
       "type": "object",
       "properties": {
+        "rank_time": {
+          "description": "ランキング計算時点の説明。e.g. 予選第2ラウンド終了時",
+          "type": "string"
+        },
         "rankings": {
           "type": "array",
           "items": {
