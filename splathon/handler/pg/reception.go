@@ -164,7 +164,7 @@ func (h *Handler) CompleteReception(ctx context.Context, params operations.Compl
 func (h *Handler) participantsByReceptionCode(eventID int64, code string) ([]*Participant, error) {
 	slackID := code
 	var ps []*Participant
-	if err := h.db.Where("event_id AND slack_user_id = ?", eventID, slackID).Find(&ps).Error; err != nil {
+	if err := h.db.Where("event_id = ? AND slack_user_id = ?", eventID, slackID).Find(&ps).Error; err != nil {
 		return nil, err
 	}
 	if len(ps) == 0 {
