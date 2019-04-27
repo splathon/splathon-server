@@ -105,7 +105,7 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 			CompanyName:    swag.String(p.CompanyName),
 			FullnameKana:   swag.String(p.FullnameKana),
 			HasCompanion:   swag.Bool(p.HasCompanion),
-			HasSwitchDock:  swag.Bool(false), // TODO(haya14busa): check db data later.
+			HasSwitchDock:  swag.Bool(p.HasSwitchDock),
 			IsPlayer:       swag.Bool(p.TeamId.Valid),
 			IsStaff:        swag.Bool(p.IsStaff),
 			JoinParty:      swag.Bool(p.JoinParty),

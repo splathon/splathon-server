@@ -121,8 +121,10 @@ type Participant struct {
 	RankClamBlitz    string
 	MainWeapon       string
 	ShortComment     string
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	HasSwitchDock    bool
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Reception struct {
