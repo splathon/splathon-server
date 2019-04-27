@@ -19,6 +19,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
@@ -71,6 +72,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		}),
 		ListNoticesHandler: ListNoticesHandlerFunc(func(params ListNoticesParams) middleware.Responder {
 			return middleware.NotImplemented("operation ListNotices has not yet been implemented")
+		}),
+		AdminListReceptionHandler: admin.ListReceptionHandlerFunc(func(params admin.ListReceptionParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminListReception has not yet been implemented")
 		}),
 		ListTeamsHandler: ListTeamsHandlerFunc(func(params ListTeamsParams) middleware.Responder {
 			return middleware.NotImplemented("operation ListTeams has not yet been implemented")
@@ -132,6 +136,8 @@ type SplathonAPI struct {
 	GetTeamDetailHandler GetTeamDetailHandler
 	// ListNoticesHandler sets the operation handler for the list notices operation
 	ListNoticesHandler ListNoticesHandler
+	// AdminListReceptionHandler sets the operation handler for the list reception operation
+	AdminListReceptionHandler admin.ListReceptionHandler
 	// ListTeamsHandler sets the operation handler for the list teams operation
 	ListTeamsHandler ListTeamsHandler
 	// LoginHandler sets the operation handler for the login operation
@@ -239,6 +245,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ListNoticesHandler == nil {
 		unregistered = append(unregistered, "ListNoticesHandler")
+	}
+
+	if o.AdminListReceptionHandler == nil {
+		unregistered = append(unregistered, "admin.ListReceptionHandler")
 	}
 
 	if o.ListTeamsHandler == nil {
@@ -400,6 +410,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/notices"] = NewListNotices(o.context, o.ListNoticesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/list-reception"] = admin.NewListReception(o.context, o.AdminListReceptionHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

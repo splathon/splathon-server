@@ -33,6 +33,10 @@ type ParticipantReception struct {
 	// Required: true
 	HasSwitchDock *bool `json:"has_switch_dock"`
 
+	// internal id
+	// Required: true
+	ID *int64 `json:"id"`
+
 	// playerとして参加するかどうか。falseならスタッフか観戦
 	// Required: true
 	IsPlayer *bool `json:"is_player"`
@@ -52,6 +56,13 @@ type ParticipantReception struct {
 	// 合計参加費(円)
 	// Required: true
 	ParticipantFee *int32 `json:"participant_fee"`
+
+	// reception
+	Reception *Reception `json:"reception,omitempty"`
+
+	// Slack ID
+	// Required: true
+	SLACKUserID *string `json:"slack_user_id"`
 
 	// チームID(一応)
 	TeamID int64 `json:"team_id,omitempty"`
@@ -80,6 +91,10 @@ func (m *ParticipantReception) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateIsPlayer(formats); err != nil {
 		res = append(res, err)
 	}
@@ -97,6 +112,14 @@ func (m *ParticipantReception) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateParticipantFee(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateReception(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSLACKUserID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -142,6 +165,15 @@ func (m *ParticipantReception) validateHasSwitchDock(formats strfmt.Registry) er
 	return nil
 }
 
+func (m *ParticipantReception) validateID(formats strfmt.Registry) error {
+
+	if err := validate.Required("id", "body", m.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *ParticipantReception) validateIsPlayer(formats strfmt.Registry) error {
 
 	if err := validate.Required("is_player", "body", m.IsPlayer); err != nil {
@@ -181,6 +213,33 @@ func (m *ParticipantReception) validateNickname(formats strfmt.Registry) error {
 func (m *ParticipantReception) validateParticipantFee(formats strfmt.Registry) error {
 
 	if err := validate.Required("participant_fee", "body", m.ParticipantFee); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateReception(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Reception) { // not required
+		return nil
+	}
+
+	if m.Reception != nil {
+		if err := m.Reception.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("reception")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *ParticipantReception) validateSLACKUserID(formats strfmt.Registry) error {
+
+	if err := validate.Required("slack_user_id", "body", m.SLACKUserID); err != nil {
 		return err
 	}
 
