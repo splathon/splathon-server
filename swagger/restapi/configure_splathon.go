@@ -16,6 +16,7 @@ import (
 	"github.com/splathon/splathon-server/splathon"
 	"github.com/splathon/splathon-server/splathon/swagutils"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
@@ -109,7 +110,6 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return operations.NewUpdateBattleOK()
 	})
-
 	api.GetParticipantsDataForReceptionHandler = operations.GetParticipantsDataForReceptionHandlerFunc(func(params operations.GetParticipantsDataForReceptionParams) middleware.Responder {
 		res, err := thonHandler.GetParticipantsDataForReception(params.HTTPRequest.Context(), params)
 		if err != nil {
@@ -136,6 +136,13 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 			return swagutils.Error(err)
 		}
 		return operations.NewListNoticesOK().WithPayload(res)
+	})
+	api.AdminListReceptionHandler = admin.ListReceptionHandlerFunc(func(params admin.ListReceptionParams) middleware.Responder {
+		res, err := thonHandler.ListReception(params.HTTPRequest.Context(), params)
+		if err != nil {
+			return swagutils.Error(err)
+		}
+		return admin.NewListReceptionOK().WithPayload(res)
 	})
 
 	api.ServerShutdown = func() {

@@ -65,6 +65,43 @@ func init() {
         }
       }
     },
+    "/v{eventId}/list-reception": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "listReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ListReceptionResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/login": {
       "post": {
         "operationId": "login",
@@ -633,6 +670,17 @@ func init() {
         }
       }
     },
+    "ListReceptionResponse": {
+      "type": "object",
+      "properties": {
+        "participants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParticipantReception"
+          }
+        }
+      }
+    },
     "LoginRequest": {
       "type": "object",
       "required": [
@@ -827,6 +875,8 @@ func init() {
     "ParticipantReception": {
       "type": "object",
       "required": [
+        "id",
+        "slack_user_id",
         "nickname",
         "fullname_kana",
         "company_name",
@@ -854,6 +904,11 @@ func init() {
           "description": "Nintendo Switch doc を持ってきたか",
           "type": "boolean"
         },
+        "id": {
+          "description": "internal id",
+          "type": "integer",
+          "format": "int64"
+        },
         "is_player": {
           "description": "playerとして参加するかどうか。falseならスタッフか観戦",
           "type": "boolean"
@@ -874,6 +929,13 @@ func init() {
           "description": "合計参加費(円)",
           "type": "integer",
           "format": "int32"
+        },
+        "reception": {
+          "$ref": "#/definitions/Reception"
+        },
+        "slack_user_id": {
+          "description": "Slack ID",
+          "type": "string"
         },
         "team_id": {
           "description": "チームID(一応)",
@@ -932,6 +994,36 @@ func init() {
           "items": {
             "$ref": "#/definitions/Rank"
           }
+        }
+      }
+    },
+    "Reception": {
+      "type": "object",
+      "required": [
+        "id",
+        "participant_id",
+        "created_at_timestamp_sec",
+        "updated_at_timestamp_sec"
+      ],
+      "properties": {
+        "created_at_timestamp_sec": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "memo": {
+          "type": "string"
+        },
+        "participant_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updated_at_timestamp_sec": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -1217,6 +1309,43 @@ func init() {
         }
       }
     },
+    "/v{eventId}/list-reception": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "listReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ListReceptionResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/login": {
       "post": {
         "operationId": "login",
@@ -1785,6 +1914,17 @@ func init() {
         }
       }
     },
+    "ListReceptionResponse": {
+      "type": "object",
+      "properties": {
+        "participants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParticipantReception"
+          }
+        }
+      }
+    },
     "LoginRequest": {
       "type": "object",
       "required": [
@@ -1979,6 +2119,8 @@ func init() {
     "ParticipantReception": {
       "type": "object",
       "required": [
+        "id",
+        "slack_user_id",
         "nickname",
         "fullname_kana",
         "company_name",
@@ -2006,6 +2148,11 @@ func init() {
           "description": "Nintendo Switch doc を持ってきたか",
           "type": "boolean"
         },
+        "id": {
+          "description": "internal id",
+          "type": "integer",
+          "format": "int64"
+        },
         "is_player": {
           "description": "playerとして参加するかどうか。falseならスタッフか観戦",
           "type": "boolean"
@@ -2026,6 +2173,13 @@ func init() {
           "description": "合計参加費(円)",
           "type": "integer",
           "format": "int32"
+        },
+        "reception": {
+          "$ref": "#/definitions/Reception"
+        },
+        "slack_user_id": {
+          "description": "Slack ID",
+          "type": "string"
         },
         "team_id": {
           "description": "チームID(一応)",
@@ -2084,6 +2238,36 @@ func init() {
           "items": {
             "$ref": "#/definitions/Rank"
           }
+        }
+      }
+    },
+    "Reception": {
+      "type": "object",
+      "required": [
+        "id",
+        "participant_id",
+        "created_at_timestamp_sec",
+        "updated_at_timestamp_sec"
+      ],
+      "properties": {
+        "created_at_timestamp_sec": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "memo": {
+          "type": "string"
+        },
+        "participant_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updated_at_timestamp_sec": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },

@@ -12,6 +12,7 @@ import (
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
 )
 
@@ -101,17 +102,7 @@ func (h *Handler) GetParticipantsDataForReception(ctx context.Context, params op
 		Participants:    make([]*models.ParticipantReception, len(ps)),
 	}
 	for i, p := range ps {
-		r := &models.ParticipantReception{
-			CompanyName:    swag.String(p.CompanyName),
-			FullnameKana:   swag.String(p.FullnameKana),
-			HasCompanion:   swag.Bool(p.HasCompanion),
-			HasSwitchDock:  swag.Bool(p.HasSwitchDock),
-			IsPlayer:       swag.Bool(p.TeamId.Valid),
-			IsStaff:        swag.Bool(p.IsStaff),
-			JoinParty:      swag.Bool(p.JoinParty),
-			Nickname:       swag.String(p.Nickname),
-			ParticipantFee: swag.Int32(p.Fee),
-		}
+		r := convertParticipant(p)
 		if p.TeamId.Valid {
 			var team Team
 			if err := h.db.Select("name").Where("id = ?", p.TeamId.Int64).Find(&team).Error; err != nil {
@@ -159,6 +150,49 @@ func (h *Handler) CompleteReception(ctx context.Context, params operations.Compl
 		}
 	}
 	return tx.Commit().Error
+}
+
+func (h *Handler) ListReception(ctx context.Context, params admin.ListReceptionParams) (*models.ListReceptionResponse, error) {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return nil, err
+	}
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+	var ps []*Participant
+	if err := h.db.Where("event_id = ?", eventID).Find(&ps).Error; err != nil {
+		return nil, err
+	}
+	ids := make([]int64, len(ps))
+	for i, p := range ps {
+		ids[i] = p.Id
+	}
+	var rs []*Reception
+	if err := h.db.Where("participant_id IN (?)", ids).Find(&rs).Error; err != nil {
+		return nil, err
+	}
+	id2r := make(map[int64]*Reception)
+	for _, r := range rs {
+		id2r[r.ParticipantId] = r
+	}
+	resp := &models.ListReceptionResponse{
+		Participants: make([]*models.ParticipantReception, len(ps)),
+	}
+	for i, p := range ps {
+		participant := convertParticipant(p)
+		if r, ok := id2r[p.Id]; ok {
+			participant.Reception = &models.Reception{
+				ID:                    swag.Int64(r.Id),
+				ParticipantID:         swag.Int64(p.Id),
+				Memo:                  r.Memo,
+				CreatedAtTimestampSec: swag.Int64(r.CreatedAt.Unix()),
+				UpdatedAtTimestampSec: swag.Int64(r.UpdatedAt.Unix()),
+			}
+		}
+		resp.Participants[i] = participant
+	}
+	return resp, nil
 }
 
 func (h *Handler) participantsByReceptionCode(eventID int64, code string) ([]*Participant, error) {

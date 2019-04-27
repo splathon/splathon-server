@@ -371,6 +371,31 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/list-reception":
+    get:
+      operationId: "listReception"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/ListReceptionResponse"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object
@@ -788,9 +813,19 @@ definitions:
         items:
           $ref: "#/definitions/ParticipantReception"
 
+  ListReceptionResponse:
+    type: object
+    properties:
+      participants:
+        type: array
+        items:
+          $ref: "#/definitions/ParticipantReception"
+
   ParticipantReception:
     type: object
     required:
+      - id
+      - slack_user_id
       - nickname
       - fullname_kana
       - company_name
@@ -801,6 +836,13 @@ definitions:
       - has_switch_dock
       - has_companion
     properties:
+      id:
+        type: integer
+        format: int64
+        description: "internal id"
+      slack_user_id:
+        type: string
+        description: "Slack ID"
       nickname:
         type: string
         description: "ハンドルネーム。 e.g. みーくん"
@@ -836,3 +878,28 @@ definitions:
       has_companion:
         type: boolean
         description: "同伴者がいるかどうか。いる場合は用スプレッドシート確認。"
+      reception:
+        $ref: "#/definitions/Reception"
+
+  Reception:
+    type: object
+    required:
+      - id
+      - participant_id
+      - created_at_timestamp_sec
+      - updated_at_timestamp_sec
+    properties:
+      id:
+        type: integer
+        format: int64
+      participant_id:
+        type: integer
+        format: int64
+      created_at_timestamp_sec:
+        type: integer
+        format: int64
+      updated_at_timestamp_sec:
+        type: integer
+        format: int64
+      memo:
+        type: string

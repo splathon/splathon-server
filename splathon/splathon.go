@@ -6,6 +6,7 @@ import (
 	"github.com/splathon/splathon-server/splathon/handler/pg"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/ranking"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/reception"
@@ -26,6 +27,7 @@ type Handler interface {
 	CompleteReception(context.Context, operations.CompleteReceptionParams) error
 	ListNotices(context.Context, operations.ListNoticesParams) (*models.ListNoticesResponse, error)
 	GetNextMatch(context.Context, match.GetNextMatchParams) (*models.GetNextMatchResponse, error)
+	ListReception(context.Context, admin.ListReceptionParams) (*models.ListReceptionResponse, error)
 }
 
 func NewDefaultHandler() (Handler, error) {
