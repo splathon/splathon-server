@@ -165,7 +165,7 @@ func configureServer(s *http.Server, scheme, addr string) {
 // The middleware executes after routing but before authentication, binding and validation
 func setupMiddlewares(handler http.Handler) http.Handler {
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"https://splathon.github.io", "http://petstore.swagger.io"},
+		AllowedOrigins: []string{"*"},
 	})
 	return c.Handler(handler)
 }
