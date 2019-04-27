@@ -207,14 +207,6 @@ func (h *Handler) participantsByReceptionCode(eventID int64, code string) ([]*Pa
 	return ps, nil
 }
 
-func (h *Handler) fetchCompletedReceptions(eventID int64, participantIDs []int64) ([]*Reception, error) {
-	var rs []*Reception
-	if err := h.db.Where("event_id = ? AND id IN (?)", eventID, participantIDs).Find(&rs).Error; err != nil {
-		return nil, err
-	}
-	return rs, nil
-}
-
 func googleQRCodeImageURL(code string) string {
 	return fmt.Sprintf("https://chart.apis.google.com/chart?chs=142x142&cht=qr&chl=%s", code)
 }
