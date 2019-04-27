@@ -153,9 +153,9 @@ func (h *Handler) CompleteReception(ctx context.Context, params operations.Compl
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 		}
-		if err := tx.Create(r).Error; err != nil {
-			tx.Rollback()
-			return fmt.Errorf("complete reception failed: %v (id=%q, slack_user_id=%q)", err, p.Id, p.SlackUserId)
+		var res Reception
+		if err := tx.Where(Reception{ParticipantId: p.Id}).Assign(&r).FirstOrCreate(&res).Error; err != nil {
+			return err
 		}
 	}
 	return tx.Commit().Error
