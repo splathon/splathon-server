@@ -72,3 +72,19 @@ func convertParticipant2TeamMember(p *Participant) *models.Member {
 		},
 	}
 }
+
+func convertParticipant(p *Participant) *models.ParticipantReception {
+	return &models.ParticipantReception{
+		ID:             swag.Int64(p.Id),
+		SLACKUserID:    swag.String(p.SlackUserId),
+		CompanyName:    swag.String(p.CompanyName),
+		FullnameKana:   swag.String(p.FullnameKana),
+		HasCompanion:   swag.Bool(p.HasCompanion),
+		HasSwitchDock:  swag.Bool(p.HasSwitchDock),
+		IsPlayer:       swag.Bool(p.TeamId.Valid),
+		IsStaff:        swag.Bool(p.IsStaff),
+		JoinParty:      swag.Bool(p.JoinParty),
+		Nickname:       swag.String(p.Nickname),
+		ParticipantFee: swag.Int32(p.Fee),
+	}
+}
