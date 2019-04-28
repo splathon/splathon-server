@@ -592,7 +592,7 @@ func init() {
             "required": true
           },
           {
-            "name": "participant",
+            "name": "request",
             "in": "body",
             "required": true,
             "schema": {
@@ -1893,7 +1893,7 @@ func init() {
             "required": true
           },
           {
-            "name": "participant",
+            "name": "request",
             "in": "body",
             "required": true,
             "schema": {
