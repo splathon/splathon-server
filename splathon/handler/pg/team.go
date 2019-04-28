@@ -61,7 +61,7 @@ func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDe
 		return h.db.Where("id = ?", params.TeamID).Find(&t).Error
 	})
 	eg.Go(func() error {
-		return h.db.Where("team_id = ?", params.TeamID).Order("id asc").Find(&participants).Error
+		return h.db.Where("team_id = ?", params.TeamID).Order("order_in_team asc").Find(&participants).Error
 	})
 	if err := eg.Wait(); err != nil {
 		return nil, err

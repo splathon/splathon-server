@@ -47,7 +47,7 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 
 		// Fetch participants.
 		eg.Go(func() error {
-			return h.db.Where("team_id = ? OR team_id = ?", match.TeamId, match.OpponentId).Order("id asc").Find(&participants).Error
+			return h.db.Where("team_id = ? OR team_id = ?", match.TeamId, match.OpponentId).Order("order_in_team asc").Find(&participants).Error
 		})
 
 		// Fetch round name.
