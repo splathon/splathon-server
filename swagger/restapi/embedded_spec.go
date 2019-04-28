@@ -570,6 +570,48 @@ func init() {
           }
         }
       }
+    },
+    "/v{eventId}/update-reception": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "updateReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "participant",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParticipantReception"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1234,6 +1276,21 @@ func init() {
           "items": {
             "$ref": "#/definitions/Team"
           }
+        }
+      }
+    },
+    "UpdateReceptionRequest": {
+      "type": "object",
+      "required": [
+        "participant",
+        "complete"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "participant": {
+          "$ref": "#/definitions/ParticipantReception"
         }
       }
     }
@@ -1814,6 +1871,48 @@ func init() {
           }
         }
       }
+    },
+    "/v{eventId}/update-reception": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "updateReception",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "participant",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ParticipantReception"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2478,6 +2577,21 @@ func init() {
           "items": {
             "$ref": "#/definitions/Team"
           }
+        }
+      }
+    },
+    "UpdateReceptionRequest": {
+      "type": "object",
+      "required": [
+        "participant",
+        "complete"
+      ],
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "participant": {
+          "$ref": "#/definitions/ParticipantReception"
         }
       }
     }
