@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-openapi/swag"
+	"github.com/jinzhu/gorm"
 	"github.com/splathon/splathon-server/splathon/serror"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
@@ -146,6 +147,7 @@ func (h *Handler) CompleteReception(ctx context.Context, params operations.Compl
 		}
 		var res Reception
 		if err := tx.Where(Reception{ParticipantId: p.Id}).Assign(&r).FirstOrCreate(&res).Error; err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
@@ -193,6 +195,56 @@ func (h *Handler) ListReception(ctx context.Context, params admin.ListReceptionP
 		resp.Participants[i] = participant
 	}
 	return resp, nil
+}
+
+func (h *Handler) UpdateReception(ctx context.Context, params admin.UpdateReceptionParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
+	tx := h.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := updateReception(ctx, tx, params); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+}
+
+func updateReception(ctx context.Context, tx *gorm.DB, params admin.UpdateReceptionParams) error {
+	participantID := *params.Request.Participant.ID
+
+	// Update reception record.
+	if *params.Request.Complete {
+		r := &Reception{
+			ParticipantId: participantID,
+			Memo:          params.Request.Participant.Reception.Memo,
+			UpdatedAt:     time.Now(),
+		}
+		if params.Request.Participant.Reception == nil {
+			r.CreatedAt = time.Now()
+		}
+		var res Reception
+		if err := tx.Where(Reception{ParticipantId: participantID}).Assign(&r).FirstOrCreate(&res).Error; err != nil {
+			return err
+		}
+	} else {
+		tx.Where("participant_id = ?", participantID).Delete(&Reception{})
+	}
+
+	// Update participant data.
+	p := params.Request.Participant
+	return tx.Model(&Participant{Id: participantID}).Updates(map[string]interface{}{
+		"fee":             *p.ParticipantFee,
+		"has_companion":   *p.HasCompanion,
+		"join_party":      *p.JoinParty,
+		"is_staff":        *p.IsStaff,
+		"is_player":       *p.IsPlayer,
+		"has_switch_dock": *p.HasSwitchDock,
+	}).Error
 }
 
 func (h *Handler) participantsByReceptionCode(eventID int64, code string) ([]*Participant, error) {
