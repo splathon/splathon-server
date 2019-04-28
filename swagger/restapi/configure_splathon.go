@@ -138,6 +138,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return operations.NewListNoticesOK().WithPayload(res)
 	})
+	api.AdminWriteNoticeHandler = admin.WriteNoticeHandlerFunc(func(params admin.WriteNoticeParams) middleware.Responder {
+		if err := thonHandler.WriteNotice(params.HTTPRequest.Context(), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewWriteNoticeOK()
+	})
 	api.AdminListReceptionHandler = admin.ListReceptionHandlerFunc(func(params admin.ListReceptionParams) middleware.Responder {
 		res, err := thonHandler.ListReception(params.HTTPRequest.Context(), params)
 		if err != nil {

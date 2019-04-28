@@ -88,6 +88,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		AdminUpdateReceptionHandler: admin.UpdateReceptionHandlerFunc(func(params admin.UpdateReceptionParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminUpdateReception has not yet been implemented")
 		}),
+		AdminWriteNoticeHandler: admin.WriteNoticeHandlerFunc(func(params admin.WriteNoticeParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminWriteNotice has not yet been implemented")
+		}),
 	}
 }
 
@@ -149,6 +152,8 @@ type SplathonAPI struct {
 	UpdateBattleHandler UpdateBattleHandler
 	// AdminUpdateReceptionHandler sets the operation handler for the update reception operation
 	AdminUpdateReceptionHandler admin.UpdateReceptionHandler
+	// AdminWriteNoticeHandler sets the operation handler for the write notice operation
+	AdminWriteNoticeHandler admin.WriteNoticeHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -270,6 +275,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.AdminUpdateReceptionHandler == nil {
 		unregistered = append(unregistered, "admin.UpdateReceptionHandler")
+	}
+
+	if o.AdminWriteNoticeHandler == nil {
+		unregistered = append(unregistered, "admin.WriteNoticeHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -444,6 +453,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/v{eventId}/update-reception"] = admin.NewUpdateReception(o.context, o.AdminUpdateReceptionHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/notices"] = admin.NewWriteNotice(o.context, o.AdminWriteNoticeHandler)
 
 }
 

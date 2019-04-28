@@ -306,6 +306,47 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "description": "Insert or update notices. Update if Notice.id is specified.",
+        "tags": [
+          "admin"
+        ],
+        "operationId": "writeNotice",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "notice",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/v{eventId}/ranking": {
@@ -905,6 +946,10 @@ func init() {
         "timestamp_sec"
       ],
       "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
         "text": {
           "type": "string"
         },
@@ -1604,6 +1649,47 @@ func init() {
             }
           }
         }
+      },
+      "post": {
+        "description": "Insert or update notices. Update if Notice.id is specified.",
+        "tags": [
+          "admin"
+        ],
+        "operationId": "writeNotice",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "notice",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/v{eventId}/ranking": {
@@ -2203,6 +2289,10 @@ func init() {
         "timestamp_sec"
       ],
       "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
         "text": {
           "type": "string"
         },
