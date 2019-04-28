@@ -2,7 +2,6 @@ package pg
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/swagger/models"
@@ -17,7 +16,6 @@ func (h *Handler) ListNotices(ctx context.Context, params operations.ListNotices
 }
 
 func dummyNotices() *models.ListNoticesResponse {
-	now := time.Now()
 	return &models.ListNoticesResponse{
 		Notices: []*models.Notice{
 			{
