@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/go-openapi/swag"
@@ -14,7 +15,27 @@ func (h *Handler) ListNotices(ctx context.Context, params operations.ListNotices
 	if _, err := h.getTokenSession(params.XSPLATHONAPITOKEN); err != nil {
 		return nil, err
 	}
-	return dummyNotices(), nil
+	// TODO(haya14busa): remove.
+	if os.Getenv("SPLATHON_DUMMY_NOTICE") == "1" {
+		return dummyNotices(), nil
+	}
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+
+	var ns []*Notice
+	if err := h.db.Where("event_id = ?", eventID).Order("created_at DESC").Find(&ns).Error; err != nil {
+		return nil, err
+	}
+
+	res := &models.ListNoticesResponse{
+		Notices: make([]*models.Notice, len(ns)),
+	}
+	for i, n := range ns {
+		res.Notices[i] = convertNotice(n)
+	}
+	return res, nil
 }
 
 func dummyNotices() *models.ListNoticesResponse {

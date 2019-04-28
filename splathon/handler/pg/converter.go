@@ -88,3 +88,11 @@ func convertParticipant(p *Participant) *models.ParticipantReception {
 		ParticipantFee: swag.Int32(p.Fee),
 	}
 }
+
+func convertNotice(n *Notice) *models.Notice {
+	return &models.Notice{
+		ID:           n.Id,
+		Text:         swag.String(n.Text),
+		TimestampSec: swag.Int64(n.CreatedAt.Unix()),
+	}
+}
