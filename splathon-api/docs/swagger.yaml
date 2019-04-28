@@ -415,7 +415,7 @@ paths:
         in: body
         required: true
         schema:
-          $ref: "#/definitions/ParticipantReception"
+          $ref: "#/definitions/UpdateReceptionRequest"
       responses:
         200:
           description: Success
