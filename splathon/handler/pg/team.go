@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"sort"
 
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
@@ -79,16 +80,29 @@ func (h *Handler) GetTeamDetail(ctx context.Context, params operations.GetTeamDe
 }
 
 func buildTeam2Members(ps []*Participant) map[int64][]*models.Member {
-	t2ms := make(map[int64][]*models.Member)
+	// Team ID to Participants.
+	tid2ps := make(map[int64][]*Participant)
 	for _, p := range ps {
 		if !p.TeamId.Valid {
 			continue
 		}
 		teamID := p.TeamId.Int64
-		if _, ok := t2ms[teamID]; !ok {
-			t2ms[teamID] = make([]*models.Member, 0)
+		if _, ok := tid2ps[teamID]; !ok {
+			tid2ps[teamID] = make([]*Participant, 0)
 		}
-		t2ms[teamID] = append(t2ms[teamID], convertParticipant2TeamMember(p))
+		tid2ps[teamID] = append(tid2ps[teamID], p)
 	}
-	return t2ms
+	// Team ID to Members.
+	tid2ms := make(map[int64][]*models.Member)
+	for teamID, ps := range tid2ps {
+		// Sort participants by order in team.
+		sort.Slice(ps, func(i, j int) bool {
+			return ps[i].OrderInTeam.Int64 < ps[j].OrderInTeam.Int64
+		})
+		tid2ms[teamID] = make([]*models.Member, len(ps))
+		for i, p := range ps {
+			tid2ms[teamID][i] = convertParticipant2TeamMember(p)
+		}
+	}
+	return tid2ms
 }

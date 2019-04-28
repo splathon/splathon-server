@@ -122,6 +122,7 @@ type Participant struct {
 	MainWeapon       string
 	ShortComment     string
 	HasSwitchDock    bool
+	OrderInTeam      sql.NullInt64
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
