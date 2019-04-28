@@ -144,6 +144,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return admin.NewListReceptionOK().WithPayload(res)
 	})
+	api.AdminUpdateReceptionHandler = admin.UpdateReceptionHandlerFunc(func(params admin.UpdateReceptionParams) middleware.Responder {
+		if err := thonHandler.UpdateReception(params.HTTPRequest.Context(), params); err != nil {
+			return swagutils.Error(err)
+		}
+		return admin.NewUpdateReceptionOK()
+	})
 
 	api.ServerShutdown = func() {
 		if closer, ok := thonHandler.(io.Closer); ok {
