@@ -26,6 +26,7 @@ type Handler interface {
 	GetParticipantsDataForReception(context.Context, operations.GetParticipantsDataForReceptionParams) (*models.ReceptionPartcipantsDataResponse, error)
 	CompleteReception(context.Context, operations.CompleteReceptionParams) error
 	ListNotices(context.Context, operations.ListNoticesParams) (*models.ListNoticesResponse, error)
+	WriteNotice(context.Context, admin.WriteNoticeParams) error
 	GetNextMatch(context.Context, match.GetNextMatchParams) (*models.GetNextMatchResponse, error)
 	ListReception(context.Context, admin.ListReceptionParams) (*models.ListReceptionResponse, error)
 	UpdateReception(context.Context, admin.UpdateReceptionParams) error

@@ -2,10 +2,12 @@ package pg
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 )
 
 func (h *Handler) ListNotices(ctx context.Context, params operations.ListNoticesParams) (*models.ListNoticesResponse, error) {
@@ -28,4 +30,11 @@ func dummyNotices() *models.ListNoticesResponse {
 			},
 		},
 	}
+}
+
+func (h *Handler) WriteNotice(ctx context.Context, params admin.WriteNoticeParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
+	return errors.New("operation .WriteNotices has not yet been implemented")
 }

@@ -17,6 +17,9 @@ import (
 // swagger:model Notice
 type Notice struct {
 
+	// id
+	ID int64 `json:"id,omitempty"`
+
 	// text
 	// Required: true
 	Text *string `json:"text"`
