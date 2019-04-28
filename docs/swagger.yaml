@@ -396,6 +396,34 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/update-reception":
+    post:
+      operationId: "updateReception"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      - name: request
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/UpdateReceptionRequest"
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object
@@ -903,3 +931,14 @@ definitions:
         format: int64
       memo:
         type: string
+
+  UpdateReceptionRequest:
+    type: object
+    required:
+      - participant
+      - complete
+    properties:
+      participant:
+        $ref: "#/definitions/ParticipantReception"
+      complete:
+        type: boolean
