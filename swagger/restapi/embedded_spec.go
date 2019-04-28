@@ -1042,10 +1042,7 @@ func init() {
     "Reception": {
       "type": "object",
       "required": [
-        "id",
-        "participant_id",
-        "created_at_timestamp_sec",
-        "updated_at_timestamp_sec"
+        "participant_id"
       ],
       "properties": {
         "created_at_timestamp_sec": {
@@ -2343,10 +2340,7 @@ func init() {
     "Reception": {
       "type": "object",
       "required": [
-        "id",
-        "participant_id",
-        "created_at_timestamp_sec",
-        "updated_at_timestamp_sec"
+        "participant_id"
       ],
       "properties": {
         "created_at_timestamp_sec": {

@@ -18,12 +18,10 @@ import (
 type Reception struct {
 
 	// created at timestamp sec
-	// Required: true
-	CreatedAtTimestampSec *int64 `json:"created_at_timestamp_sec"`
+	CreatedAtTimestampSec int64 `json:"created_at_timestamp_sec,omitempty"`
 
 	// id
-	// Required: true
-	ID *int64 `json:"id"`
+	ID int64 `json:"id,omitempty"`
 
 	// memo
 	Memo string `json:"memo,omitempty"`
@@ -33,27 +31,14 @@ type Reception struct {
 	ParticipantID *int64 `json:"participant_id"`
 
 	// updated at timestamp sec
-	// Required: true
-	UpdatedAtTimestampSec *int64 `json:"updated_at_timestamp_sec"`
+	UpdatedAtTimestampSec int64 `json:"updated_at_timestamp_sec,omitempty"`
 }
 
 // Validate validates this reception
 func (m *Reception) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateCreatedAtTimestampSec(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateParticipantID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateUpdatedAtTimestampSec(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -63,36 +48,9 @@ func (m *Reception) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Reception) validateCreatedAtTimestampSec(formats strfmt.Registry) error {
-
-	if err := validate.Required("created_at_timestamp_sec", "body", m.CreatedAtTimestampSec); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Reception) validateID(formats strfmt.Registry) error {
-
-	if err := validate.Required("id", "body", m.ID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *Reception) validateParticipantID(formats strfmt.Registry) error {
 
 	if err := validate.Required("participant_id", "body", m.ParticipantID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Reception) validateUpdatedAtTimestampSec(formats strfmt.Registry) error {
-
-	if err := validate.Required("updated_at_timestamp_sec", "body", m.UpdatedAtTimestampSec); err != nil {
 		return err
 	}
 
