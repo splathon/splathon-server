@@ -19,9 +19,7 @@ func dummyNotices() *models.ListNoticesResponse {
 	return &models.ListNoticesResponse{
 		Notices: []*models.Notice{
 			{
-				Text: swag.String(`イベントのしおりは読みましたか？まだの方は最新版をチェック!
-URL: https://splathon.kibe.la/shared/entries/9ff1d58e-f4fb-43f2-a776-ac4d91bd3176
-`),
+				Text:         swag.String(`すでにしおりは読みましたか？まだの方は最新版をチェック! http://bit.ly/2La6fSR`),
 				TimestampSec: swag.Int64(1556460633),
 			},
 			{
