@@ -11,4 +11,4 @@ automatic_scaling:
 
 includes:
 - secret/secret.yaml
-- secret/secret_prod.yaml
+- secret/secret_dev.yaml
