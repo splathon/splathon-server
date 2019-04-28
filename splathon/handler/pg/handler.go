@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/haya14busa/secretbox"
 	"github.com/jinzhu/gorm"
@@ -97,6 +98,11 @@ func NewHandler(opt *Option) (*Handler, error) {
 		log.Printf("SET DB_MAX_OPEN_CONNS=%d", n)
 		db.DB().SetMaxOpenConns(n)
 	}
+	if n, ok := getIntEnv("DB_CONN_MAX_MAX_LIFE_TIME_SEC"); ok {
+		log.Printf("SET DB_CONN_MAX_MAX_LIFE_TIME_SEC=%d", n)
+		db.DB().SetConnMaxLifetime(time.Duration(n) * time.Second)
+	}
+
 	handler.db = db
 
 	// Setup admin ID/PASS.
