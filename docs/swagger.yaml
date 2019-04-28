@@ -912,10 +912,7 @@ definitions:
   Reception:
     type: object
     required:
-      - id
       - participant_id
-      - created_at_timestamp_sec
-      - updated_at_timestamp_sec
     properties:
       id:
         type: integer
