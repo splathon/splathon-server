@@ -62,7 +62,7 @@ func (h *Handler) GetReception(ctx context.Context, params reception.GetReceptio
 			Description: `QRコードを入退ゲートにかざしご入館・退館ください。
 同伴者様がいる場合は同伴者様にもアプリをインストールしていただくか、Splathon 運営に連絡の上事前にQRコードを印刷してご持参ください。
 `,
-			ShortText: fmt.Sprintf("来客用入館証 (受付番号：%s)", os.Getenv("SPLATHON_BUILDING_RECEPTION_NUMBER")),
+			ShortText: fmt.Sprintf("[%s] 来客用入館証", strings.Join(nicknames, ",")),
 			CodeType:  models.ReceptionCodeCodeTypeQrcode,
 			Code:      os.Getenv("SPLATHON_BUILDING_CODE"),
 			QrcodeImg: os.Getenv("SPLATHON_BUILDING_QRCODE_URL"),
