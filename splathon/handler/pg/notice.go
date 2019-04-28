@@ -75,3 +75,10 @@ func (h *Handler) WriteNotice(ctx context.Context, params admin.WriteNoticeParam
 	}
 	return h.db.Where(&Notice{Id: params.Notice.ID}).Assign(&n).FirstOrCreate(&Notice{}).Error
 }
+
+func (h *Handler) DeleteNotice(ctx context.Context, params admin.DeleteNoticeParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
+	return h.db.Where("id = ?", params.NoticeID).Delete(&Notice{}).Error
+}
