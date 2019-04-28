@@ -411,7 +411,7 @@ paths:
         in: header
         type: string
         required: true
-      - name: participant
+      - name: request
         in: body
         required: true
         schema:
