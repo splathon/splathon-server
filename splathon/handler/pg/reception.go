@@ -185,11 +185,11 @@ func (h *Handler) ListReception(ctx context.Context, params admin.ListReceptionP
 		participant := convertParticipant(p)
 		if r, ok := id2r[p.Id]; ok {
 			participant.Reception = &models.Reception{
-				ID:                    swag.Int64(r.Id),
+				ID:                    r.Id,
 				ParticipantID:         swag.Int64(p.Id),
 				Memo:                  r.Memo,
-				CreatedAtTimestampSec: swag.Int64(r.CreatedAt.Unix()),
-				UpdatedAtTimestampSec: swag.Int64(r.UpdatedAt.Unix()),
+				CreatedAtTimestampSec: r.CreatedAt.Unix(),
+				UpdatedAtTimestampSec: r.UpdatedAt.Unix(),
 			}
 		}
 		resp.Participants[i] = participant
