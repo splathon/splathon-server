@@ -349,6 +349,47 @@ func init() {
         }
       }
     },
+    "/v{eventId}/notices/{noticeId}": {
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "DeleteNotice",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "noticeId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/ranking": {
       "get": {
         "description": "予選ランキングを返す。",
@@ -1677,6 +1718,47 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Notice"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v{eventId}/notices/{noticeId}": {
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "DeleteNotice",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "noticeId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
           }
         ],
         "responses": {
