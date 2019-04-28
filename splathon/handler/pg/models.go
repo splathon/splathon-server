@@ -135,3 +135,11 @@ type Reception struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
+
+type Notice struct {
+	Id        int64 `gorm:"primary_key"`
+	EventId   int64
+	Text      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}

@@ -2,7 +2,7 @@ package pg
 
 import (
 	"context"
-	"errors"
+	"time"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/swagger/models"
@@ -36,5 +36,21 @@ func (h *Handler) WriteNotice(ctx context.Context, params admin.WriteNoticeParam
 	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
 		return err
 	}
-	return errors.New("operation .WriteNotices has not yet been implemented")
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return err
+	}
+	n := &Notice{
+		EventId:   eventID,
+		Text:      *params.Notice.Text,
+		CreatedAt: time.Unix(*params.Notice.TimestampSec, 0),
+		UpdatedAt: time.Now(),
+	}
+	if params.Notice.ID != 0 {
+		n.Id = params.Notice.ID
+		h.db.Save(&n)
+	} else {
+		h.db.Create(&n)
+	}
+	return h.db.Where(&Notice{Id: params.Notice.ID}).Assign(&n).FirstOrCreate(&Notice{}).Error
 }
