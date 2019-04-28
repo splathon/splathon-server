@@ -44,7 +44,7 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 	// Assuming they are not associated with different teams, use team_id from one of them as a primary team id.
 	var ps []*Participant
 	if err := h.db.Select("slack_user_id, team_id").Where("event_id = ? AND slack_username = ? AND raw_password = ?", eventID, strings.Trim(*params.Request.UserID, " "), params.Request.Password).Find(&ps).Error; err != nil || len(ps) == 0 {
-		return nil, errors.New("login failed. ID or Password is wrong")
+		return nil, &serror.Error{Code: http.StatusBadRequest, Message: "login failed. ID or Password is wrong"}
 	}
 	sort.Slice(ps, func(i, j int) bool {
 		return ps[i].TeamId.Int64 > ps[j].TeamId.Int64
