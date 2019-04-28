@@ -596,7 +596,7 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParticipantReception"
+              "$ref": "#/definitions/UpdateReceptionRequest"
             }
           }
         ],
@@ -1897,7 +1897,7 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ParticipantReception"
+              "$ref": "#/definitions/UpdateReceptionRequest"
             }
           }
         ],

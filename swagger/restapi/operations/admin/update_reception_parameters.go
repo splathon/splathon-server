@@ -50,7 +50,7 @@ type UpdateReceptionParams struct {
 	  Required: true
 	  In: body
 	*/
-	Participant *models.ParticipantReception
+	Participant *models.UpdateReceptionRequest
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -73,7 +73,7 @@ func (o *UpdateReceptionParams) BindRequest(r *http.Request, route *middleware.M
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body models.ParticipantReception
+		var body models.UpdateReceptionRequest
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			if err == io.EOF {
 				res = append(res, errors.Required("participant", "body"))
