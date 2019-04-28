@@ -144,6 +144,9 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return admin.NewWriteNoticeOK()
 	})
+	api.AdminDeleteNoticeHandler = admin.DeleteNoticeHandlerFunc(func(params admin.DeleteNoticeParams) middleware.Responder {
+		return middleware.NotImplemented("operation admin.DeleteNotice has not yet been implemented")
+	})
 	api.AdminListReceptionHandler = admin.ListReceptionHandlerFunc(func(params admin.ListReceptionParams) middleware.Responder {
 		res, err := thonHandler.ListReception(params.HTTPRequest.Context(), params)
 		if err != nil {
