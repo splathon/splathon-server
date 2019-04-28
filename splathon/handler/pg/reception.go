@@ -217,19 +217,24 @@ func (h *Handler) UpdateReception(ctx context.Context, params admin.UpdateRecept
 func updateReception(ctx context.Context, tx *gorm.DB, params admin.UpdateReceptionParams) error {
 	participantID := *params.Request.Participant.ID
 
-	// Update reception record.
 	if *params.Request.Complete {
-		r := &Reception{
-			ParticipantId: participantID,
-			Memo:          params.Request.Participant.Reception.Memo,
-			UpdatedAt:     time.Now(),
-		}
-		if params.Request.Participant.Reception == nil {
-			r.CreatedAt = time.Now()
-		}
-		var res Reception
-		if err := tx.Where(Reception{ParticipantId: participantID}).Assign(&r).FirstOrCreate(&res).Error; err != nil {
-			return err
+		if params.Request.Participant.Reception.ID != 0 {
+			// Update.
+			values := map[string]interface{}{
+				"memo":       params.Request.Participant.Reception.Memo,
+				"updated_at": time.Now(),
+			}
+			tx.Model(&Reception{Id: params.Request.Participant.Reception.ID}).Updates(values)
+		} else {
+			r := &Reception{
+				ParticipantId: participantID,
+				Memo:          params.Request.Participant.Reception.Memo,
+				CreatedAt:     time.Now(),
+				UpdatedAt:     time.Now(),
+			}
+			if err := tx.Create(&r).Error; err != nil {
+				return err
+			}
 		}
 	} else {
 		tx.Where("participant_id = ?", participantID).Delete(&Reception{})
