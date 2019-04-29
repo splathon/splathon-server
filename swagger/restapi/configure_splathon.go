@@ -163,6 +163,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return admin.NewUpdateReceptionOK()
 	})
+	api.AdminAddTournamentRoundHandler = admin.AddTournamentRoundHandlerFunc(func(params admin.AddTournamentRoundParams) middleware.Responder {
+		if err := thonHandler.AddTournamentRound(params.HTTPRequest.Context(), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewAddTournamentRoundOK()
+	})
 
 	api.ServerShutdown = func() {
 		if closer, ok := thonHandler.(io.Closer); ok {

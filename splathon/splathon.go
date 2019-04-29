@@ -31,6 +31,7 @@ type Handler interface {
 	GetNextMatch(context.Context, match.GetNextMatchParams) (*models.GetNextMatchResponse, error)
 	ListReception(context.Context, admin.ListReceptionParams) (*models.ListReceptionResponse, error)
 	UpdateReception(context.Context, admin.UpdateReceptionParams) error
+	AddTournamentRound(context.Context, admin.AddTournamentRoundParams) error
 }
 
 func NewDefaultHandler() (Handler, error) {
