@@ -27,6 +27,9 @@ type Event struct {
 	// Required: true
 	Numbering *int32 `json:"numbering"`
 
+	// rooms
+	Rooms []*SupportedRoom `json:"rooms"`
+
 	// rules
 	Rules []*Rule `json:"rules"`
 
@@ -43,6 +46,10 @@ func (m *Event) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateNumbering(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRooms(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -73,6 +80,31 @@ func (m *Event) validateNumbering(formats strfmt.Registry) error {
 
 	if err := validate.Required("numbering", "body", m.Numbering); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *Event) validateRooms(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Rooms) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Rooms); i++ {
+		if swag.IsZero(m.Rooms[i]) { // not required
+			continue
+		}
+
+		if m.Rooms[i] != nil {
+			if err := m.Rooms[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("rooms" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
