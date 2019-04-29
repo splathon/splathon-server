@@ -3,6 +3,19 @@ package pg
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/splathon/splathon-server/splathon/serror"
+)
+
+type Env int
+
+const (
+	ENV_UNKNOWN Env = iota
+	ENV_PROD
+	ENV_DEV
 )
 
 type TokenSession struct {
@@ -13,6 +26,8 @@ type TokenSession struct {
 	TeamID int64 `json:"team_id,omitempty"`
 	// Optional.
 	SlackUserID string `json:"slack_userid,omitempty"`
+	// Optional.
+	Env Env `json:"env,omitempty"`
 }
 
 // Cipher is crypt interface to encrypt/decrypt cookie.
@@ -27,10 +42,21 @@ type Cipher interface {
 // maintenance.
 type TokenManager struct {
 	cipher Cipher
+	env    Env
 }
 
-func NewTokenManager(cipher Cipher) *TokenManager {
-	return &TokenManager{cipher: cipher}
+func NewTokenManager(cipher Cipher, env Env) *TokenManager {
+	return &TokenManager{cipher: cipher, env: env}
+}
+
+func (tm *TokenManager) NewToken(isAdmin bool, teamID int64, slackUserID string) TokenSession {
+	return TokenSession{
+		IsAdmin:             isAdmin,
+		TeamID:              teamID,
+		SlackUserID:         slackUserID,
+		Env:                 tm.env,
+		CreatedTimestampSec: time.Now().Unix(),
+	}
 }
 
 func (tm *TokenManager) Marhal(t TokenSession) (string, error) {
@@ -60,4 +86,15 @@ func (tm *TokenManager) Unmarhal(token string) (*TokenSession, error) {
 		return nil, err
 	}
 	return &t, nil
+}
+
+func (tm *TokenManager) ValidateAdminToken(token string) error {
+	t, err := tm.Unmarhal(token)
+	if err != nil {
+		return &serror.Error{Code: http.StatusBadRequest, Message: fmt.Sprintf("invalid token: %v", err)}
+	}
+	if t.IsAdmin && t.Env == tm.env {
+		return nil
+	}
+	return &serror.Error{Code: http.StatusUnauthorized, Message: "The request user is not authorized."}
 }

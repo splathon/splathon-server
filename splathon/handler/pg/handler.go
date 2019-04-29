@@ -122,7 +122,14 @@ func NewHandler(opt *Option) (*Handler, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secretbox: %v", err)
 	}
-	handler.tm = NewTokenManager(cipher)
+	var env Env
+	switch os.Getenv("SPLATHON_ENV") {
+	case "PROD":
+		env = ENV_PROD
+	case "DEV":
+		env = ENV_DEV
+	}
+	handler.tm = NewTokenManager(cipher, env)
 
 	return handler, nil
 }
