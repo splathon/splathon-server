@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/splathon/serror"
@@ -21,12 +20,8 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 		return nil, err
 	}
 
-	token := TokenSession{
-		CreatedTimestampSec: time.Now().Unix(),
-	}
 	if h.isAdminLoginReq(params) {
-		token.IsAdmin = true
-		apiToken, err := h.tm.Marhal(token)
+		apiToken, err := h.tm.Marhal(h.tm.NewToken(true, 0, ""))
 		if err != nil {
 			return nil, err
 		}
@@ -56,16 +51,14 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 
 	fmt.Printf("Login: %s", p.SlackUserId)
 
-	token.SlackUserID = p.SlackUserId
 	if p.TeamId.Valid {
-		token.TeamID = p.TeamId.Int64
 		var team Team
 		if err := h.db.Where("id = ?", p.TeamId.Int64).Find(&team).Error; err != nil {
 			return nil, err
 		}
 		resp.Team = convertTeam(&team)
 	}
-	apiToken, err := h.tm.Marhal(token)
+	apiToken, err := h.tm.Marhal(h.tm.NewToken(false, p.TeamId.Int64, p.SlackUserId))
 	if err != nil {
 		return nil, err
 	}
@@ -86,12 +79,5 @@ func (h *Handler) getTokenSession(token string) (*TokenSession, error) {
 }
 
 func (h *Handler) checkAdminAuth(token string) error {
-	t, err := h.getTokenSession(token)
-	if err != nil {
-		return err
-	}
-	if t.IsAdmin {
-		return nil
-	}
-	return &serror.Error{Code: http.StatusUnauthorized, Message: "The request user has no access for the requested operation."}
+	return h.tm.ValidateAdminToken(token)
 }
