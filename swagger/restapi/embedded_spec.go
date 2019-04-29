@@ -653,6 +653,48 @@ func init() {
         }
       }
     },
+    "/v{eventId}/tournament/": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "addTournamentRound",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddTournamentRoundRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/update-reception": {
       "post": {
         "tags": [
@@ -697,6 +739,29 @@ func init() {
     }
   },
   "definitions": {
+    "AddTournamentRoundRequest": {
+      "type": "object",
+      "required": [
+        "round_name",
+        "round",
+        "matches"
+      ],
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NewMatchRequest"
+          }
+        },
+        "round": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "round_name": {
+          "type": "string"
+        }
+      }
+    },
     "Battle": {
       "description": "バトル。勝敗などは決まってない状態のこともある。",
       "type": "object",
@@ -943,6 +1008,34 @@ func init() {
         "short_comment": {
           "description": "一言コメント",
           "type": "string"
+        }
+      }
+    },
+    "NewMatchRequest": {
+      "type": "object",
+      "required": [
+        "alpha_team_id",
+        "bravo_team_id",
+        "room_id",
+        "order_in_room"
+      ],
+      "properties": {
+        "alpha_team_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "bravo_team_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "order_in_room": {
+          "description": "Match order in this room.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "room_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -1273,6 +1366,11 @@ func init() {
         "name"
       ],
       "properties": {
+        "id": {
+          "description": "Round ID. (Qualifier ID or Tournament ID)",
+          "type": "integer",
+          "format": "int64"
+        },
         "name": {
           "description": "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦",
           "type": "string"
@@ -2067,6 +2165,48 @@ func init() {
         }
       }
     },
+    "/v{eventId}/tournament/": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "addTournamentRound",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddTournamentRoundRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/update-reception": {
       "post": {
         "tags": [
@@ -2111,6 +2251,29 @@ func init() {
     }
   },
   "definitions": {
+    "AddTournamentRoundRequest": {
+      "type": "object",
+      "required": [
+        "round_name",
+        "round",
+        "matches"
+      ],
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NewMatchRequest"
+          }
+        },
+        "round": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "round_name": {
+          "type": "string"
+        }
+      }
+    },
     "Battle": {
       "description": "バトル。勝敗などは決まってない状態のこともある。",
       "type": "object",
@@ -2357,6 +2520,34 @@ func init() {
         "short_comment": {
           "description": "一言コメント",
           "type": "string"
+        }
+      }
+    },
+    "NewMatchRequest": {
+      "type": "object",
+      "required": [
+        "alpha_team_id",
+        "bravo_team_id",
+        "room_id",
+        "order_in_room"
+      ],
+      "properties": {
+        "alpha_team_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "bravo_team_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "order_in_room": {
+          "description": "Match order in this room.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "room_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -2687,6 +2878,11 @@ func init() {
         "name"
       ],
       "properties": {
+        "id": {
+          "description": "Round ID. (Qualifier ID or Tournament ID)",
+          "type": "integer",
+          "format": "int64"
+        },
         "name": {
           "description": "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦",
           "type": "string"

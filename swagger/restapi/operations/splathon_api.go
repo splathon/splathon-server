@@ -46,6 +46,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		AdminDeleteNoticeHandler: admin.DeleteNoticeHandlerFunc(func(params admin.DeleteNoticeParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminDeleteNotice has not yet been implemented")
 		}),
+		AdminAddTournamentRoundHandler: admin.AddTournamentRoundHandlerFunc(func(params admin.AddTournamentRoundParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminAddTournamentRound has not yet been implemented")
+		}),
 		CompleteReceptionHandler: CompleteReceptionHandlerFunc(func(params CompleteReceptionParams) middleware.Responder {
 			return middleware.NotImplemented("operation CompleteReception has not yet been implemented")
 		}),
@@ -127,6 +130,8 @@ type SplathonAPI struct {
 
 	// AdminDeleteNoticeHandler sets the operation handler for the delete notice operation
 	AdminDeleteNoticeHandler admin.DeleteNoticeHandler
+	// AdminAddTournamentRoundHandler sets the operation handler for the add tournament round operation
+	AdminAddTournamentRoundHandler admin.AddTournamentRoundHandler
 	// CompleteReceptionHandler sets the operation handler for the complete reception operation
 	CompleteReceptionHandler CompleteReceptionHandler
 	// GetEventHandler sets the operation handler for the get event operation
@@ -224,6 +229,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.AdminDeleteNoticeHandler == nil {
 		unregistered = append(unregistered, "admin.DeleteNoticeHandler")
+	}
+
+	if o.AdminAddTournamentRoundHandler == nil {
+		unregistered = append(unregistered, "admin.AddTournamentRoundHandler")
 	}
 
 	if o.CompleteReceptionHandler == nil {
@@ -392,6 +401,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/v{eventId}/notices/{noticeId}"] = admin.NewDeleteNotice(o.context, o.AdminDeleteNoticeHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/tournament"] = admin.NewAddTournamentRound(o.context, o.AdminAddTournamentRoundHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
