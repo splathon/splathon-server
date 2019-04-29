@@ -135,5 +135,17 @@ func (h *Handler) updateBattleAndMatch(ctx context.Context, tx *gorm.DB, params 
 		}
 		tx.Save(match)
 	}
+	if match.TournamentId.Valid {
+		// Assuming maxBattleNum is odd number.
+		if alphaWin > (maxBattleNum / 2) {
+			match.TeamPoints = 1
+			match.OpponentPoints = 0
+			tx.Save(match)
+		} else if bravoWin > (maxBattleNum / 2) {
+			match.TeamPoints = 0
+			match.OpponentPoints = 1
+			tx.Save(match)
+		}
+	}
 	return nil
 }
