@@ -480,6 +480,34 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/tournament/":
+    post:
+      operationId: "addTournamentRound"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      - name: request
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/AddTournamentRoundRequest"
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object
@@ -601,6 +629,10 @@ definitions:
     required:
       - name
     properties:
+      id:
+        description: "Round ID. (Qualifier ID or Tournament ID)"
+        type: integer
+        format: int64
       name:
         description: "ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦"
         type: string
@@ -1020,3 +1052,42 @@ definitions:
         $ref: "#/definitions/ParticipantReception"
       complete:
         type: boolean
+
+  AddTournamentRoundRequest:
+    type: object
+    required:
+      - round_name
+      - round
+      - matches
+    properties:
+      round_name:
+        type: string
+      round:
+        type: integer
+        format: int32
+      matches:
+        type: array
+        items:
+          $ref: "#/definitions/NewMatchRequest"
+
+  NewMatchRequest:
+    type: object
+    required:
+      - alpha_team_id
+      - bravo_team_id
+      - room_id
+      - order_in_room
+    properties:
+      alpha_team_id:
+        type: integer
+        format: int64
+      bravo_team_id:
+        type: integer
+        format: int64
+      room_id:
+        type: integer
+        format: int64
+      order_in_room:
+        description: "Match order in this room."
+        type: integer
+        format: int32

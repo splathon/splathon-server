@@ -19,6 +19,9 @@ import (
 // swagger:model Round
 type Round struct {
 
+	// Round ID. (Qualifier ID or Tournament ID)
+	ID int64 `json:"id,omitempty"`
+
 	// ラウンド名。e.g. 予選第1ラウンド, 決勝T1回戦, 決勝戦
 	// Required: true
 	Name *string `json:"name"`
