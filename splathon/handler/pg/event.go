@@ -24,12 +24,28 @@ func (h *Handler) GetEvent(ctx context.Context, params operations.GetEventParams
 		Rules:     make([]*models.Rule, 0),
 		Stages:    make([]*models.Stage, 0),
 	}
+
 	for _, r := range spldata.ListRules() {
 		event.Rules = append(event.Rules, convertRule(r))
 	}
 	for _, s := range spldata.ListStages() {
 		event.Stages = append(event.Stages, convertStage(s))
 	}
+
+	var rooms []*Room
+	if err := h.db.Where("event_id = ?", eventID).Order("name asc").Find(&rooms).Error; err != nil {
+		return nil, err
+	}
+
+	event.Rooms = make([]*models.SupportedRoom, len(rooms))
+	for i, r := range rooms {
+		event.Rooms[i] = &models.SupportedRoom{
+			ID:       swag.Int64(r.Id),
+			Name:     swag.String(r.Name),
+			Priority: swag.Int32(r.Priority),
+		}
+	}
+
 	return event, nil
 }
 
