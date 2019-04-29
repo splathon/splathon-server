@@ -620,7 +620,6 @@ definitions:
       - name
       - matches
     properties:
-      # Room ID is needless as client-server I/F?
       id:
         description: "Room ID."
         type: integer
@@ -632,6 +631,25 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Match"
+
+  SupportedRoom:
+    description: "Room data"
+    type: object
+    required:
+      - id
+      - name
+      - priority
+    properties:
+      id:
+        description: "Room ID."
+        type: integer
+        format: int64
+      name:
+        description: "Room name. e.g. A卓"
+        type: string
+      priority:
+        type: integer
+        format: int32
 
   Match:
     type: object
@@ -817,6 +835,10 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Stage"
+      rooms:
+        type: array
+        items:
+          $ref: "#/definitions/SupportedRoom"
 
   Rule:
     type: object

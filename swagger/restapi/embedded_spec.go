@@ -759,6 +759,12 @@ func init() {
           "type": "integer",
           "format": "int32"
         },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SupportedRoom"
+          }
+        },
         "rules": {
           "type": "array",
           "items": {
@@ -1321,6 +1327,30 @@ func init() {
         "name": {
           "description": "Localized stage name.",
           "type": "string"
+        }
+      }
+    },
+    "SupportedRoom": {
+      "description": "Room data",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "priority"
+      ],
+      "properties": {
+        "id": {
+          "description": "Room ID.",
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "description": "Room name. e.g. A卓",
+          "type": "string"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2143,6 +2173,12 @@ func init() {
           "type": "integer",
           "format": "int32"
         },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SupportedRoom"
+          }
+        },
         "rules": {
           "type": "array",
           "items": {
@@ -2705,6 +2741,30 @@ func init() {
         "name": {
           "description": "Localized stage name.",
           "type": "string"
+        }
+      }
+    },
+    "SupportedRoom": {
+      "description": "Room data",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "priority"
+      ],
+      "properties": {
+        "id": {
+          "description": "Room ID.",
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "description": "Room name. e.g. A卓",
+          "type": "string"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
