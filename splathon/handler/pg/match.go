@@ -13,13 +13,16 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const qualifierMaxBattleNum = 2
+const (
+	qualifierMaxBattleNum  = 2
+	tournamentMaxBattleNum = 3
+)
 
 func getMaxBattleNum(m Match) int {
 	// TODO(haya14busa): register and get theses magic numbers from database.
 	n := qualifierMaxBattleNum
 	if !m.QualifierId.Valid {
-		n = 3
+		n = tournamentMaxBattleNum
 	}
 	return n
 }
