@@ -59,13 +59,5 @@ func (h *Handler) UpdateReleaseQualifier(ctx context.Context, params admin.Updat
 	if err != nil {
 		return err
 	}
-	round := params.Request.Round
-	if round == 0 {
-		var q Qualifier
-		if err := h.db.Select("round").Where("event_id = ?", eventID).Order("round desc").Limit(1).Find(&q).Error; err != nil {
-			return err
-		}
-		round = q.Round
-	}
-	return UpdateQualifierRelease(ctx, eventID, round)
+	return UpdateQualifierRelease(ctx, eventID, params.Request.Round)
 }
