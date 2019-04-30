@@ -10,6 +10,7 @@ func convertTeam(t *Team) *models.Team {
 	return &models.Team{
 		ID:           swag.Int32(int32(t.Id)),
 		Name:         swag.String(t.Name),
+		NameKana:     t.NameKana,
 		ShortComment: t.ShortComment,
 	}
 }

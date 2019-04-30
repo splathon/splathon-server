@@ -54,6 +54,7 @@ type Team struct {
 	Id           int64 `gorm:"primary_key"`
 	EventId      int64
 	Name         string
+	NameKana     string
 	CompanyName  string
 	Rank         int32
 	ShortComment string
