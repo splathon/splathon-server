@@ -32,6 +32,9 @@ type Handler interface {
 	ListReception(context.Context, admin.ListReceptionParams) (*models.ListReceptionResponse, error)
 	UpdateReception(context.Context, admin.UpdateReceptionParams) error
 	AddTournamentRound(context.Context, admin.AddTournamentRoundParams) error
+
+	UpdateReleaseQualifier(context.Context, admin.UpdateReleaseQualifierParams) error
+	GetReleaseQualifier(context.Context, admin.GetReleaseQualifierParams) (int32, error)
 }
 
 func NewDefaultHandler() (Handler, error) {

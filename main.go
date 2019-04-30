@@ -2,12 +2,14 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 
 	loads "github.com/go-openapi/loads"
 	"github.com/splathon/splathon-server/swagger/restapi"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
+	"google.golang.org/appengine"
 )
 
 func main() {
@@ -26,8 +28,6 @@ func main() {
 
 	server.ConfigureAPI()
 
-	if err := server.Serve(); err != nil {
-		log.Fatalln(err)
-	}
-
+	http.Handle("/", server.GetHandler())
+	appengine.Main()
 }
