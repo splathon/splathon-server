@@ -19,4 +19,5 @@ require (
 	github.com/rs/cors v1.6.0
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
+	google.golang.org/appengine v1.5.0
 )

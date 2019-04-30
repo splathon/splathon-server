@@ -548,6 +548,83 @@ func init() {
         }
       }
     },
+    "/v{eventId}/release-qualifier": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "getReleaseQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "UpdateReleaseQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UpdateReleaseQualifierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/results": {
       "get": {
         "description": "リザルト一覧を返す。リザルトと言いつつ終了していない未来のマッチも返す。ゲスト・管理アプリ両方から使う。team_idを指定するとそのチームのみの結果が返ってくる。",
@@ -569,6 +646,11 @@ func init() {
             "description": "team id",
             "name": "team_id",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header"
           }
         ],
         "responses": {
@@ -1506,6 +1588,15 @@ func init() {
         },
         "participant": {
           "$ref": "#/definitions/ParticipantReception"
+        }
+      }
+    },
+    "UpdateReleaseQualifierRequest": {
+      "type": "object",
+      "properties": {
+        "round": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     }
@@ -2064,6 +2155,83 @@ func init() {
         }
       }
     },
+    "/v{eventId}/release-qualifier": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "getReleaseQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "UpdateReleaseQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UpdateReleaseQualifierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/results": {
       "get": {
         "description": "リザルト一覧を返す。リザルトと言いつつ終了していない未来のマッチも返す。ゲスト・管理アプリ両方から使う。team_idを指定するとそのチームのみの結果が返ってくる。",
@@ -2085,6 +2253,11 @@ func init() {
             "description": "team id",
             "name": "team_id",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header"
           }
         ],
         "responses": {
@@ -3022,6 +3195,15 @@ func init() {
         },
         "participant": {
           "$ref": "#/definitions/ParticipantReception"
+        }
+      }
+    },
+    "UpdateReleaseQualifierRequest": {
+      "type": "object",
+      "properties": {
+        "round": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     }

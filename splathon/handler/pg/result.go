@@ -74,7 +74,18 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		return nil, err
 	}
 
-	return buildResult(qualifiers, tournaments, qmatches, tmatches, teams, rooms), nil
+	isAdmin := params.XSPLATHONAPITOKEN != nil && h.checkAdminAuth(*params.XSPLATHONAPITOKEN) == nil
+	releasedRound, err := GetQualifierRelease(ctx, eventID)
+	if err != nil {
+		return nil, err
+	}
+	var qs []*Qualifier
+	for _, q := range qualifiers {
+		if isAdmin || releasedRound == -1 || q.Round <= releasedRound {
+			qs = append(qs, q)
+		}
+	}
+	return buildResult(qs, tournaments, qmatches, tmatches, teams, rooms), nil
 }
 
 func checkTeamFound(params result.GetResultParams, teams []*Team) error {

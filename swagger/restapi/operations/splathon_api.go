@@ -46,6 +46,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		AdminDeleteNoticeHandler: admin.DeleteNoticeHandlerFunc(func(params admin.DeleteNoticeParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminDeleteNotice has not yet been implemented")
 		}),
+		AdminUpdateReleaseQualifierHandler: admin.UpdateReleaseQualifierHandlerFunc(func(params admin.UpdateReleaseQualifierParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminUpdateReleaseQualifier has not yet been implemented")
+		}),
 		AdminAddTournamentRoundHandler: admin.AddTournamentRoundHandlerFunc(func(params admin.AddTournamentRoundParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminAddTournamentRound has not yet been implemented")
 		}),
@@ -69,6 +72,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		}),
 		ReceptionGetReceptionHandler: reception.GetReceptionHandlerFunc(func(params reception.GetReceptionParams) middleware.Responder {
 			return middleware.NotImplemented("operation ReceptionGetReception has not yet been implemented")
+		}),
+		AdminGetReleaseQualifierHandler: admin.GetReleaseQualifierHandlerFunc(func(params admin.GetReleaseQualifierParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminGetReleaseQualifier has not yet been implemented")
 		}),
 		ResultGetResultHandler: result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 			return middleware.NotImplemented("operation ResultGetResult has not yet been implemented")
@@ -130,6 +136,8 @@ type SplathonAPI struct {
 
 	// AdminDeleteNoticeHandler sets the operation handler for the delete notice operation
 	AdminDeleteNoticeHandler admin.DeleteNoticeHandler
+	// AdminUpdateReleaseQualifierHandler sets the operation handler for the update release qualifier operation
+	AdminUpdateReleaseQualifierHandler admin.UpdateReleaseQualifierHandler
 	// AdminAddTournamentRoundHandler sets the operation handler for the add tournament round operation
 	AdminAddTournamentRoundHandler admin.AddTournamentRoundHandler
 	// CompleteReceptionHandler sets the operation handler for the complete reception operation
@@ -146,6 +154,8 @@ type SplathonAPI struct {
 	RankingGetRankingHandler ranking.GetRankingHandler
 	// ReceptionGetReceptionHandler sets the operation handler for the get reception operation
 	ReceptionGetReceptionHandler reception.GetReceptionHandler
+	// AdminGetReleaseQualifierHandler sets the operation handler for the get release qualifier operation
+	AdminGetReleaseQualifierHandler admin.GetReleaseQualifierHandler
 	// ResultGetResultHandler sets the operation handler for the get result operation
 	ResultGetResultHandler result.GetResultHandler
 	// GetTeamDetailHandler sets the operation handler for the get team detail operation
@@ -231,6 +241,10 @@ func (o *SplathonAPI) Validate() error {
 		unregistered = append(unregistered, "admin.DeleteNoticeHandler")
 	}
 
+	if o.AdminUpdateReleaseQualifierHandler == nil {
+		unregistered = append(unregistered, "admin.UpdateReleaseQualifierHandler")
+	}
+
 	if o.AdminAddTournamentRoundHandler == nil {
 		unregistered = append(unregistered, "admin.AddTournamentRoundHandler")
 	}
@@ -261,6 +275,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ReceptionGetReceptionHandler == nil {
 		unregistered = append(unregistered, "reception.GetReceptionHandler")
+	}
+
+	if o.AdminGetReleaseQualifierHandler == nil {
+		unregistered = append(unregistered, "admin.GetReleaseQualifierHandler")
 	}
 
 	if o.ResultGetResultHandler == nil {
@@ -402,6 +420,11 @@ func (o *SplathonAPI) initHandlerCache() {
 	}
 	o.handlers["DELETE"]["/v{eventId}/notices/{noticeId}"] = admin.NewDeleteNotice(o.context, o.AdminDeleteNoticeHandler)
 
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/v{eventId}/release-qualifier"] = admin.NewUpdateReleaseQualifier(o.context, o.AdminUpdateReleaseQualifierHandler)
+
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -441,6 +464,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/reception"] = reception.NewGetReception(o.context, o.ReceptionGetReceptionHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/release-qualifier"] = admin.NewGetReleaseQualifier(o.context, o.AdminGetReleaseQualifierHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
