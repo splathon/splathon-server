@@ -113,6 +113,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return operations.NewUpdateBattleOK()
 	})
+	api.AdminUpdateMatchHandler = admin.UpdateMatchHandlerFunc(func(params admin.UpdateMatchParams) middleware.Responder {
+		if err := thonHandler.UpdateMatch(reqContext(params.HTTPRequest), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewUpdateMatchOK()
+	})
 	api.GetParticipantsDataForReceptionHandler = operations.GetParticipantsDataForReceptionHandlerFunc(func(params operations.GetParticipantsDataForReceptionParams) middleware.Responder {
 		res, err := thonHandler.GetParticipantsDataForReception(reqContext(params.HTTPRequest), params)
 		if err != nil {
