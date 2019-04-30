@@ -9,6 +9,7 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/jinzhu/gorm"
 	"github.com/splathon/splathon-server/swagger/models"
+	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/match"
 	"golang.org/x/sync/errgroup"
 )
@@ -209,6 +210,18 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 		},
 	}
 	return resp, nil
+}
+
+func (h *Handler) UpdateMatch(ctx context.Context, params admin.UpdateMatchParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
+	return h.db.Model(&Match{Id: params.MatchID}).Updates(map[string]interface{}{
+		"team_id":     *params.Match.AlphaTeamID,
+		"opponent_id": *params.Match.BravoTeamID,
+		"room_id":     *params.Match.RoomID,
+		"order":       *params.Match.OrderInRoom,
+	}).Error
 }
 
 func fetchRoundName(db *gorm.DB, match *Match) (string, error) {

@@ -97,6 +97,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		UpdateBattleHandler: UpdateBattleHandlerFunc(func(params UpdateBattleParams) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateBattle has not yet been implemented")
 		}),
+		AdminUpdateMatchHandler: admin.UpdateMatchHandlerFunc(func(params admin.UpdateMatchParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminUpdateMatch has not yet been implemented")
+		}),
 		AdminUpdateReceptionHandler: admin.UpdateReceptionHandlerFunc(func(params admin.UpdateReceptionParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminUpdateReception has not yet been implemented")
 		}),
@@ -170,6 +173,8 @@ type SplathonAPI struct {
 	LoginHandler LoginHandler
 	// UpdateBattleHandler sets the operation handler for the update battle operation
 	UpdateBattleHandler UpdateBattleHandler
+	// AdminUpdateMatchHandler sets the operation handler for the update match operation
+	AdminUpdateMatchHandler admin.UpdateMatchHandler
 	// AdminUpdateReceptionHandler sets the operation handler for the update reception operation
 	AdminUpdateReceptionHandler admin.UpdateReceptionHandler
 	// AdminWriteNoticeHandler sets the operation handler for the write notice operation
@@ -307,6 +312,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.UpdateBattleHandler == nil {
 		unregistered = append(unregistered, "UpdateBattleHandler")
+	}
+
+	if o.AdminUpdateMatchHandler == nil {
+		unregistered = append(unregistered, "admin.UpdateMatchHandler")
 	}
 
 	if o.AdminUpdateReceptionHandler == nil {
@@ -504,6 +513,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/v{eventId}/matches/{matchId}"] = NewUpdateBattle(o.context, o.UpdateBattleHandler)
+
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/v{eventId}/matches/{matchId}"] = admin.NewUpdateMatch(o.context, o.AdminUpdateMatchHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

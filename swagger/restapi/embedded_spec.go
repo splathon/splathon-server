@@ -177,6 +177,54 @@ func init() {
           }
         }
       },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "updateMatch",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "match id",
+            "name": "matchId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "match",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewMatchRequest"
+            }
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Update a battle data in the match.",
         "tags": [
@@ -1775,6 +1823,54 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Match"
             }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "updateMatch",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "match id",
+            "name": "matchId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "match",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewMatchRequest"
+            }
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
           },
           "default": {
             "description": "Generic error",
