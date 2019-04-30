@@ -33,6 +33,10 @@ type GetResultParams struct {
 	HTTPRequest *http.Request `json:"-"`
 
 	/*
+	  In: header
+	*/
+	XSPLATHONAPITOKEN *string
+	/*
 	  Required: true
 	  In: path
 	*/
@@ -54,6 +58,10 @@ func (o *GetResultParams) BindRequest(r *http.Request, route *middleware.Matched
 
 	qs := runtime.Values(r.URL.Query())
 
+	if err := o.bindXSPLATHONAPITOKEN(r.Header[http.CanonicalHeaderKey("X-SPLATHON-API-TOKEN")], true, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	rEventID, rhkEventID, _ := route.Params.GetOK("eventId")
 	if err := o.bindEventID(rEventID, rhkEventID, route.Formats); err != nil {
 		res = append(res, err)
@@ -67,6 +75,24 @@ func (o *GetResultParams) BindRequest(r *http.Request, route *middleware.Matched
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindXSPLATHONAPITOKEN binds and validates parameter XSPLATHONAPITOKEN from header.
+func (o *GetResultParams) bindXSPLATHONAPITOKEN(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	o.XSPLATHONAPITOKEN = &raw
+
 	return nil
 }
 

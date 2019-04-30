@@ -646,6 +646,11 @@ func init() {
             "description": "team id",
             "name": "team_id",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header"
           }
         ],
         "responses": {
@@ -2248,6 +2253,11 @@ func init() {
             "description": "team id",
             "name": "team_id",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header"
           }
         ],
         "responses": {
