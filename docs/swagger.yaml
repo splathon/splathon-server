@@ -199,6 +199,9 @@ paths:
         description: team id
         type: integer
         format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
       responses:
         200:
           description: Success
