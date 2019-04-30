@@ -30,6 +30,9 @@ type Team struct {
 	// Required: true
 	Name *string `json:"name"`
 
+	// チーム名のよみがな(ひらがな)
+	NameKana string `json:"name_kana,omitempty"`
+
 	// Team の大会にむけての意気込みコメント
 	ShortComment string `json:"short_comment,omitempty"`
 }

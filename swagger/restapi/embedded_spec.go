@@ -1473,6 +1473,10 @@ func init() {
         "name": {
           "type": "string"
         },
+        "name_kana": {
+          "description": "チーム名のよみがな(ひらがな)",
+          "type": "string"
+        },
         "short_comment": {
           "description": "Team の大会にむけての意気込みコメント",
           "type": "string"
@@ -2983,6 +2987,10 @@ func init() {
           }
         },
         "name": {
+          "type": "string"
+        },
+        "name_kana": {
+          "description": "チーム名のよみがな(ひらがな)",
           "type": "string"
         },
         "short_comment": {
