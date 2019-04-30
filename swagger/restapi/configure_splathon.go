@@ -3,6 +3,7 @@
 package restapi
 
 import (
+	"context"
 	"crypto/tls"
 	"io"
 	"log"
@@ -11,6 +12,7 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	"google.golang.org/appengine"
 
 	"github.com/rs/cors"
 	"github.com/splathon/splathon-server/splathon"
@@ -50,124 +52,137 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 	}
 
 	api.LoginHandler = operations.LoginHandlerFunc(func(params operations.LoginParams) middleware.Responder {
-		res, err := thonHandler.Login(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.Login(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewLoginOK().WithPayload(res)
 	})
 	api.GetEventHandler = operations.GetEventHandlerFunc(func(params operations.GetEventParams) middleware.Responder {
-		res, err := thonHandler.GetEvent(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetEvent(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewGetEventOK().WithPayload(res)
 	})
 	api.MatchGetMatchHandler = match.GetMatchHandlerFunc(func(params match.GetMatchParams) middleware.Responder {
-		res, err := thonHandler.GetMatch(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetMatch(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return match.NewGetMatchOK().WithPayload(res)
 	})
 	api.MatchGetNextMatchHandler = match.GetNextMatchHandlerFunc(func(params match.GetNextMatchParams) middleware.Responder {
-		res, err := thonHandler.GetNextMatch(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetNextMatch(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return match.NewGetNextMatchOK().WithPayload(res)
 	})
 	api.ResultGetResultHandler = result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
-		res, err := thonHandler.GetResult(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetResult(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return result.NewGetResultOK().WithPayload(res)
 	})
 	api.RankingGetRankingHandler = ranking.GetRankingHandlerFunc(func(params ranking.GetRankingParams) middleware.Responder {
-		res, err := thonHandler.GetRanking(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetRanking(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return ranking.NewGetRankingOK().WithPayload(res)
 	})
 	api.ListTeamsHandler = operations.ListTeamsHandlerFunc(func(params operations.ListTeamsParams) middleware.Responder {
-		res, err := thonHandler.ListTeams(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.ListTeams(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewListTeamsOK().WithPayload(res)
 	})
 	api.GetTeamDetailHandler = operations.GetTeamDetailHandlerFunc(func(params operations.GetTeamDetailParams) middleware.Responder {
-		res, err := thonHandler.GetTeamDetail(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetTeamDetail(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewGetTeamDetailOK().WithPayload(res)
 	})
 	api.UpdateBattleHandler = operations.UpdateBattleHandlerFunc(func(params operations.UpdateBattleParams) middleware.Responder {
-		if err := thonHandler.UpdateBattle(params.HTTPRequest.Context(), params); err != nil {
+		if err := thonHandler.UpdateBattle(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewUpdateBattleOK()
 	})
 	api.GetParticipantsDataForReceptionHandler = operations.GetParticipantsDataForReceptionHandlerFunc(func(params operations.GetParticipantsDataForReceptionParams) middleware.Responder {
-		res, err := thonHandler.GetParticipantsDataForReception(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetParticipantsDataForReception(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewGetParticipantsDataForReceptionOK().WithPayload(res)
 	})
 	api.CompleteReceptionHandler = operations.CompleteReceptionHandlerFunc(func(params operations.CompleteReceptionParams) middleware.Responder {
-		if err := thonHandler.CompleteReception(params.HTTPRequest.Context(), params); err != nil {
+		if err := thonHandler.CompleteReception(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return operations.NewCompleteReceptionOK()
 	})
 	api.ReceptionGetReceptionHandler = reception.GetReceptionHandlerFunc(func(params reception.GetReceptionParams) middleware.Responder {
-		res, err := thonHandler.GetReception(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.GetReception(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return reception.NewGetReceptionOK().WithPayload(res)
 	})
 	api.ListNoticesHandler = operations.ListNoticesHandlerFunc(func(params operations.ListNoticesParams) middleware.Responder {
-		res, err := thonHandler.ListNotices(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.ListNotices(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return swagutils.Error(err)
 		}
 		return operations.NewListNoticesOK().WithPayload(res)
 	})
 	api.AdminWriteNoticeHandler = admin.WriteNoticeHandlerFunc(func(params admin.WriteNoticeParams) middleware.Responder {
-		if err := thonHandler.WriteNotice(params.HTTPRequest.Context(), params); err != nil {
+		if err := thonHandler.WriteNotice(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return admin.NewWriteNoticeOK()
 	})
 	api.AdminDeleteNoticeHandler = admin.DeleteNoticeHandlerFunc(func(params admin.DeleteNoticeParams) middleware.Responder {
-		if err := thonHandler.DeleteNotice(params.HTTPRequest.Context(), params); err != nil {
+		if err := thonHandler.DeleteNotice(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return admin.NewDeleteNoticeOK()
 	})
 	api.AdminListReceptionHandler = admin.ListReceptionHandlerFunc(func(params admin.ListReceptionParams) middleware.Responder {
-		res, err := thonHandler.ListReception(params.HTTPRequest.Context(), params)
+		res, err := thonHandler.ListReception(reqContext(params.HTTPRequest), params)
 		if err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return admin.NewListReceptionOK().WithPayload(res)
 	})
 	api.AdminUpdateReceptionHandler = admin.UpdateReceptionHandlerFunc(func(params admin.UpdateReceptionParams) middleware.Responder {
-		if err := thonHandler.UpdateReception(params.HTTPRequest.Context(), params); err != nil {
+		if err := thonHandler.UpdateReception(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return admin.NewUpdateReceptionOK()
 	})
 	api.AdminAddTournamentRoundHandler = admin.AddTournamentRoundHandlerFunc(func(params admin.AddTournamentRoundParams) middleware.Responder {
-		if err := thonHandler.AddTournamentRound(params.HTTPRequest.Context(), params); err != nil {
+		if err := thonHandler.AddTournamentRound(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
 		}
 		return admin.NewAddTournamentRoundOK()
+	})
+	api.AdminUpdateReleaseQualifierHandler = admin.UpdateReleaseQualifierHandlerFunc(func(params admin.UpdateReleaseQualifierParams) middleware.Responder {
+		if err := thonHandler.UpdateReleaseQualifier(reqContext(params.HTTPRequest), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewUpdateReleaseQualifierOK()
+	})
+	api.AdminGetReleaseQualifierHandler = admin.GetReleaseQualifierHandlerFunc(func(params admin.GetReleaseQualifierParams) middleware.Responder {
+		res, err := thonHandler.GetReleaseQualifier(reqContext(params.HTTPRequest), params)
+		if err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewGetReleaseQualifierOK().WithPayload(res)
 	})
 
 	api.ServerShutdown = func() {
@@ -179,6 +194,10 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 	}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
+}
+
+func reqContext(r *http.Request) context.Context {
+	return appengine.NewContext(r)
 }
 
 func logAndErr(err error, req *http.Request) middleware.Responder {

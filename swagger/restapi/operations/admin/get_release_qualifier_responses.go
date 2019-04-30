@@ -21,6 +21,11 @@ const GetReleaseQualifierOKCode int = 200
 swagger:response getReleaseQualifierOK
 */
 type GetReleaseQualifierOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload int32 `json:"body,omitempty"`
 }
 
 // NewGetReleaseQualifierOK creates GetReleaseQualifierOK with default headers values
@@ -29,12 +34,25 @@ func NewGetReleaseQualifierOK() *GetReleaseQualifierOK {
 	return &GetReleaseQualifierOK{}
 }
 
+// WithPayload adds the payload to the get release qualifier o k response
+func (o *GetReleaseQualifierOK) WithPayload(payload int32) *GetReleaseQualifierOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get release qualifier o k response
+func (o *GetReleaseQualifierOK) SetPayload(payload int32) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *GetReleaseQualifierOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
 }
 
 /*GetReleaseQualifierDefault Generic error

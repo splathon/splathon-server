@@ -420,10 +420,10 @@ func (o *SplathonAPI) initHandlerCache() {
 	}
 	o.handlers["DELETE"]["/v{eventId}/notices/{noticeId}"] = admin.NewDeleteNotice(o.context, o.AdminDeleteNoticeHandler)
 
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/v{eventId}/release-qualifier"] = admin.NewUpdateReleaseQualifier(o.context, o.AdminUpdateReleaseQualifierHandler)
+	o.handlers["PUT"]["/v{eventId}/release-qualifier"] = admin.NewUpdateReleaseQualifier(o.context, o.AdminUpdateReleaseQualifierHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

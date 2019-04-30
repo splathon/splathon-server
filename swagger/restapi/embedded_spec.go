@@ -561,11 +561,21 @@ func init() {
             "name": "eventId",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           },
           "default": {
             "description": "Generic error",
@@ -575,7 +585,7 @@ func init() {
           }
         }
       },
-      "post": {
+      "put": {
         "tags": [
           "admin"
         ],
@@ -586,6 +596,12 @@ func init() {
             "format": "int64",
             "name": "eventId",
             "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
             "required": true
           },
           {
@@ -2147,11 +2163,21 @@ func init() {
             "name": "eventId",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
           }
         ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           },
           "default": {
             "description": "Generic error",
@@ -2161,7 +2187,7 @@ func init() {
           }
         }
       },
-      "post": {
+      "put": {
         "tags": [
           "admin"
         ],
@@ -2172,6 +2198,12 @@ func init() {
             "format": "int64",
             "name": "eventId",
             "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
             "required": true
           },
           {

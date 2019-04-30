@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
@@ -33,6 +34,11 @@ type GetReleaseQualifierParams struct {
 
 	/*
 	  Required: true
+	  In: header
+	*/
+	XSPLATHONAPITOKEN string
+	/*
+	  Required: true
 	  In: path
 	*/
 	EventID int64
@@ -47,6 +53,10 @@ func (o *GetReleaseQualifierParams) BindRequest(r *http.Request, route *middlewa
 
 	o.HTTPRequest = r
 
+	if err := o.bindXSPLATHONAPITOKEN(r.Header[http.CanonicalHeaderKey("X-SPLATHON-API-TOKEN")], true, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	rEventID, rhkEventID, _ := route.Params.GetOK("eventId")
 	if err := o.bindEventID(rEventID, rhkEventID, route.Formats); err != nil {
 		res = append(res, err)
@@ -55,6 +65,27 @@ func (o *GetReleaseQualifierParams) BindRequest(r *http.Request, route *middlewa
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindXSPLATHONAPITOKEN binds and validates parameter XSPLATHONAPITOKEN from header.
+func (o *GetReleaseQualifierParams) bindXSPLATHONAPITOKEN(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	if !hasKey {
+		return errors.Required("X-SPLATHON-API-TOKEN", "header")
+	}
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+
+	if err := validate.RequiredString("X-SPLATHON-API-TOKEN", "header", raw); err != nil {
+		return err
+	}
+
+	o.XSPLATHONAPITOKEN = raw
+
 	return nil
 }
 

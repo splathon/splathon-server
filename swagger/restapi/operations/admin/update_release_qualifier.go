@@ -29,7 +29,7 @@ func NewUpdateReleaseQualifier(ctx *middleware.Context, handler UpdateReleaseQua
 	return &UpdateReleaseQualifier{Context: ctx, Handler: handler}
 }
 
-/*UpdateReleaseQualifier swagger:route POST /v{eventId}/release-qualifier admin updateReleaseQualifier
+/*UpdateReleaseQualifier swagger:route PUT /v{eventId}/release-qualifier admin updateReleaseQualifier
 
 UpdateReleaseQualifier update release qualifier API
 
