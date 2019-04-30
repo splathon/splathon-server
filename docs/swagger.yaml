@@ -508,6 +508,47 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/release-qualifier":
+    get:
+      operationId: "getReleaseQualifier"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
+    post:
+      operationId: "UpdateReleaseQualifier"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: request
+        in: body
+        schema:
+          $ref: "#/definitions/UpdateReleaseQualifierRequest"
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object
@@ -1092,5 +1133,12 @@ definitions:
         format: int64
       order_in_room:
         description: "Match order in this room."
+        type: integer
+        format: int32
+
+  UpdateReleaseQualifierRequest:
+    type: object
+    properties:
+      round:
         type: integer
         format: int32
