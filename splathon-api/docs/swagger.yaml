@@ -275,6 +275,39 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+    put:
+      tags:
+      - "admin"
+      operationId: "updateMatch"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: matchId
+        in: path
+        required: true
+        description: match id
+        type: integer
+        format: int64
+      - name: match
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/NewMatchRequest"
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
   "/v{eventId}/ranking":
     get:
       tags:
