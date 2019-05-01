@@ -11,6 +11,7 @@ import (
 	"github.com/haya14busa/secretbox"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/splathon/splathon-server/swagger/models"
 )
 
 // Handler is splathon API handler backed by PostgreSQL.
@@ -23,6 +24,14 @@ type Handler struct {
 	tm      *TokenManager
 	adminID string
 	adminPW string
+
+	teamCacheMu sync.Mutex
+	teamCache   map[int64]*teamCache // key: event ID
+}
+
+type teamCache struct {
+	teams     *models.Teams
+	timestamp time.Time
 }
 
 type Option struct {
@@ -80,7 +89,10 @@ func nonEmptyEnv(envname string) (string, error) {
 }
 
 func NewHandler(opt *Option) (*Handler, error) {
-	handler := &Handler{eventCache: make(map[int64]int64)}
+	handler := &Handler{
+		eventCache: make(map[int64]int64),
+		teamCache:  make(map[int64]*teamCache),
+	}
 
 	// Setup DB.
 	db, err := gorm.Open("postgres", opt.DBArg())
