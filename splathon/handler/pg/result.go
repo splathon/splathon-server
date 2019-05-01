@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/splathon/serror"
@@ -29,6 +30,19 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	if err != nil {
 		return nil, err
 	}
+	var teamID int64 = 0
+	if params.TeamID != nil {
+		teamID = *params.TeamID
+	}
+	h.resultCacheMu.Lock()
+	defer h.resultCacheMu.Unlock()
+	cacheKey := resultCacheKey{eventID: eventID, teamID: teamID}
+	if cache, ok := h.resultCache[cacheKey]; ok {
+		if time.Now().Sub(cache.timestamp) < 5*time.Minute {
+			fmt.Printf("cache: result teamID=%d\n", teamID)
+			return cache.results, nil
+		}
+	}
 
 	eg.Go(func() error {
 		return h.db.Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error
@@ -41,8 +55,7 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	eg.Go(func() error {
 		qids := h.db.Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
 		query := h.db.Where("qualifier_id in (?)", qids)
-		if params.TeamID != nil {
-			teamID := *params.TeamID
+		if teamID != 0 {
 			query = h.db.Where("qualifier_id in (?) AND (team_id = ? OR opponent_id = ?)", qids, teamID, teamID)
 		}
 		return query.Find(&qmatches).Error
@@ -85,7 +98,12 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 			qs = append(qs, q)
 		}
 	}
-	return buildResult(qs, tournaments, qmatches, tmatches, teams, rooms), nil
+	r := buildResult(qs, tournaments, qmatches, tmatches, teams, rooms)
+	h.resultCache[cacheKey] = &resultCache{
+		results:   r,
+		timestamp: time.Now(),
+	}
+	return r, nil
 }
 
 func checkTeamFound(params result.GetResultParams, teams []*Team) error {

@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"google.golang.org/appengine/datastore"
@@ -59,5 +60,9 @@ func (h *Handler) UpdateReleaseQualifier(ctx context.Context, params admin.Updat
 	if err != nil {
 		return err
 	}
+	fmt.Printf("remove all result cache")
+	h.resultCacheMu.Lock()
+	defer h.resultCacheMu.Unlock()
+	h.resultCache = make(map[resultCacheKey]*resultCache)
 	return UpdateQualifierRelease(ctx, eventID, params.Request.Round)
 }
