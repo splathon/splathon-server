@@ -69,6 +69,10 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 	if err != nil {
 		return err
 	}
+	h.rankingCacheMu.Lock()
+	defer h.rankingCacheMu.Unlock()
+	delete(h.rankingCache, eventID)
+
 	h.resultCacheMu.Lock()
 	defer h.resultCacheMu.Unlock()
 	fmt.Printf("remove result cache: teamID=%d", match.TeamId)

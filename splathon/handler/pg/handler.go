@@ -25,11 +25,19 @@ type Handler struct {
 	adminID string
 	adminPW string
 
+	rankingCacheMu sync.Mutex
+	rankingCache   map[int64]*rankingCache // key: event ID
+
 	teamCacheMu sync.Mutex
 	teamCache   map[int64]*teamCache // key: event ID
 
 	resultCacheMu sync.Mutex
 	resultCache   map[resultCacheKey]*resultCache
+}
+
+type rankingCache struct {
+	ranking   *models.Ranking
+	timestamp time.Time
 }
 
 type teamCache struct {
@@ -102,9 +110,10 @@ func nonEmptyEnv(envname string) (string, error) {
 
 func NewHandler(opt *Option) (*Handler, error) {
 	handler := &Handler{
-		eventCache:  make(map[int64]int64),
-		teamCache:   make(map[int64]*teamCache),
-		resultCache: make(map[resultCacheKey]*resultCache),
+		eventCache:   make(map[int64]int64),
+		teamCache:    make(map[int64]*teamCache),
+		rankingCache: make(map[int64]*rankingCache),
+		resultCache:  make(map[resultCacheKey]*resultCache),
 	}
 
 	// Setup DB.
