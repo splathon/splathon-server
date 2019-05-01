@@ -30,9 +30,6 @@ type Handler struct {
 
 	teamCacheMu sync.Mutex
 	teamCache   map[int64]*teamCache // key: event ID
-
-	resultCacheMu sync.Mutex
-	resultCache   map[resultCacheKey]*resultCache
 }
 
 type rankingCache struct {
@@ -43,15 +40,6 @@ type rankingCache struct {
 type teamCache struct {
 	teams     *models.Teams
 	timestamp time.Time
-}
-
-type resultCache struct {
-	results   *models.Results
-	timestamp time.Time
-}
-type resultCacheKey struct {
-	eventID int64
-	teamID  int64
 }
 
 type Option struct {
@@ -113,7 +101,6 @@ func NewHandler(opt *Option) (*Handler, error) {
 		eventCache:   make(map[int64]int64),
 		teamCache:    make(map[int64]*teamCache),
 		rankingCache: make(map[int64]*rankingCache),
-		resultCache:  make(map[resultCacheKey]*resultCache),
 	}
 
 	// Setup DB.
