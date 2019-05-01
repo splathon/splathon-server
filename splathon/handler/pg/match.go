@@ -57,7 +57,7 @@ func (h *Handler) GetMatch(ctx context.Context, params match.GetMatchParams) (*m
 		// Fetch round name.
 		eg.Go(func() error {
 			var err error
-			roundName, err = fetchRoundName(h.db, &match)
+			roundName, _, err = fetchRoundName(h.db, &match)
 			return err
 		})
 
@@ -136,6 +136,11 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 		return nil, errors.New("team_id is not specified or you are not a member of any teams")
 	}
 
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	var eg errgroup.Group
 	var (
 		match        Match
@@ -144,6 +149,7 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 		opponentTeam Team
 		room         Room
 		roundName    string
+		round        int32
 	)
 
 	eg.Go(func() error {
@@ -172,7 +178,7 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 		// Fetch round name.
 		eg.Go(func() error {
 			var err error
-			roundName, err = fetchRoundName(h.db, &match)
+			roundName, round, err = fetchRoundName(h.db, &match)
 			return err
 		})
 
@@ -186,8 +192,13 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 	if err := eg.Wait(); err != nil {
 		return nil, err
 	}
-	if !matchFound {
-		// Return non-error if the next match is not created yet.
+	released, err := GetQualifierRelease(ctx, eventID)
+	if err != nil {
+		return nil, err
+	}
+	isNonReleasedRound := match.QualifierId.Valid && released != -1 && round > released
+	if !matchFound || isNonReleasedRound {
+		// Return non-error if the next match is not created yet or not released yet.
 		return &models.GetNextMatchResponse{}, nil
 	}
 
@@ -224,20 +235,20 @@ func (h *Handler) UpdateMatch(ctx context.Context, params admin.UpdateMatchParam
 	}).Error
 }
 
-func fetchRoundName(db *gorm.DB, match *Match) (string, error) {
+func fetchRoundName(db *gorm.DB, match *Match) (string, int32, error) {
 	if match.QualifierId.Valid {
 		var q Qualifier
 		if err := db.Select("round").Where("id = ?", match.QualifierId).Find(&q).Error; err != nil {
-			return "", err
+			return "", 0, err
 		}
-		return q.GetName(), nil
+		return q.GetName(), q.Round, nil
 	}
 	if match.TournamentId.Valid {
 		var t Tournament
 		if err := db.Select("name").Where("id = ?", match.TournamentId).Find(&t).Error; err != nil {
-			return "", err
+			return "", 0, err
 		}
-		return t.GetName(), nil
+		return t.GetName(), t.Round, nil
 	}
-	return "", fmt.Errorf("room not found: match_id=%d", match.Id)
+	return "", 0, fmt.Errorf("room not found: match_id=%d", match.Id)
 }
