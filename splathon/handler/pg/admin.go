@@ -65,6 +65,13 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 		tx.Rollback()
 		return err
 	}
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return err
+	}
+	h.rankingCacheMu.Lock()
+	defer h.rankingCacheMu.Unlock()
+	delete(h.rankingCache, eventID)
 	return tx.Commit().Error
 }
 

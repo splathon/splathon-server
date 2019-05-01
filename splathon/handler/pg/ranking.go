@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"time"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/swagger/models"
@@ -16,6 +17,12 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 	eventID, err := h.queryInternalEventID(params.EventID)
 	if err != nil {
 		return nil, err
+	}
+
+	h.rankingCacheMu.Lock()
+	defer h.rankingCacheMu.Unlock()
+	if cache, ok := h.rankingCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
+		return cache.ranking, nil
 	}
 
 	var (
@@ -49,6 +56,11 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		rankResp.RankTime = fmt.Sprintf("予選第%dラウンド終了時点", rankResp.Rankings[0].NumOfMatches)
 	} else {
 		rankResp.RankTime = "開始時点"
+	}
+
+	h.rankingCache[eventID] = &rankingCache{
+		ranking:   rankResp,
+		timestamp: time.Now(),
 	}
 	return rankResp, nil
 }
