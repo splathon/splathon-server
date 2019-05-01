@@ -73,13 +73,6 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 	defer h.rankingCacheMu.Unlock()
 	delete(h.rankingCache, eventID)
 
-	h.resultCacheMu.Lock()
-	defer h.resultCacheMu.Unlock()
-	fmt.Printf("remove result cache: teamID=%d", match.TeamId)
-	fmt.Printf("remove result cache: teamID=%d", match.OpponentId)
-	delete(h.resultCache, resultCacheKey{eventID: eventID, teamID: match.TeamId})
-	delete(h.resultCache, resultCacheKey{eventID: eventID, teamID: match.OpponentId})
-	delete(h.resultCache, resultCacheKey{eventID: eventID, teamID: 0})
 	return tx.Commit().Error
 }
 
