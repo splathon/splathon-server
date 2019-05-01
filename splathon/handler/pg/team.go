@@ -2,7 +2,9 @@ package pg
 
 import (
 	"context"
+	"fmt"
 	"sort"
+	"time"
 
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
@@ -13,6 +15,13 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 	eventID, err := h.queryInternalEventID(params.EventID)
 	if err != nil {
 		return nil, err
+	}
+
+	h.teamCacheMu.Lock()
+	defer h.teamCacheMu.Unlock()
+	if cached, ok := h.teamCache[eventID]; ok && time.Now().Sub(cached.timestamp) < 30*time.Minute {
+		fmt.Println("return from cache")
+		return cached.teams, nil
 	}
 
 	var (
@@ -47,6 +56,10 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 			// TODO(haya14busa): Remove later when all participants data are in database.
 			fillInDummyMembers(false, r.Teams[i])
 		}
+	}
+	h.teamCache[eventID] = &teamCache{
+		teams:     r,
+		timestamp: time.Now(),
 	}
 	return r, nil
 }
