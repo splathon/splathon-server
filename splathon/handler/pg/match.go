@@ -196,8 +196,9 @@ func (h *Handler) GetNextMatch(ctx context.Context, params match.GetNextMatchPar
 	if err != nil {
 		return nil, err
 	}
-	if !matchFound || (released != -1 && round > released) {
-		// Return non-error if the next match is not created yet.
+	isNonReleasedRound := match.QualifierId.Valid && released != -1 && round > released
+	if !matchFound || isNonReleasedRound {
+		// Return non-error if the next match is not created yet or not released yet.
 		return &models.GetNextMatchResponse{}, nil
 	}
 
