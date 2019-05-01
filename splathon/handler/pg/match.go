@@ -216,6 +216,15 @@ func (h *Handler) UpdateMatch(ctx context.Context, params admin.UpdateMatchParam
 	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
 		return err
 	}
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("UpdateMatch: remove result cache: teamID=%d", *params.Match.AlphaTeamID)
+	fmt.Printf("UpdateMatch: remove result cache: teamID=%d", *params.Match.BravoTeamID)
+	delete(h.resultCache, resultCacheKey{eventID: eventID, teamID: *params.Match.AlphaTeamID})
+	delete(h.resultCache, resultCacheKey{eventID: eventID, teamID: *params.Match.BravoTeamID})
+	delete(h.resultCache, resultCacheKey{eventID: eventID, teamID: 0})
 	return h.db.Model(&Match{Id: params.MatchID}).Updates(map[string]interface{}{
 		"team_id":     *params.Match.AlphaTeamID,
 		"opponent_id": *params.Match.BravoTeamID,
