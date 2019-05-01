@@ -22,6 +22,7 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 	h.rankingCacheMu.Lock()
 	defer h.rankingCacheMu.Unlock()
 	if cache, ok := h.rankingCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
+		fmt.Println("ranking cached")
 		return cache.ranking, nil
 	}
 
