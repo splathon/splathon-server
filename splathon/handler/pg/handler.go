@@ -27,11 +27,23 @@ type Handler struct {
 
 	teamCacheMu sync.Mutex
 	teamCache   map[int64]*teamCache // key: event ID
+
+	resultCacheMu sync.Mutex
+	resultCache   map[resultCacheKey]*resultCache
 }
 
 type teamCache struct {
 	teams     *models.Teams
 	timestamp time.Time
+}
+
+type resultCache struct {
+	results   *models.Results
+	timestamp time.Time
+}
+type resultCacheKey struct {
+	eventID int64
+	teamID  int64
 }
 
 type Option struct {
@@ -90,8 +102,9 @@ func nonEmptyEnv(envname string) (string, error) {
 
 func NewHandler(opt *Option) (*Handler, error) {
 	handler := &Handler{
-		eventCache: make(map[int64]int64),
-		teamCache:  make(map[int64]*teamCache),
+		eventCache:  make(map[int64]int64),
+		teamCache:   make(map[int64]*teamCache),
+		resultCache: make(map[resultCacheKey]*resultCache),
 	}
 
 	// Setup DB.
