@@ -717,6 +717,35 @@ func init() {
         }
       }
     },
+    "/v{eventId}/schedule": {
+      "get": {
+        "description": "Return event schedule data",
+        "operationId": "getSchedule",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Schedule"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/teams": {
       "get": {
         "description": "Return team list",
@@ -1537,6 +1566,34 @@ func init() {
         },
         "name": {
           "description": "Localized rule name.",
+          "type": "string"
+        }
+      }
+    },
+    "Schedule": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ScheduleEntry"
+          }
+        }
+      }
+    },
+    "ScheduleEntry": {
+      "type": "object",
+      "properties": {
+        "duration_sec": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "start_timestamp_sec": {
+          "description": "Unix timestamp in seconds.",
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
           "type": "string"
         }
       }
@@ -2372,6 +2429,35 @@ func init() {
         }
       }
     },
+    "/v{eventId}/schedule": {
+      "get": {
+        "description": "Return event schedule data",
+        "operationId": "getSchedule",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Schedule"
+            }
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/teams": {
       "get": {
         "description": "Return team list",
@@ -3192,6 +3278,34 @@ func init() {
         },
         "name": {
           "description": "Localized rule name.",
+          "type": "string"
+        }
+      }
+    },
+    "Schedule": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ScheduleEntry"
+          }
+        }
+      }
+    },
+    "ScheduleEntry": {
+      "type": "object",
+      "properties": {
+        "duration_sec": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "start_timestamp_sec": {
+          "description": "Unix timestamp in seconds.",
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
           "type": "string"
         }
       }

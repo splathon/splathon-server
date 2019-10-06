@@ -79,6 +79,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		ResultGetResultHandler: result.GetResultHandlerFunc(func(params result.GetResultParams) middleware.Responder {
 			return middleware.NotImplemented("operation ResultGetResult has not yet been implemented")
 		}),
+		GetScheduleHandler: GetScheduleHandlerFunc(func(params GetScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetSchedule has not yet been implemented")
+		}),
 		GetTeamDetailHandler: GetTeamDetailHandlerFunc(func(params GetTeamDetailParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetTeamDetail has not yet been implemented")
 		}),
@@ -161,6 +164,8 @@ type SplathonAPI struct {
 	AdminGetReleaseQualifierHandler admin.GetReleaseQualifierHandler
 	// ResultGetResultHandler sets the operation handler for the get result operation
 	ResultGetResultHandler result.GetResultHandler
+	// GetScheduleHandler sets the operation handler for the get schedule operation
+	GetScheduleHandler GetScheduleHandler
 	// GetTeamDetailHandler sets the operation handler for the get team detail operation
 	GetTeamDetailHandler GetTeamDetailHandler
 	// ListNoticesHandler sets the operation handler for the list notices operation
@@ -288,6 +293,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.ResultGetResultHandler == nil {
 		unregistered = append(unregistered, "result.GetResultHandler")
+	}
+
+	if o.GetScheduleHandler == nil {
+		unregistered = append(unregistered, "GetScheduleHandler")
 	}
 
 	if o.GetTeamDetailHandler == nil {
@@ -483,6 +492,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v{eventId}/results"] = result.NewGetResult(o.context, o.ResultGetResultHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v{eventId}/schedule"] = NewGetSchedule(o.context, o.GetScheduleHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
