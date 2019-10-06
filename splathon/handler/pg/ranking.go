@@ -26,6 +26,20 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		return cache.ranking, nil
 	}
 
+	rankResp, err := h.BuildRanking(eventID, true)
+	if err != nil {
+		return nil, err
+	}
+
+	h.rankingCache[eventID] = &rankingCache{
+		ranking:   rankResp,
+		timestamp: time.Now(),
+	}
+	return rankResp, nil
+}
+
+// completed: true if build ranking only from completed qualifier.
+func (h *Handler) BuildRanking(eventID int64, completed bool) (*models.Ranking, error) {
 	var (
 		teams        []*Team
 		matches      []*Match
@@ -52,16 +66,15 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		return nil, err
 	}
 
-	rankResp := buildRanking(teams, filterCompletedMatches(teams, matches), buildTeam2Members(participants))
+	ms := matches
+	if completed {
+		ms = filterCompletedMatches(teams, matches)
+	}
+	rankResp := buildRanking(teams, ms, buildTeam2Members(participants))
 	if len(rankResp.Rankings) > 0 {
 		rankResp.RankTime = fmt.Sprintf("予選第%dラウンド終了時点", rankResp.Rankings[0].NumOfMatches)
 	} else {
 		rankResp.RankTime = "開始時点"
-	}
-
-	h.rankingCache[eventID] = &rankingCache{
-		ranking:   rankResp,
-		timestamp: time.Now(),
 	}
 	return rankResp, nil
 }
