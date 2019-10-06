@@ -14,7 +14,7 @@ func (h *Handler) GetSchedule(context.Context, operations.GetScheduleParams) (*m
 		// https://url-c.com/tc/
 		Entries: []*models.ScheduleEntry{
 			{
-				Title:             "8:00",
+				Title:             "開会",
 				StartTimestampSec: 1571526000,
 			},
 			{
