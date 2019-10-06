@@ -596,6 +596,26 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/schedule":
+    get:
+      description: "Return event schedule data"
+      operationId: "getSchedule"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/Schedule"
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object
@@ -1189,3 +1209,27 @@ definitions:
       round:
         type: integer
         format: int32
+
+  Schedule:
+    type: object
+    required:
+      - name
+      - numbering
+    properties:
+      entries:
+        type: array
+        items:
+          $ref: "#/definitions/ScheduleEntry"
+
+  ScheduleEntry:
+    type: object
+    properties:
+      title:
+        type: string
+      start_timestamp_sec:
+        description: "Unix timestamp in seconds."
+        type: integer
+        format: int64
+      duration_sec:
+        type: integer
+        format: int64
