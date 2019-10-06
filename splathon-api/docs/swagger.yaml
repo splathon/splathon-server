@@ -1212,9 +1212,6 @@ definitions:
 
   Schedule:
     type: object
-    required:
-      - name
-      - numbering
     properties:
       entries:
         type: array
