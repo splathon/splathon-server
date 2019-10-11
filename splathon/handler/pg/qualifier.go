@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"time"
 
+	gormbulk "github.com/haya14busa/gorm-bulk-insert"
+	"github.com/jinzhu/gorm"
 	"github.com/splathon/splathon-server/swagger/models"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
 	"golang.org/x/sync/errgroup"
@@ -61,15 +63,15 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 			tx.Rollback()
 		}
 	}()
-	if err := h.createNextQualifierRound(teams, rankResp, matches, eventID,
+	if err := h.createNextQualifierRound(tx, teams, rankResp, matches, eventID,
 		nextQualifierRound, rooms); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("failed to create next qualifier round: %v", err)
 	}
-	return nil
+	return tx.Commit().Error
 }
 
-func (h *Handler) createNextQualifierRound(teams []*Team,
+func (h *Handler) createNextQualifierRound(tx *gorm.DB, teams []*Team,
 	ranking *models.Ranking, completedMatches []*Match,
 	eventID int64, nextQualifierRound int, rooms []*Room) error {
 	// Fill in Team.Points from ranking.
@@ -91,7 +93,7 @@ func (h *Handler) createNextQualifierRound(teams []*Team,
 	}
 
 	nextQ := Qualifier{EventId: eventID, Round: int32(nextQualifierRound)}
-	if err := h.db.Where(nextQ).FirstOrCreate(&nextQ).Error; err != nil {
+	if err := tx.Where(nextQ).FirstOrCreate(&nextQ).Error; err != nil {
 		return err
 	}
 
@@ -118,11 +120,9 @@ func (h *Handler) createNextQualifierRound(teams []*Team,
 	if err := allocateRooms(newMatches, rooms, team2roomScore, random); err != nil {
 		return err
 	}
-	// NOTE(haya14busa): use bulk insert?
-	for _, m := range newMatches {
-		if err := h.db.Create(m).Error; err != nil {
-			return err
-		}
+	records := make([]interface{}, len(newMatches))
+	for i, m := range newMatches {
+		records[i] = *m
 	}
-	return nil
+	return gormbulk.BulkInsert(tx, records, 3000)
 }
