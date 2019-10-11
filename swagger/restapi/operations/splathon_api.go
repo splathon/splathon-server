@@ -43,6 +43,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		AdminCreateNewQualifierHandler: admin.CreateNewQualifierHandlerFunc(func(params admin.CreateNewQualifierParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminCreateNewQualifier has not yet been implemented")
+		}),
 		AdminDeleteNoticeHandler: admin.DeleteNoticeHandlerFunc(func(params admin.DeleteNoticeParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminDeleteNotice has not yet been implemented")
 		}),
@@ -140,6 +143,8 @@ type SplathonAPI struct {
 	// JSONProducer registers a producer for a "application/json; charset=utf-8" mime type
 	JSONProducer runtime.Producer
 
+	// AdminCreateNewQualifierHandler sets the operation handler for the create new qualifier operation
+	AdminCreateNewQualifierHandler admin.CreateNewQualifierHandler
 	// AdminDeleteNoticeHandler sets the operation handler for the delete notice operation
 	AdminDeleteNoticeHandler admin.DeleteNoticeHandler
 	// AdminUpdateReleaseQualifierHandler sets the operation handler for the update release qualifier operation
@@ -245,6 +250,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
+	}
+
+	if o.AdminCreateNewQualifierHandler == nil {
+		unregistered = append(unregistered, "admin.CreateNewQualifierHandler")
 	}
 
 	if o.AdminDeleteNoticeHandler == nil {
@@ -432,6 +441,11 @@ func (o *SplathonAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/qualifier"] = admin.NewCreateNewQualifier(o.context, o.AdminCreateNewQualifierHandler)
 
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
