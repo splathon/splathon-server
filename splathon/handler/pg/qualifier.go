@@ -24,6 +24,7 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 		teams              []*Team
 		matches            []*Match
 		nextQualifierRound int
+		rooms              []*Room
 	)
 
 	var eg errgroup.Group
@@ -46,6 +47,10 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 		return nil
 	})
 
+	eg.Go(func() error {
+		return h.db.Where("event_id = ?", eventID).Order("id asc").Find(&rooms).Error
+	})
+
 	if err := eg.Wait(); err != nil {
 		return err
 	}
@@ -57,7 +62,7 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 		}
 	}()
 	if err := h.createNextQualifierRound(teams, rankResp, matches, eventID,
-		nextQualifierRound); err != nil {
+		nextQualifierRound, rooms); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("failed to create next qualifier round: %v", err)
 	}
@@ -66,11 +71,15 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 
 func (h *Handler) createNextQualifierRound(teams []*Team,
 	ranking *models.Ranking, completedMatches []*Match,
-	eventID int64, nextQualifierRound int) error {
+	eventID int64, nextQualifierRound int, rooms []*Room) error {
 	// Fill in Team.Points from ranking.
 	teamMap := make(map[int64]*Team)
 	for _, t := range teams {
 		teamMap[t.Id] = t
+	}
+	roomMap := make(map[int64]*Room)
+	for _, r := range rooms {
+		roomMap[r.Id] = r
 	}
 	for _, r := range ranking.Rankings {
 		t := r.Team
@@ -91,15 +100,27 @@ func (h *Handler) createNextQualifierRound(teams []*Team,
 		return err
 	}
 
-	// NOTE(haya14busa): use bulk insert?
 	// https://github.com/t-tiger/gorm-bulk-insert doesn't quote column name.
-	for _, pair := range pairs {
-		if err := h.db.Create(&Match{
+	newMatches := make([]*Match, len(pairs))
+	for i, pair := range pairs {
+		newMatches[i] = &Match{
 			TeamId:      pair.a,
 			OpponentId:  pair.b,
 			QualifierId: sql.NullInt64{Int64: nextQ.GetID(), Valid: true},
-			// TODO(haya14busa): assign room and order.
-		}).Error; err != nil {
+		}
+	}
+	team2roomScore := make(map[int64]int)
+	for _, m := range completedMatches {
+		score := int(roomMap[m.RoomId].Priority)
+		team2roomScore[m.TeamId] += score
+		team2roomScore[m.OpponentId] += score
+	}
+	if err := allocateRooms(newMatches, rooms, team2roomScore, random); err != nil {
+		return err
+	}
+	// NOTE(haya14busa): use bulk insert?
+	for _, m := range newMatches {
+		if err := h.db.Create(m).Error; err != nil {
 			return err
 		}
 	}
