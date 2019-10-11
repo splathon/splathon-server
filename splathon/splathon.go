@@ -34,7 +34,9 @@ type Handler interface {
 	ListReception(context.Context, admin.ListReceptionParams) (*models.ListReceptionResponse, error)
 	UpdateReception(context.Context, admin.UpdateReceptionParams) error
 	AddTournamentRound(context.Context, admin.AddTournamentRoundParams) error
+	CreateNewQualifier(context.Context, admin.CreateNewQualifierParams) error
 
+	// Below API doesn't use postgres in pg handler.
 	UpdateReleaseQualifier(context.Context, admin.UpdateReleaseQualifierParams) error
 	GetReleaseQualifier(context.Context, admin.GetReleaseQualifierParams) (int32, error)
 }

@@ -184,6 +184,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return admin.NewAddTournamentRoundOK()
 	})
+	api.AdminCreateNewQualifierHandler = admin.CreateNewQualifierHandlerFunc(func(params admin.CreateNewQualifierParams) middleware.Responder {
+		if err := thonHandler.CreateNewQualifier(reqContext(params.HTTPRequest), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewCreateNewQualifierOK()
+	})
 	api.AdminUpdateReleaseQualifierHandler = admin.UpdateReleaseQualifierHandlerFunc(func(params admin.UpdateReleaseQualifierParams) middleware.Responder {
 		if err := thonHandler.UpdateReleaseQualifier(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)
