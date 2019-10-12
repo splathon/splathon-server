@@ -112,6 +112,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		AdminUpdateReceptionHandler: admin.UpdateReceptionHandlerFunc(func(params admin.UpdateReceptionParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminUpdateReception has not yet been implemented")
 		}),
+		AdminUpdateScheduleHandler: admin.UpdateScheduleHandlerFunc(func(params admin.UpdateScheduleParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminUpdateSchedule has not yet been implemented")
+		}),
 		AdminWriteNoticeHandler: admin.WriteNoticeHandlerFunc(func(params admin.WriteNoticeParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminWriteNotice has not yet been implemented")
 		}),
@@ -192,6 +195,8 @@ type SplathonAPI struct {
 	AdminUpdateMatchHandler admin.UpdateMatchHandler
 	// AdminUpdateReceptionHandler sets the operation handler for the update reception operation
 	AdminUpdateReceptionHandler admin.UpdateReceptionHandler
+	// AdminUpdateScheduleHandler sets the operation handler for the update schedule operation
+	AdminUpdateScheduleHandler admin.UpdateScheduleHandler
 	// AdminWriteNoticeHandler sets the operation handler for the write notice operation
 	AdminWriteNoticeHandler admin.WriteNoticeHandler
 
@@ -347,6 +352,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.AdminUpdateReceptionHandler == nil {
 		unregistered = append(unregistered, "admin.UpdateReceptionHandler")
+	}
+
+	if o.AdminUpdateScheduleHandler == nil {
+		unregistered = append(unregistered, "admin.UpdateScheduleHandler")
 	}
 
 	if o.AdminWriteNoticeHandler == nil {
@@ -565,6 +574,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/v{eventId}/update-reception"] = admin.NewUpdateReception(o.context, o.AdminUpdateReceptionHandler)
+
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/v{eventId}/schedule"] = admin.NewUpdateSchedule(o.context, o.AdminUpdateScheduleHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

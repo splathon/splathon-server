@@ -107,6 +107,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return operations.NewGetScheduleOK().WithPayload(res)
 	})
+	api.AdminUpdateScheduleHandler = admin.UpdateScheduleHandlerFunc(func(params admin.UpdateScheduleParams) middleware.Responder {
+		if err := thonHandler.UpdateSchedule(reqContext(params.HTTPRequest), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return operations.NewUpdateScheduleOK()
+	})
 	api.GetTeamDetailHandler = operations.GetTeamDetailHandlerFunc(func(params operations.GetTeamDetailParams) middleware.Responder {
 		res, err := thonHandler.GetTeamDetail(reqContext(params.HTTPRequest), params)
 		if err != nil {

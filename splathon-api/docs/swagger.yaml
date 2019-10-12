@@ -666,6 +666,34 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+    put:
+      tags:
+      - "admin"
+      description: "Update event schedule data"
+      operationId: "updateSchedule"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      - name: request
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/Schedule"
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
 definitions:
   Error:
     type: object

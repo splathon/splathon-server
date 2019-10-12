@@ -21,6 +21,7 @@ type Handler interface {
 	GetRanking(context.Context, ranking.GetRankingParams) (*models.Ranking, error)
 	ListTeams(context.Context, operations.ListTeamsParams) (*models.Teams, error)
 	GetSchedule(context.Context, operations.GetScheduleParams) (*models.Schedule, error)
+	UpdateSchedule(context.Context, admin.UpdateScheduleParams) error
 	GetTeamDetail(context.Context, operations.GetTeamDetailParams) (*models.Team, error)
 	UpdateBattle(context.Context, operations.UpdateBattleParams) error
 	Login(context.Context, operations.LoginParams) (*models.LoginResponse, error)
