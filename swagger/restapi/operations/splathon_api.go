@@ -461,10 +461,10 @@ func (o *SplathonAPI) initHandlerCache() {
 	}
 	o.handlers["DELETE"]["/v{eventId}/notices/{noticeId}"] = admin.NewDeleteNotice(o.context, o.AdminDeleteNoticeHandler)
 
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/v{eventId}/qualifier"] = admin.NewDeleteQualifier(o.context, o.AdminDeleteQualifierHandler)
+	o.handlers["POST"]["/v{eventId}/delete-qualifier"] = admin.NewDeleteQualifier(o.context, o.AdminDeleteQualifierHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)

@@ -29,7 +29,7 @@ func NewDeleteQualifier(ctx *middleware.Context, handler DeleteQualifierHandler)
 	return &DeleteQualifier{Context: ctx, Handler: handler}
 }
 
-/*DeleteQualifier swagger:route DELETE /v{eventId}/qualifier admin deleteQualifier
+/*DeleteQualifier swagger:route POST /v{eventId}/delete-qualifier admin deleteQualifier
 
 DeleteQualifier delete qualifier API
 

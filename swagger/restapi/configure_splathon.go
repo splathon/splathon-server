@@ -190,6 +190,12 @@ func configureAPI(api *operations.SplathonAPI) http.Handler {
 		}
 		return admin.NewCreateNewQualifierOK()
 	})
+	api.AdminDeleteQualifierHandler = admin.DeleteQualifierHandlerFunc(func(params admin.DeleteQualifierParams) middleware.Responder {
+		if err := thonHandler.DeleteQualifier(reqContext(params.HTTPRequest), params); err != nil {
+			return logAndErr(err, params.HTTPRequest)
+		}
+		return admin.NewDeleteQualifierOK()
+	})
 	api.AdminUpdateReleaseQualifierHandler = admin.UpdateReleaseQualifierHandlerFunc(func(params admin.UpdateReleaseQualifierParams) middleware.Responder {
 		if err := thonHandler.UpdateReleaseQualifier(reqContext(params.HTTPRequest), params); err != nil {
 			return logAndErr(err, params.HTTPRequest)

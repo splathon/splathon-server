@@ -36,6 +36,47 @@ func init() {
   "host": "splathon-api-us.appspot.com",
   "basePath": "/splathon/",
   "paths": {
+    "/v{eventId}/delete-qualifier": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "DeleteQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/DeleteQualifierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/event": {
       "get": {
         "description": "Return event data",
@@ -457,45 +498,6 @@ func init() {
             "name": "X-SPLATHON-API-TOKEN",
             "in": "header",
             "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "default": {
-            "description": "Generic error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "admin"
-        ],
-        "operationId": "DeleteQualifier",
-        "parameters": [
-          {
-            "type": "integer",
-            "format": "int64",
-            "name": "eventId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "X-SPLATHON-API-TOKEN",
-            "in": "header",
-            "required": true
-          },
-          {
-            "name": "request",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/DeleteQualifierRequest"
-            }
           }
         ],
         "responses": {
@@ -1830,6 +1832,47 @@ func init() {
   "host": "splathon-api-us.appspot.com",
   "basePath": "/splathon/",
   "paths": {
+    "/v{eventId}/delete-qualifier": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "DeleteQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/DeleteQualifierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/v{eventId}/event": {
       "get": {
         "description": "Return event data",
@@ -2251,45 +2294,6 @@ func init() {
             "name": "X-SPLATHON-API-TOKEN",
             "in": "header",
             "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          },
-          "default": {
-            "description": "Generic error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "admin"
-        ],
-        "operationId": "DeleteQualifier",
-        "parameters": [
-          {
-            "type": "integer",
-            "format": "int64",
-            "name": "eventId",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "X-SPLATHON-API-TOKEN",
-            "in": "header",
-            "required": true
-          },
-          {
-            "name": "request",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/DeleteQualifierRequest"
-            }
           }
         ],
         "responses": {

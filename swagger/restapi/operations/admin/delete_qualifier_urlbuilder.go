@@ -42,7 +42,7 @@ func (o *DeleteQualifierURL) SetBasePath(bp string) {
 func (o *DeleteQualifierURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/v{eventId}/qualifier"
+	var _path = "/v{eventId}/delete-qualifier"
 
 	eventID := swag.FormatInt64(o.EventID)
 	if eventID != "" {
