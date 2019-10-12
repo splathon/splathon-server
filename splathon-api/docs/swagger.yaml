@@ -544,6 +544,29 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/qualifier":
+    post:
+      operationId: "CreateNewQualifier"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
   "/v{eventId}/release-qualifier":
     get:
       operationId: "getReleaseQualifier"
