@@ -7,8 +7,6 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-var _ = datastore.NewKey
-
 type QualifierRelease struct {
 	EventID        int64
 	QualifierRound int32
