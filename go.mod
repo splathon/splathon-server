@@ -3,6 +3,8 @@ module github.com/splathon/splathon-server
 go 1.12
 
 require (
+	cloud.google.com/go v0.44.1
+	cloud.google.com/go/datastore v1.0.0
 	github.com/denisenkom/go-mssqldb v0.0.0-20191001013358-cfbb681360f0 // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/go-openapi/errors v0.19.0
@@ -14,7 +16,7 @@ require (
 	github.com/go-openapi/validate v0.19.0
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
-	github.com/google/go-cmp v0.2.0
+	github.com/google/go-cmp v0.3.0
 	github.com/haya14busa/gorm-bulk-insert v0.0.0-20191011172930-b087fa06875b
 	github.com/haya14busa/secretbox v0.0.0-20180525171038-07c7ecf409f5
 	github.com/jessevdk/go-flags v1.4.0
@@ -24,7 +26,7 @@ require (
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/rs/cors v1.6.0
-	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
-	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
-	google.golang.org/appengine v1.5.0
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	google.golang.org/appengine v1.6.1
 )
