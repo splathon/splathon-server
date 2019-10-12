@@ -567,7 +567,8 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-    delete:
+  "/v{eventId}/delete-qualifier":
+    post:
       operationId: "DeleteQualifier"
       tags:
       - "admin"
