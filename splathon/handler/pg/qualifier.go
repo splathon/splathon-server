@@ -17,6 +17,9 @@ import (
 var random = rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
 func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNewQualifierParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
 	eventID, err := h.queryInternalEventID(params.EventID)
 	if err != nil {
 		return err
@@ -128,6 +131,9 @@ func (h *Handler) createNextQualifierRound(tx *gorm.DB, teams []*Team,
 }
 
 func (h *Handler) DeleteQualifier(ctx context.Context, params admin.DeleteQualifierParams) error {
+	if err := h.checkAdminAuth(params.XSPLATHONAPITOKEN); err != nil {
+		return err
+	}
 	eventID, err := h.queryInternalEventID(params.EventID)
 	if err != nil {
 		return err
