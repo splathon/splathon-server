@@ -3,8 +3,8 @@ package pg
 import (
 	"context"
 
+	"cloud.google.com/go/datastore"
 	"github.com/splathon/splathon-server/swagger/restapi/operations/admin"
-	"google.golang.org/appengine/datastore"
 )
 
 type QualifierRelease struct {
@@ -14,7 +14,7 @@ type QualifierRelease struct {
 
 func (q *QualifierRelease) dsKey(ctx context.Context) *datastore.Key {
 	const kind = "QualifierRelease"
-	return datastore.NewKey(ctx, kind, "", q.EventID, nil)
+	return datastore.IDKey(kind, q.EventID, nil)
 }
 
 func UpdateQualifierRelease(ctx context.Context, eventID int64, qualifierRound int32) error {
@@ -22,14 +22,22 @@ func UpdateQualifierRelease(ctx context.Context, eventID int64, qualifierRound i
 		EventID:        eventID,
 		QualifierRound: qualifierRound,
 	}
-	_, err := datastore.Put(ctx, e.dsKey(ctx), e)
+	cli, err := datastoreClient(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = cli.Put(ctx, e.dsKey(ctx), e)
 	return err
 }
 
 func GetQualifierRelease(ctx context.Context, eventID int64) (int32, error) {
 	k := (&QualifierRelease{EventID: eventID}).dsKey(ctx)
 	e := new(QualifierRelease)
-	if err := datastore.Get(ctx, k, e); err != nil {
+	cli, err := datastoreClient(ctx)
+	if err != nil {
+		return 0, err
+	}
+	if err := cli.Get(ctx, k, e); err != nil {
 		if err == datastore.ErrNoSuchEntity {
 			return -1, nil
 		}
