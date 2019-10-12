@@ -470,6 +470,45 @@ func init() {
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "DeleteQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/DeleteQualifierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/v{eventId}/ranking": {
@@ -985,6 +1024,15 @@ func init() {
             "alpha",
             "bravo"
           ]
+        }
+      }
+    },
+    "DeleteQualifierRequest": {
+      "type": "object",
+      "properties": {
+        "round": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2216,6 +2264,45 @@ func init() {
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "operationId": "DeleteQualifier",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "eventId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "X-SPLATHON-API-TOKEN",
+            "in": "header",
+            "required": true
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/DeleteQualifierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Generic error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/v{eventId}/ranking": {
@@ -2731,6 +2818,15 @@ func init() {
             "alpha",
             "bravo"
           ]
+        }
+      }
+    },
+    "DeleteQualifierRequest": {
+      "type": "object",
+      "properties": {
+        "round": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
