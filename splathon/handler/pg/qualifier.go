@@ -126,3 +126,11 @@ func (h *Handler) createNextQualifierRound(tx *gorm.DB, teams []*Team,
 	}
 	return gormbulk.BulkInsert(tx, records, 3000)
 }
+
+func (h *Handler) DeleteQualifier(ctx context.Context, params admin.DeleteQualifierParams) error {
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return err
+	}
+	return h.db.Where("event_id = ? AND round = ?", eventID, params.Request.Round).Delete(Qualifier{}).Error
+}

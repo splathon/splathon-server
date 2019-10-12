@@ -49,6 +49,9 @@ func NewSplathonAPI(spec *loads.Document) *SplathonAPI {
 		AdminDeleteNoticeHandler: admin.DeleteNoticeHandlerFunc(func(params admin.DeleteNoticeParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminDeleteNotice has not yet been implemented")
 		}),
+		AdminDeleteQualifierHandler: admin.DeleteQualifierHandlerFunc(func(params admin.DeleteQualifierParams) middleware.Responder {
+			return middleware.NotImplemented("operation AdminDeleteQualifier has not yet been implemented")
+		}),
 		AdminUpdateReleaseQualifierHandler: admin.UpdateReleaseQualifierHandlerFunc(func(params admin.UpdateReleaseQualifierParams) middleware.Responder {
 			return middleware.NotImplemented("operation AdminUpdateReleaseQualifier has not yet been implemented")
 		}),
@@ -147,6 +150,8 @@ type SplathonAPI struct {
 	AdminCreateNewQualifierHandler admin.CreateNewQualifierHandler
 	// AdminDeleteNoticeHandler sets the operation handler for the delete notice operation
 	AdminDeleteNoticeHandler admin.DeleteNoticeHandler
+	// AdminDeleteQualifierHandler sets the operation handler for the delete qualifier operation
+	AdminDeleteQualifierHandler admin.DeleteQualifierHandler
 	// AdminUpdateReleaseQualifierHandler sets the operation handler for the update release qualifier operation
 	AdminUpdateReleaseQualifierHandler admin.UpdateReleaseQualifierHandler
 	// AdminAddTournamentRoundHandler sets the operation handler for the add tournament round operation
@@ -258,6 +263,10 @@ func (o *SplathonAPI) Validate() error {
 
 	if o.AdminDeleteNoticeHandler == nil {
 		unregistered = append(unregistered, "admin.DeleteNoticeHandler")
+	}
+
+	if o.AdminDeleteQualifierHandler == nil {
+		unregistered = append(unregistered, "admin.DeleteQualifierHandler")
 	}
 
 	if o.AdminUpdateReleaseQualifierHandler == nil {
@@ -451,6 +460,11 @@ func (o *SplathonAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/v{eventId}/notices/{noticeId}"] = admin.NewDeleteNotice(o.context, o.AdminDeleteNoticeHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v{eventId}/delete-qualifier"] = admin.NewDeleteQualifier(o.context, o.AdminDeleteQualifierHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)

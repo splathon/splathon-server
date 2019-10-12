@@ -567,6 +567,33 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  "/v{eventId}/delete-qualifier":
+    post:
+      operationId: "DeleteQualifier"
+      tags:
+      - "admin"
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - name: "X-SPLATHON-API-TOKEN"
+        in: header
+        type: string
+        required: true
+      - name: request
+        in: body
+        schema:
+          $ref: "#/definitions/DeleteQualifierRequest"
+      responses:
+        200:
+          description: Success
+        default:
+          description: Generic error
+          schema:
+            $ref: "#/definitions/Error"
+
   "/v{eventId}/release-qualifier":
     get:
       operationId: "getReleaseQualifier"
@@ -1227,6 +1254,13 @@ definitions:
         format: int32
 
   UpdateReleaseQualifierRequest:
+    type: object
+    properties:
+      round:
+        type: integer
+        format: int32
+
+  DeleteQualifierRequest:
     type: object
     properties:
       round:
