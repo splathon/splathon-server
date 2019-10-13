@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
@@ -46,7 +47,8 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 
 	eg.Go(func() error {
 		if err := h.db.Table("qualifiers").Select("MAX(round)").Where("event_id = ?", eventID).Row().Scan(&nextQualifierRound); err != nil {
-			return err
+			// For first round, the above query will fail.
+			log.Printf("[INFO] failed to create next qualifier round: %v", err)
 		}
 		nextQualifierRound++
 		return nil
