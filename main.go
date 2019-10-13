@@ -9,7 +9,6 @@ import (
 	loads "github.com/go-openapi/loads"
 	"github.com/splathon/splathon-server/swagger/restapi"
 	"github.com/splathon/splathon-server/swagger/restapi/operations"
-	"google.golang.org/appengine"
 )
 
 func main() {
@@ -29,5 +28,5 @@ func main() {
 	server.ConfigureAPI()
 
 	http.Handle("/", server.GetHandler())
-	appengine.Main()
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
 }

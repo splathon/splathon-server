@@ -3,7 +3,8 @@ module github.com/splathon/splathon-server
 go 1.12
 
 require (
-	cloud.google.com/go v0.44.3
+	cloud.google.com/go v0.46.3
+	cloud.google.com/go/bigquery v1.1.0 // indirect
 	cloud.google.com/go/datastore v1.0.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20191010210010-c384db38a6f3
 	github.com/denisenkom/go-mssqldb v0.0.0-20191001013358-cfbb681360f0 // indirect
@@ -29,5 +30,4 @@ require (
 	github.com/rs/cors v1.6.0
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	google.golang.org/appengine v1.6.1
 )

@@ -1,5 +1,5 @@
 # https://cloud.google.com/appengine/docs/standard/go/config/appref
-runtime: go111
+runtime: go112
 
 handlers:
 - url: /.*
