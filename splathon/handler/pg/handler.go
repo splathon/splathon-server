@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/haya14busa/secretbox"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/splathon/splathon-server/swagger/models"
 )
 
@@ -57,10 +57,13 @@ func (opt *Option) DBArg() string {
 	if opt.ApplicationName != "" {
 		appname = opt.ApplicationName
 	}
-	arg := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s fallback_application_name=%s",
-		opt.Host, opt.Port, opt.User, opt.DBName, opt.Password, appname)
+	arg := fmt.Sprintf("host=%s user=%s dbname=%s password=%s fallback_application_name=%s",
+		opt.Host, opt.User, opt.DBName, opt.Password, appname)
 	if opt.SSLMode != "" {
 		arg = fmt.Sprintf("%s sslmode=%s", arg, opt.SSLMode)
+	}
+	if opt.Port != "" {
+		arg = fmt.Sprintf("%s port=%s", arg, opt.Port)
 	}
 	return arg
 }
@@ -69,9 +72,6 @@ func NewOptionFromEnv() (*Option, error) {
 	opt := &Option{}
 	var err error
 	if opt.Host, err = nonEmptyEnv("DB_HOST"); err != nil {
-		return nil, err
-	}
-	if opt.Port, err = nonEmptyEnv("DB_PORT"); err != nil {
 		return nil, err
 	}
 	if opt.User, err = nonEmptyEnv("DB_USER"); err != nil {
@@ -83,6 +83,7 @@ func NewOptionFromEnv() (*Option, error) {
 	if opt.Password, err = nonEmptyEnv("DB_PASSWORD"); err != nil {
 		return nil, err
 	}
+	opt.Port = os.Getenv("DB_PORT")
 	opt.SSLMode = os.Getenv("DB_SSLMODE")
 	opt.ApplicationName = os.Getenv("DB_APPLICATION_NAME")
 	return opt, nil
@@ -104,7 +105,7 @@ func NewHandler(opt *Option) (*Handler, error) {
 	}
 
 	// Setup DB.
-	db, err := gorm.Open("postgres", opt.DBArg())
+	db, err := gorm.Open("cloudsqlpostgres", opt.DBArg())
 	if err != nil {
 		return nil, err
 	}
