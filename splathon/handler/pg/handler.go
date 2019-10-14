@@ -12,6 +12,7 @@ import (
 	"github.com/haya14busa/secretbox"
 	"github.com/jinzhu/gorm"
 	"github.com/splathon/splathon-server/swagger/models"
+	"golang.org/x/sync/singleflight"
 )
 
 // Handler is splathon API handler backed by PostgreSQL.
@@ -25,8 +26,13 @@ type Handler struct {
 	adminID string
 	adminPW string
 
+	sfgroup singleflight.Group
+
 	rankingCacheMu sync.Mutex
 	rankingCache   map[int64]*rankingCache // key: event ID
+
+	resultCacheMu sync.Mutex
+	resultCache   map[int64]*resultCache // key: event ID
 
 	teamCacheMu sync.Mutex
 	teamCache   map[int64]*teamCache // key: event ID
@@ -34,6 +40,11 @@ type Handler struct {
 
 type rankingCache struct {
 	ranking   *models.Ranking
+	timestamp time.Time
+}
+
+type resultCache struct {
+	result    *models.Results
 	timestamp time.Time
 }
 
@@ -102,6 +113,7 @@ func NewHandler(opt *Option) (*Handler, error) {
 		eventCache:   make(map[int64]int64),
 		teamCache:    make(map[int64]*teamCache),
 		rankingCache: make(map[int64]*rankingCache),
+		resultCache:  make(map[int64]*resultCache),
 	}
 
 	// Setup DB.

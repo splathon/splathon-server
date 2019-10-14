@@ -69,10 +69,8 @@ func (h *Handler) UpdateBattle(ctx context.Context, params operations.UpdateBatt
 	if err != nil {
 		return err
 	}
-	h.rankingCacheMu.Lock()
-	defer h.rankingCacheMu.Unlock()
-	delete(h.rankingCache, eventID)
-
+	defer h.clearResultCache(eventID)
+	defer h.clearRankingCache(eventID)
 	return tx.Commit().Error
 }
 
