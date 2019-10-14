@@ -527,6 +527,12 @@ func init() {
             "name": "eventId",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "description": "Return latest ranking if true.",
+            "name": "latest",
+            "in": "query"
           }
         ],
         "responses": {
@@ -2364,6 +2370,12 @@ func init() {
             "name": "eventId",
             "in": "path",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "description": "Return latest ranking if true.",
+            "name": "latest",
+            "in": "query"
           }
         ],
         "responses": {

@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 
@@ -36,6 +37,10 @@ type GetRankingParams struct {
 	  In: path
 	*/
 	EventID int64
+	/*Return latest ranking if true.
+	  In: query
+	*/
+	Latest *bool
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -47,8 +52,15 @@ func (o *GetRankingParams) BindRequest(r *http.Request, route *middleware.Matche
 
 	o.HTTPRequest = r
 
+	qs := runtime.Values(r.URL.Query())
+
 	rEventID, rhkEventID, _ := route.Params.GetOK("eventId")
 	if err := o.bindEventID(rEventID, rhkEventID, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qLatest, qhkLatest, _ := qs.GetOK("latest")
+	if err := o.bindLatest(qLatest, qhkLatest, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -73,6 +85,28 @@ func (o *GetRankingParams) bindEventID(rawData []string, hasKey bool, formats st
 		return errors.InvalidType("eventId", "path", "int64", raw)
 	}
 	o.EventID = value
+
+	return nil
+}
+
+// bindLatest binds and validates parameter Latest from query.
+func (o *GetRankingParams) bindLatest(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("latest", "query", "bool", raw)
+	}
+	o.Latest = &value
 
 	return nil
 }

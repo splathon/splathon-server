@@ -18,6 +18,8 @@ import (
 type GetRankingURL struct {
 	EventID int64
 
+	Latest *bool
+
 	_basePath string
 	// avoid unkeyed usage
 	_ struct{}
@@ -56,6 +58,18 @@ func (o *GetRankingURL) Build() (*url.URL, error) {
 		_basePath = "/splathon/"
 	}
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	var latest string
+	if o.Latest != nil {
+		latest = swag.FormatBool(*o.Latest)
+	}
+	if latest != "" {
+		qs.Set("latest", latest)
+	}
+
+	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }
