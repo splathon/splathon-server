@@ -19,21 +19,27 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 		return nil, err
 	}
 
-	h.rankingCacheMu.Lock()
-	defer h.rankingCacheMu.Unlock()
-	if cache, ok := h.rankingCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
-		fmt.Println("ranking cached")
-		return cache.ranking, nil
+	onlyFromCompleted := !(params.Latest != nil && *params.Latest)
+
+	if onlyFromCompleted {
+		h.rankingCacheMu.Lock()
+		defer h.rankingCacheMu.Unlock()
+		if cache, ok := h.rankingCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
+			fmt.Println("ranking cached")
+			return cache.ranking, nil
+		}
 	}
 
-	rankResp, err := h.BuildRanking(eventID, true)
+	rankResp, err := h.BuildRanking(eventID, onlyFromCompleted)
 	if err != nil {
 		return nil, err
 	}
 
-	h.rankingCache[eventID] = &rankingCache{
-		ranking:   rankResp,
-		timestamp: time.Now(),
+	if onlyFromCompleted {
+		h.rankingCache[eventID] = &rankingCache{
+			ranking:   rankResp,
+			timestamp: time.Now(),
+		}
 	}
 	return rankResp, nil
 }
@@ -71,7 +77,9 @@ func (h *Handler) BuildRanking(eventID int64, completed bool) (*models.Ranking, 
 		ms = filterCompletedMatches(teams, matches)
 	}
 	rankResp := buildRanking(teams, ms, buildTeam2Members(participants))
-	if len(rankResp.Rankings) > 0 {
+	if !completed {
+		rankResp.RankTime = "最新"
+	} else if len(rankResp.Rankings) > 0 && rankResp.Rankings[0].NumOfMatches != 0 {
 		rankResp.RankTime = fmt.Sprintf("予選第%dラウンド終了時点", rankResp.Rankings[0].NumOfMatches)
 	} else {
 		rankResp.RankTime = "開始時点"
@@ -124,6 +132,9 @@ func buildRanking(teams []*Team, matches []*Match, team2members map[int64][]*mod
 		}
 	}
 	for _, m := range matches {
+		if (m.TeamPoints + m.OpponentPoints) == 0 {
+			continue
+		}
 		teamMap[m.TeamId].opponentTeamIDs = append(teamMap[m.TeamId].opponentTeamIDs, m.OpponentId)
 		teamMap[m.TeamId].totalPoint += m.TeamPoints
 		teamMap[m.OpponentId].opponentTeamIDs = append(teamMap[m.OpponentId].opponentTeamIDs, m.TeamId)
