@@ -21,17 +21,23 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		return nil, err
 	}
 	isAdmin := params.XSPLATHONAPITOKEN != nil && h.checkAdminAuth(*params.XSPLATHONAPITOKEN) == nil
+	var teamID int64
+	if params.TeamID != nil {
+		teamID = *params.TeamID
+	}
 
 	// Do not use cache for requests from admin because it needs latest results
 	// regardless of release flag.
-	if !isAdmin {
+	shouldUseCache := !isAdmin && teamID == 0
+	if shouldUseCache {
 		if ok, result := h.maybeGetResultFromCache(eventID); ok {
 			return result, nil
 		}
 	}
 
-	v, err, shared := h.sfgroup.Do(fmt.Sprintf("GetResult,admin=%v", isAdmin), func() (interface{}, error) {
-		return h.getResultInternal(ctx, params, eventID, isAdmin)
+	key := fmt.Sprintf("GetResult,event_id=%v,admin=%v,team_id=%v", eventID, isAdmin, teamID)
+	v, err, shared := h.sfgroup.Do(key, func() (interface{}, error) {
+		return h.getResultInternal(ctx, eventID, isAdmin, teamID)
 	})
 	if err != nil {
 		return nil, err
@@ -42,7 +48,7 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 	result := v.(*models.Results)
 
 	// Cache result.
-	if !isAdmin {
+	if shouldUseCache {
 		h.resultCacheMu.Lock()
 		defer h.resultCacheMu.Unlock()
 		h.resultCache[eventID] = &resultCache{
@@ -63,8 +69,8 @@ func (h *Handler) maybeGetResultFromCache(eventID int64) (bool, *models.Results)
 	return false, nil
 }
 
-func (h *Handler) getResultInternal(ctx context.Context, params result.GetResultParams, eventID int64,
-	ignoreReleaseFlag bool) (*models.Results, error) {
+func (h *Handler) getResultInternal(ctx context.Context, eventID int64,
+	ignoreReleaseFlag bool, teamID int64) (*models.Results, error) {
 	var eg errgroup.Group
 
 	var (
@@ -87,8 +93,7 @@ func (h *Handler) getResultInternal(ctx context.Context, params result.GetResult
 	eg.Go(func() error {
 		qids := h.db.Table("qualifiers").Select("id").Where("event_id = ?", eventID).QueryExpr()
 		query := h.db.Where("qualifier_id in (?)", qids)
-		if params.TeamID != nil {
-			teamID := *params.TeamID
+		if teamID != 0 {
 			query = h.db.Where("qualifier_id in (?) AND (team_id = ? OR opponent_id = ?)", qids, teamID, teamID)
 		}
 		return query.Find(&qmatches).Error
@@ -97,8 +102,7 @@ func (h *Handler) getResultInternal(ctx context.Context, params result.GetResult
 	eg.Go(func() error {
 		tids := h.db.Table("tournaments").Select("id").Where("event_id = ?", eventID).QueryExpr()
 		query := h.db.Where("tournament_id in (?)", tids)
-		if params.TeamID != nil {
-			teamID := *params.TeamID
+		if teamID != 0 {
 			query = h.db.Where("tournament_id in (?) AND (team_id = ? OR opponent_id = ?)", tids, teamID, teamID)
 		}
 		return query.Find(&tmatches).Error
@@ -116,7 +120,7 @@ func (h *Handler) getResultInternal(ctx context.Context, params result.GetResult
 		return nil, err
 	}
 
-	if err := checkTeamFound(params, teams); err != nil {
+	if err := checkTeamFound(teamID, teams); err != nil {
 		return nil, err
 	}
 
@@ -133,18 +137,18 @@ func (h *Handler) getResultInternal(ctx context.Context, params result.GetResult
 	return buildResult(qs, tournaments, qmatches, tmatches, teams, rooms), nil
 }
 
-func checkTeamFound(params result.GetResultParams, teams []*Team) error {
-	if params.TeamID == nil {
+func checkTeamFound(teamID int64, teams []*Team) error {
+	if teamID == 0 {
 		return nil
 	}
 	for _, t := range teams {
-		if t.Id == *params.TeamID {
+		if t.Id == teamID {
 			return nil
 		}
 	}
 	return &serror.Error{
 		Code:    http.StatusNotFound,
-		Message: fmt.Sprintf("team_id=%d not found", *params.TeamID),
+		Message: fmt.Sprintf("team_id=%d not found", teamID),
 	}
 }
 
