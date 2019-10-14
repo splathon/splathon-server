@@ -320,6 +320,10 @@ paths:
         required: true
         type: integer
         format: int64
+      - name: latest
+        in: query
+        description: "Return latest ranking if true."
+        type: boolean
       responses:
         200:
           description: Success
