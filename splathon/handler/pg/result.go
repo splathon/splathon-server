@@ -35,7 +35,8 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		}
 	}
 
-	v, err, shared := h.sfgroup.Do(fmt.Sprintf("GetResult,admin=%v,team_id=", isAdmin, teamID), func() (interface{}, error) {
+	key := fmt.Sprintf("GetResult,event_id=%v,admin=%v,team_id=%v", eventID, isAdmin, teamID)
+	v, err, shared := h.sfgroup.Do(key, func() (interface{}, error) {
 		return h.getResultInternal(ctx, eventID, isAdmin, teamID)
 	})
 	if err != nil {
