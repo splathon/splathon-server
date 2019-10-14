@@ -169,8 +169,7 @@ func (h *Handler) queryInternalEventID(eventIDInPath int64) (int64, error) {
 	}
 
 	var event Event
-	q := fmt.Sprintf("Splathon#%d", int32(eventIDInPath)) + "%"
-	if err := h.db.Where("name LIKE ?", q).Find(&event).Error; err != nil {
+	if err := h.db.Where("numbering = ?", eventIDInPath).Find(&event).Error; err != nil {
 		return 0, fmt.Errorf("event not found (event_id=%d): %v", int32(eventIDInPath), err)
 	}
 	h.eventCache[eventIDInPath] = event.Id
