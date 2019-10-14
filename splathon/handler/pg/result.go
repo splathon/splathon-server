@@ -3,8 +3,10 @@ package pg
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/go-openapi/swag"
 	"github.com/splathon/splathon-server/splathon/serror"
@@ -14,6 +16,55 @@ import (
 )
 
 func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) (*models.Results, error) {
+	eventID, err := h.queryInternalEventID(params.EventID)
+	if err != nil {
+		return nil, err
+	}
+	isAdmin := params.XSPLATHONAPITOKEN != nil && h.checkAdminAuth(*params.XSPLATHONAPITOKEN) == nil
+
+	// Do not use cache for requests from admin because it needs latest results
+	// regardless of release flag.
+	if !isAdmin {
+		if ok, result := h.maybeGetResultFromCache(eventID); ok {
+			return result, nil
+		}
+	}
+
+	v, err, shared := h.sfgroup.Do(fmt.Sprintf("GetResult,admin=%v", isAdmin), func() (interface{}, error) {
+		return h.getResultInternal(ctx, params, eventID, isAdmin)
+	})
+	if err != nil {
+		return nil, err
+	}
+	if shared {
+		log.Println("[INFO] get result from shared data")
+	}
+	result := v.(*models.Results)
+
+	// Cache result.
+	if !isAdmin {
+		h.resultCacheMu.Lock()
+		defer h.resultCacheMu.Unlock()
+		h.resultCache[eventID] = &resultCache{
+			result:    result,
+			timestamp: time.Now(),
+		}
+	}
+	return result, nil
+}
+
+func (h *Handler) maybeGetResultFromCache(eventID int64) (bool, *models.Results) {
+	h.resultCacheMu.Lock()
+	defer h.resultCacheMu.Unlock()
+	if cache, ok := h.resultCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
+		log.Println("[INFO] get result from cache")
+		return true, cache.result
+	}
+	return false, nil
+}
+
+func (h *Handler) getResultInternal(ctx context.Context, params result.GetResultParams, eventID int64,
+	ignoreReleaseFlag bool) (*models.Results, error) {
 	var eg errgroup.Group
 
 	var (
@@ -24,11 +75,6 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		teams       []*Team
 		rooms       []*Room
 	)
-
-	eventID, err := h.queryInternalEventID(params.EventID)
-	if err != nil {
-		return nil, err
-	}
 
 	eg.Go(func() error {
 		return h.db.Where("event_id = ?", eventID).Order("round asc").Find(&qualifiers).Error
@@ -74,14 +120,13 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 		return nil, err
 	}
 
-	isAdmin := params.XSPLATHONAPITOKEN != nil && h.checkAdminAuth(*params.XSPLATHONAPITOKEN) == nil
 	releasedRound, err := GetQualifierRelease(ctx, eventID)
 	if err != nil {
 		return nil, err
 	}
 	var qs []*Qualifier
 	for _, q := range qualifiers {
-		if isAdmin || releasedRound == -1 || q.Round <= releasedRound {
+		if ignoreReleaseFlag || releasedRound == -1 || q.Round <= releasedRound {
 			qs = append(qs, q)
 		}
 	}

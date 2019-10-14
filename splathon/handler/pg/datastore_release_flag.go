@@ -65,5 +65,6 @@ func (h *Handler) UpdateReleaseQualifier(ctx context.Context, params admin.Updat
 	if err != nil {
 		return err
 	}
+	defer h.clearResultCache(eventID)
 	return UpdateQualifierRelease(ctx, eventID, params.Request.Round)
 }

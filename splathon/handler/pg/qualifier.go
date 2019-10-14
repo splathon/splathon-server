@@ -73,6 +73,7 @@ func (h *Handler) CreateNewQualifier(ctx context.Context, params admin.CreateNew
 		tx.Rollback()
 		return fmt.Errorf("failed to create next qualifier round: %v", err)
 	}
+	defer h.clearResultCache(eventID)
 	return tx.Commit().Error
 }
 
