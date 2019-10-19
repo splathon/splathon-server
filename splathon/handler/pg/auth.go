@@ -49,7 +49,7 @@ func (h *Handler) Login(ctx context.Context, params operations.LoginParams) (*mo
 		return nil, errors.New("login failed. slack user ID not found")
 	}
 
-	fmt.Printf("Login: %s", p.SlackUserId)
+	fmt.Printf("[INFO] Login: %s\n", p.SlackUserId)
 
 	if p.TeamId.Valid {
 		var team Team
