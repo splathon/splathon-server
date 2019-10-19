@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"fmt"
+	"log"
 	"math"
 	"sort"
 	"time"
@@ -22,26 +23,42 @@ func (h *Handler) GetRanking(ctx context.Context, params ranking.GetRankingParam
 	onlyFromCompleted := !(params.Latest != nil && *params.Latest)
 
 	if onlyFromCompleted {
-		h.rankingCacheMu.Lock()
-		defer h.rankingCacheMu.Unlock()
-		if cache, ok := h.rankingCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
-			fmt.Println("ranking cached")
-			return cache.ranking, nil
+		if ok, ranking := h.maybeGetRankingFromCache(eventID); ok {
+			return ranking, nil
 		}
 	}
 
-	rankResp, err := h.BuildRanking(eventID, onlyFromCompleted)
+	key := fmt.Sprintf("GetRanking,event_id=%v,completed=%v", eventID, onlyFromCompleted)
+	v, err, shared := h.sfgroup.Do(key, func() (interface{}, error) {
+		return h.BuildRanking(eventID, onlyFromCompleted)
+	})
 	if err != nil {
 		return nil, err
 	}
+	if shared {
+		log.Println("[INFO] get ranking from shared data")
+	}
+	rankResp := v.(*models.Ranking)
 
 	if onlyFromCompleted {
+		h.rankingCacheMu.Lock()
+		defer h.rankingCacheMu.Unlock()
 		h.rankingCache[eventID] = &rankingCache{
 			ranking:   rankResp,
 			timestamp: time.Now(),
 		}
 	}
 	return rankResp, nil
+}
+
+func (h *Handler) maybeGetRankingFromCache(eventID int64) (bool, *models.Ranking) {
+	h.rankingCacheMu.Lock()
+	defer h.rankingCacheMu.Unlock()
+	if cache, ok := h.rankingCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
+		log.Println("[INFO] get ranking from cache")
+		return true, cache.ranking
+	}
+	return false, nil
 }
 
 // completed: true if build ranking only from completed qualifier.
