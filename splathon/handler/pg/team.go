@@ -19,7 +19,7 @@ func (h *Handler) ListTeams(ctx context.Context, params operations.ListTeamsPara
 
 	h.teamCacheMu.Lock()
 	defer h.teamCacheMu.Unlock()
-	if cached, ok := h.teamCache[eventID]; ok && time.Now().Sub(cached.timestamp) < 30*time.Minute {
+	if cached, ok := h.teamCache[eventID]; ok && time.Now().Sub(cached.timestamp) < 5*time.Minute {
 		fmt.Println("return from cache")
 		return cached.teams, nil
 	}
