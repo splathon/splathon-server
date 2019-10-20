@@ -62,7 +62,7 @@ func (h *Handler) GetResult(ctx context.Context, params result.GetResultParams) 
 func (h *Handler) maybeGetResultFromCache(eventID int64) (bool, *models.Results) {
 	h.resultCacheMu.Lock()
 	defer h.resultCacheMu.Unlock()
-	if cache, ok := h.resultCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 3*time.Minute {
+	if cache, ok := h.resultCache[eventID]; ok && time.Now().Sub(cache.timestamp) < 1*time.Minute {
 		log.Println("[INFO] get result from cache")
 		return true, cache.result
 	}
